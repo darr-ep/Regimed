@@ -700,9 +700,8 @@ app.post("/registro", function (req, res) {
   });
 });
 
-app.listen(3000, function () {
-  console.log("Servidor activo: http://localhost:3000");
-});
+app.listen(process.env.PORT || 3000)
+console.log('Servidor activo: ', process.env.PORT|| 3000);
 
 app.get("/verificar-correo", function (req, res) {
   const token = req.query.token;
