@@ -1,0 +1,746 @@
+<!-- Acceder con variable de sesión -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="CSS/principal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Regimed</title>
+    <link rel="icon" href="img/logo/Logo.png" type="image/png">
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
+        integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script defer src="JS/app.js"></script>
+    <script defer src="JS/codigoTemporal.js"></script>
+</head>
+
+<body>
+
+    <div id="informacion-general" class="contenido">
+        <!-- Aside -->
+        <aside>
+            <div class="superior">
+                <div class="logo">
+                    <img src="../../img/Logo/logo.png" alt="">
+                    <h1>Regimed</h1>
+                </div>
+                <ul>
+                    <li>
+                        <a href="#informacion-general" class="opcion seleccionado">
+                            <i class="fa-solid fa-user"></i>
+                            <p>Información</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#vacunas" class="opcion">
+                            <i class="fa-solid fa-syringe"></i>
+                            <p>Vacunas</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#historial" class="opcion">
+                            <i class="fa-solid fa-file-medical"></i>
+                            <p>Historial médico</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#enfermedades" class="opcion">
+                            <i class="fa-solid fa-star-of-life"></i>
+                            <p>Recetas médicas</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#registros" class="opcion">
+                            <i class="fa-solid fa-user-group"></i>
+                            <p>Registros</p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="inferior">
+                <ul>
+                    <li>
+                        <a href="" class="opcion">
+                            <i class="fa-solid fa-address-card"></i>
+                            <p>Cuenta</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../../controller/cerrar_sesion.php" class="opcion">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                            <p>Cerrar sesión</p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+        <main>
+            <div class="seccion">
+                <div class="titulo-seccion">
+                    <i class="fa-solid fa-user"></i>
+                    <h2>Información General</h2>
+                </div>
+                <div class="columna informacion_general">
+                    <form action="inicio.php" method="post" class="contenedor datos-personales"
+                        enctype="multipart/form-data">
+                        <div class="titulo-contenedor">
+                            <h3>Datos Personales</h3>
+                            <button type="submit" name="editar-datos-personales" class="boton-datos">
+                                <i class='fa-solid fa-pen-to-square'></i>&nbsp;
+                                <?php echo $_SESSION['editar-datos-personales'] == 0 ? 'Editar información' : 'Guardar información' ?>
+                            </button>
+                        </div>
+                        <div class="datos">
+                            <div class="izq">
+                                <div class="imagen">
+                                    <div class="contenido-imagen">
+                                        <img src="../../img/users/<?php echo $imagen_usuario != null ? $imagen_usuario : 'Usuario.png'; ?>" alt="">
+                                    </div>
+                                    <div
+                                        class="<?php echo ($_SESSION['editar-datos-personales'] == 0 ? '' : 'editar-imagen') ?>">
+                                        <?php echo ($_SESSION['editar-datos-personales'] == 0 ? '' : '<i class="fa-solid fa-camera"></i>') ?>
+                                        <input type="file" name="imagen_usuario" id="imagen_usuario" <?php echo $_SESSION['editar-datos-personales'] == 0 ? 'disabled' : '' ?>>
+                                    </div>
+
+                                </div>
+                                <div class="dato nombre">
+                                    <strong>Nombre</strong>
+                                    <input type="text" name="nombre_usuario"
+                                        class="<?php echo $_SESSION['editar-datos-personales'] == 0 ? 'readonly' : '' ?>"
+                                        value="<?php echo $nombre_usuario; ?>" <?php echo $_SESSION['editar-datos-personales'] == 0 ? 'readonly' : '' ?>>
+                                </div>
+                            </div>
+                            <div class="der">
+                                <div class="dato curp">
+                                    <strong>CURP</strong>
+                                    <input type="text" name="curp_usuario"
+                                        class="<?php echo $_SESSION['editar-datos-personales'] == 0 ? 'readonly' : '' ?>"
+                                        value="<?php echo $curp_usuario; ?>" <?php echo $_SESSION['editar-datos-personales'] == 0 ? 'readonly' : '' ?>
+                                        placeholder="Vacío">
+                                </div>
+                                <div class="dato telefono">
+                                    <strong>Teléfono</strong>
+                                    <input type="text" name="telefono_usuario"
+                                        class="<?php echo $_SESSION['editar-datos-personales'] == 0 ? 'readonly' : '' ?>"
+                                        value="<?php echo $_SESSION['editar-datos-personales'] == 0 ? $telefono_formato_usuario : $telefono_usuario ?>"
+                                        <?php echo $_SESSION['editar-datos-personales'] == 0 ? 'readonly' : '' ?>
+                                        placeholder="Vacío">
+                                </div>
+                                <div class="varios">
+                                    <div class="triple edad-peso-nacionalidad">
+                                        <div class="dato fecha-nacimiento">
+                                            <strong>Nacimiento</strong>
+                                            <?php echo $_SESSION['editar-datos-personales'] == 0 && $fecha_nac_usuario == 'Vacío' ? "<p class='vacio'>$fecha_nac_usuario</p>" : "<input type='date' name='fecha_nac_usuario' id='fecha_nac' class='" . ($_SESSION['editar-datos-personales'] == 0 ? 'readonly' : '') . "' value='$fecha_nac_usuario' " . ($_SESSION['editar-datos-personales'] == 0 ? 'readonly' : '') . ">"; ?>
+                                        </div>
+                                        <div class="dato peso">
+                                            <strong>Peso</strong>
+                                            <input type="text" name="peso_usuario"
+                                                class="<?php echo $_SESSION['editar-datos-personales'] == 0 ? 'readonly' : ''; ?>"
+                                                value="<?php echo $_SESSION['editar-datos-personales'] == 0 ? $peso_formato_usuario : $peso_usuario; ?>"
+                                                <?php echo $_SESSION['editar-datos-personales'] == 0 ? 'readonly' : '' ?>
+                                                placeholder="Vacío">
+                                        </div>
+                                        <div class="dato imc">
+                                            <strong>IMC</strong>
+                                            <p class="<?php echo $imc == 'Incalculado' ? 'vacio' : ''; ?>">
+                                                <?php echo $imc ?>
+                                            </p>
+                                        </div>
+                                        <div class="dato nacionalidad">
+                                            <strong>Nacionalidad</strong>
+                                            <input type="text" name="nacionalidad_usuario"
+                                                class="<?php echo $_SESSION['editar-datos-personales'] == 0 ? 'readonly' : '' ?>"
+                                                value="<?php echo $nacionalidad_usuario; ?>" <?php echo $_SESSION['editar-datos-personales'] == 0 ? 'readonly' : '' ?>
+                                                placeholder="Vacío">
+                                        </div>
+                                    </div>
+
+                                    <div class="triple estatura-sexo-sangre">
+                                        <div class="dato edad">
+                                            <strong>Edad</strong>
+                                            <p class="<?php echo $edad_usuario == 'Incalculado' ? 'vacio' : ''; ?>">
+                                                <?php echo $edad_usuario ?>
+                                            </p>
+                                        </div>
+                                        <div class=" dato estatura">
+                                            <strong>Estatura</strong>
+                                            <input type="text" name="estatura_usuario"
+                                                class="<?php echo $_SESSION['editar-datos-personales'] == 0 ? 'readonly' : '' ?>"
+                                                value="<?php echo $_SESSION['editar-datos-personales'] == 0 ? $estatura_formato_usuario : $estatura_usuario; ?>"
+                                                <?php echo $_SESSION['editar-datos-personales'] == 0 ? 'readonly' : '' ?>
+                                                placeholder="Vacío">
+                                        </div>
+                                        <div class="dato sexo">
+                                            <strong>Sexo</strong>
+                                            <?php echo $_SESSION['editar-datos-personales'] == 0 && $sexo_usuario == '' ? '<p class="vacio">Selecciona</p>' : '
+                        <select name="sexo_usuario" id="sexo"' . ($_SESSION['editar-datos-personales'] == 0 ? 'disabled' : '') . '>
+                            <option value="" disabled ' . ($sexo_usuario == '' ? 'selected' : '') . '>Selecciona</option>
+                            <option value="Hombre" ' . ($sexo_usuario == 'Hombre' ? 'selected' : '') . '>Hombre</option>
+                            <option value="Mujer" ' . ($sexo_usuario == 'Mujer' ? 'selected' : '') . '>Mujer</option>
+                        </select>' ?>
+                                        </div>
+                                        <div class="dato sangre">
+                                            <strong>Tipo de sangre</strong>
+                                            <?php echo $_SESSION['editar-datos-personales'] == 0 && $tipo_sangre_usuario == '' ? '<p class="vacio">Selecciona</p>' : '
+                        <select name="tipo_sangre_usuario" id="tipo_sangre"' . ($_SESSION['editar-datos-personales'] == 0 ? 'disabled' : '') . '>
+                            <option value="" disabled ' . ($tipo_sangre_usuario == '' ? 'selected' : '') . '>Selecciona</option>
+                            <option value="A+" ' . ($tipo_sangre_usuario == 'A+' ? 'selected' : '') . '>A+</option>
+                            <option value="A-" ' . ($tipo_sangre_usuario == 'A-' ? 'selected' : '') . '>A-</option>
+                            <option value="B+" ' . ($tipo_sangre_usuario == 'B+' ? 'selected' : '') . '>B+</option>
+                            <option value="B-" ' . ($tipo_sangre_usuario == 'B-' ? 'selected' : '') . '>B-</option>
+                            <option value="AB+" ' . ($tipo_sangre_usuario == 'AB+' ? 'selected' : '') . '>AB+</option>
+                            <option value="AB-" ' . ($tipo_sangre_usuario == 'AB-' ? 'selected' : '') . '>AB-</option>
+                            <option value="O+" ' . ($tipo_sangre_usuario == 'O+' ? 'selected' : '') . '>O+</option>
+                            <option value="O-" ' . ($tipo_sangre_usuario == 'O-' ? 'selected' : '') . '>O-</option>
+                        </select>' ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <form action="inicio.php" method="post" class="contenedor contactos">
+                        <div class="titulo-contenedor">
+                            <h3>Contactos de emergencia</h3>
+                            <button type="submit" name="editar-contactos" class="boton-datos">
+                                <i class='fa-solid fa-pen-to-square'></i>&nbsp;
+                                <?php echo $_SESSION['editar-contactos'] == 0 && !isset($_POST['agregar-contacto']) ? 'Editar información' : 'Guardar información' ?>
+                            </button>
+                        </div>
+                        <div class="tabla">
+                            <table>
+                                <tr class="superior">
+                                    <th>No. teléfono</th>
+                                    <th>Nombre</th>
+                                    <th>Relación</th>
+                                    <?php echo $_SESSION['editar-contactos'] == 1 ? "<th>Acción</th>" : "" ?>
+                                </tr>
+                                <?php echo isset($_POST['agregar-contacto']) ? '
+                                <div class="datos">
+                                    <tr>
+                                        <td><input type="text" name="telefono_nuevo_contacto" class="telefono_registrado" placeholder="Vacío"></td>
+                                        <td><input type="text" name="nombre_nuevo_contacto" class="nombre_registrado" placeholder="Vacío"></td>
+                                        <td><select name="relacion_nueva_contacto" id="relacion" class="relacion_registrado" <?php echo ($_SESSION["editar-contactos"] == 0 ? "disabled" : "") ?>>
+                                                <option value="" disabled selected>Selecciona</option>
+                                                <option value="Padre">Padre</option>
+                                                <option value="Madre">Madre</option>
+                                                <option value="Hermano/a">Hermano/a</option>
+                                                <option value="Cónyuge">Cónyuge</option>
+                                                <option value="Pareja">Pareja</option>
+                                                <option value="Tío/a">Tío/a</option>
+                                                <option value="Primo/a">Primo/a</option>
+                                                <option value="Abuelo/a">Abuelo/a</option>
+                                                <option value="Nieto/a">Nieto/a</option>
+                                                <option value="Sobrino/a">Sobrino/a</option>
+                                                <option value="Sobrino/a">Suegro/a</option>
+                                                <option value="Sobrino/a">Yerno/a</option>
+                                                <option value="Sobrino/a">Cuñado/a</option>
+                                                <option value="Sobrino/a">Otro</option>
+                                            </select>
+                                        </td>
+                                        <td class="accion-contacto"><button name="cancelar_agregar-contacto" class="accion-contacto"><i class="fa-solid fa-ban"></i></button></td>
+                                    </tr>
+                                </div>' : '' ?>
+
+                                <?php foreach ($contactos as $contacto) {
+                                    $telefono_contacto = preg_replace('/[^0-9]/', '', $contacto['telefono']);
+                                    $telefono_contacto = '(' . substr($telefono_contacto, 0, 3) . ') ' . substr($telefono_contacto, 3, 3) . '-' . substr($telefono_contacto, 6);
+                                    ?>
+                                    <tr>
+                                        <td>
+                                            <input type="text"
+                                                name="telefono_contacto_<?php echo $contacto['contacto_id'] ?>"
+                                                value="<?php echo $_SESSION['editar-contactos'] == 1 ? $contacto['telefono'] : $telefono_contacto ?>"
+                                                class="datos_guardados telefono_registrado <?php echo $_SESSION['editar-contactos'] == 0 ? 'readonly' : '' ?>"
+                                                <?php echo $_SESSION['editar-contactos'] == 0 ? 'readonly' : '' ?>>
+                                        </td>
+                                        <td>
+                                            <input type="text" name="nombre_contacto_<?php echo $contacto['contacto_id'] ?>"
+                                                value="<?php echo $contacto['nombre'] ?>"
+                                                class="datos_guardados nombre_registrado <?php echo $_SESSION['editar-contactos'] == 0 ? 'readonly' : '' ?>"
+                                                <?php echo $_SESSION['editar-contactos'] == 0 ? 'readonly' : '' ?>>
+                                        </td>
+                                        <td>
+                                            <input type="text"
+                                                name="relacion_contacto_<?php echo $contacto['contacto_id'] ?>"
+                                                value="<?php echo $contacto['relacion'] ?>"
+                                                class="datos_guardados relacion_registrado <?php echo $_SESSION['editar-contactos'] == 0 ? 'readonly' : '' ?>"
+                                                <?php echo $_SESSION['editar-contactos'] == 0 ? 'readonly' : '' ?>>
+                                        </td>
+                                        <?php if ($_SESSION['editar-contactos'] == 1) { ?>
+                                            <td class="accion-contacto">
+                                                <button class="accion-contacto" name="borrar-contacto"
+                                                    value="<?php echo $contacto['contacto_id']; ?>">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        <?php } ?>
+                                    </tr>
+                                <?php }
+                                $filas_vacias = ($_SESSION['editar-contactos'] == 1 ? 6 : 7) - $contactos->num_rows;
+
+                                while ($filas_vacias > 0) {
+                                    $filas_vacias--;
+                                    ?>
+                                    <tr>
+                                        <td>&nbsp</td>
+                                        <td></td>
+                                        <td></td>
+                                        <?php echo $_SESSION['editar-contactos'] == 1 ? "<td></td>" : "" ?>
+                                    </tr>
+                                <?php } ?>
+
+                                <?php echo (isset($_POST['editar-contactos']) || isset($_POST['borrar-contacto']) || isset($_POST['cancelar_agregar-contacto'])) && $_SESSION['editar-contactos'] == 1 ? '<tr class="inferior">
+                                    <td colspan="4" class="abajo">
+                                        <button type="submit" name="agregar-contacto" class="agregar-contacto boton-datos">
+                                            Agregar contacto
+                                            <i class="fa-solid fa-user-plus"></i>
+                                        </button>
+                                    </td>
+                                </tr>' : '' ?>
+                            </table>
+                        </div>
+                    </form>
+                </div>
+                <div class="columna">
+                    <div class="contenedor alergias">
+                        <h3>Alergias</h3>
+                        <div class="datos">
+                            <div class="dato medicamentos">
+                                <strong>Medicamentos</strong>
+                                <div class="contenedor-texto">
+                                    <p>Text</p>
+                                    <p>Text</p>
+                                    <p>Text</p>
+                                    <p>Text</p>
+                                    <p>Text</p>
+                                    <p>Text</p>
+                                    <p>Text</p>
+                                    <p>Text</p>
+                                    <p>Text</p>
+                                    <p>Text</p>
+                                    <p>Text</p>
+                                    <p>Text</p>
+                                    <p>Text</p>
+                                    <p>Text</p>
+                                    <p>Text</p>
+                                </div>
+                            </div>
+                            <div class="dato cronicas">
+                                <strong>Cronicas</strong>
+                                <div class="contenedor-texto">
+                                    <p>Text</p>
+                                    <p>Text</p>
+                                    <p>Text</p>
+                                    <p>Text</p>
+                                    <p>Text</p>
+                                    <p>Text</p>
+                                    <p>Text</p>
+                                    <p>Text</p>
+                                    <p>Text</p>
+                                    <p>Text</p>
+                                    <p>Text</p>
+                                    <p>Text</p>
+                                    <p>Text</p>
+                                    <p>Text</p>
+                                    <p>Text</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="seccion vacunas" id="vacunas">
+                <div class="titulo-seccion">
+                    <i class="fa-solid fa-syringe"></i>
+                    <h2>Vacunas</h2>
+                </div>
+                <div class="columna">
+                    <div class="contenedor vacunas-preestablecidas">
+                        <h3>Vacunas preestablecidas</h3>
+                        <div class="tabla">
+                            <table>
+                                <tr class="superior">
+                                    <th>Vacuna</th>
+                                    <th>Enfermedad que previene</th>
+                                    <th>Dosis</th>
+                                    <th>Edad y frecuencia</th>
+                                    <th>Fecha de vacunación</th>
+                                </tr>
+                                <div class="datos">
+                                    <tr>
+                                        <td class="bcg">BCG</td>
+                                        <td>Tuberculosis</td>
+                                        <td>Única</td>
+                                        <td>Al nacer</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="hepatitis-b" rowspan="3">Hepatitis B</td>
+                                        <td rowspan="3">Hepatitis B</td>
+                                        <td>Primera</td>
+                                        <td>Al nacer</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Segunda</td>
+                                        <td>2 meses</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tercera</td>
+                                        <td>6 meses</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="pentavalente" rowspan="4">Pentavalente Acelular DPat +VPI + Hib</td>
+                                        <td rowspan="4">Difteria, tos ferina, tétanos, poliomielitis e infecciones por
+                                            H. influenzae b</td>
+                                        <td>Primera</td>
+                                        <td>2 meses</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Segunda</td>
+                                        <td>4 meses</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tercera</td>
+                                        <td>6 meses</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Cuarta</td>
+                                        <td>18 meses</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="dpt">DPT</td>
+                                        <td>Difteria, tos ferina y tétanos</td>
+                                        <td>Refuerzo</td>
+                                        <td>4 años</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="rotavirus" rowspan="3">Rotavirus</td>
+                                        <td rowspan="3">Diarrea por rotavirus</td>
+                                        <td>Primera</td>
+                                        <td>2 meses</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Segunda</td>
+                                        <td>4 meses</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tercera</td>
+                                        <td>6 meses</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="neumococica" rowspan="3">Neumocócica conjugada</td>
+                                        <td rowspan="3">Infecciones por neumococo</td>
+                                        <td>Primera</td>
+                                        <td>2 meses</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Segunda</td>
+                                        <td>4 meses</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Refuerzo</td>
+                                        <td>12 meses</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="influenza" rowspan="3">Influenza</td>
+                                        <td rowspan="3">Influenza</td>
+                                        <td>Primera</td>
+                                        <td>6 meses</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Segunda</td>
+                                        <td>7 meses</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Revacunación</td>
+                                        <td>Anual hasta los 59 meses</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="srp" rowspan="2">SRP</td>
+                                        <td rowspan="2">Sarampión, rubéola y parotiditis</td>
+                                        <td>Primera</td>
+                                        <td>1 año</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Reguerzo</td>
+                                        <td>6 años</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="sabin" rowspan="8">Sabin</td>
+                                        <td rowspan="8">Poliomielitis</td>
+                                        <td rowspan="8" colspan="2">Adicionales</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="sr">SR</td>
+                                        <td>Sarampión y rubéola</td>
+                                        <td colspan="2">Adicionales</td>
+                                        <td></td>
+                                    </tr>
+                                </div>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="contenedor otras-vacunas">
+                        <h3>Otras vacunas</h3>
+                        <div class="tabla">
+                            <table>
+                                <tr class="superior">
+                                    <th>Vacuna</th>
+                                    <th>Enfermedad que previene</th>
+                                    <th>Dosis</th>
+                                    <th>Edad y frecuencia</th>
+                                    <th>Fecha de vacunación</th>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="seccion historial" id="historial">
+                <div class="titulo-seccion">
+                    <i class="fa-solid fa-file-medical"></i>
+                    <h2>Historial médico</h2>
+                </div>
+            </div>
+
+            <div class="seccion enfermedades" id="enfermedades">
+                <div class="titulo-seccion">
+                    <i class="fa-solid fa-star-of-life"></i>
+                    <h2>Recetas médicas</h2>
+                </div>
+            </div>
+
+            <div class="seccion" id="registros">
+                <div class="titulo-seccion">
+                    <i class="fa-solid fa-user-group"></i>
+                    <h2>Registros</h2>
+                </div>
+                <div class="contenedor">
+                    <div class="registros">
+                        <button class="registro">
+                            <img src="../../img/users/1710695044_1508859455_469404_1508859786_noticia_normal_recorte1.jpg"
+                                alt="">
+                            <p>Padre</p>
+                        </button>
+                        <button class="registro">
+                            <img src="../../img/users/descarga.jpeg" alt="">
+                            <p>Diosito</p>
+                        </button>
+                        <button id="abrir-agregar-registro" class="agregar-registro">
+                            <i class="fa-solid fa-plus"></i>
+                            <p>Agregar registro</p>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <div id="contenedor-agregar-registro" class="fondo-agregar-registro">
+        <div id="ventana-agregar-registro" class="ventana-agregar-registro">
+            <div class="contenido-agregar-registro">
+                <div class="titulo-agregar-registro">
+                    <h2>Agregar registro</h2>
+                </div>
+                <div class="opciones-agregar-registro">
+                    <div class="datos-agregar-registro">
+                        <div class="ingresar-agregar-registro">
+                            <h2>Ingresar registro</h2>
+                            <span>Ingresa el código de la persona a registrar</span>
+                            <!-- <input type="text" placeholder="000000"> -->
+                            <div class="codigo-agregar-registro">
+                                <input type="text" maxlength="1" class="digit-input" id="digit1">
+                                <input type="text" maxlength="1" class="digit-input" id="digit2">
+                                <input type="text" maxlength="1" class="digit-input" id="digit3">
+                                <p>-</p>
+                                <input type="text" maxlength="1" class="digit-input" id="digit4">
+                                <input type="text" maxlength="1" class="digit-input" id="digit5">
+                                <input type="text" maxlength="1" class="digit-input" id="digit6">
+                            </div>
+                            <p>o</p>
+                            <button class="boton-datos">
+                                <i class="fa-solid fa-camera"></i>
+                                Escanear código
+                            </button>
+                        </div>
+                    </div>
+                    <div class="datos-agregar-registro">
+                        <div class="compartir-registro">
+                            <h2>Compartir registro</h2>
+                            <span>Escanea el código qr para registrarte automaticamente</span>
+                            <div id="contenedorQR" class="contenedorQR"></div>
+                            <p>o</p>
+                            <span>Ingresa el siguiente código en otro registro</span>
+                            <strong>
+                                <?php echo $codigoAleatorio; ?>
+                            </strong>
+                            <span id="temporizadorCodigo">El código espirará en <span
+                                    id="tiempoRestante"></span></span>
+                            <span id="regenerarCodigo">El código ha expirado, <a href="#"
+                                    onclick="iniciarTemporizador()">regeneralo aquí</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cancelar-agregar-registro">
+                    <button id="cerrar-agregar-registro" class="boton-datos">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
