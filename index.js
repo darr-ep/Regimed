@@ -331,7 +331,7 @@ img {
                         <center style="white-space:nowrap;display:inline-block;text-align:center;color:#ffffff;font-weight:700;font-family:Inter,Arial,sans-serif;font-size:14px;">Verificar email</center>
                         </v:roundrect>
                     <![endif]-->
-<a href="https://regimed.org/verificar-correo?token=${token}" style="white-space:nowrap;background-color:#00a3ff; display:inline-block;text-align:center;color:#ffffff;font-weight:700;font-family:Inter,Arial,sans-serif;font-size:14px;line-height:45px;width:147px; -webkit-text-size-adjust:none;mso-hide:all;box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.0430000014603138);">Verificar email</a>
+<a href="https://regimed.org/verificar_correo?token=${token}" style="white-space:nowrap;background-color:#00a3ff; display:inline-block;text-align:center;color:#ffffff;font-weight:700;font-family:Inter,Arial,sans-serif;font-size:14px;line-height:45px;width:147px; -webkit-text-size-adjust:none;mso-hide:all;box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.0430000014603138);">Verificar email</a>
 </div>
 </td>
 </tr>
@@ -469,7 +469,7 @@ app.get("/acceso", function (req, res) {
   res.render("acceso");
 });
 
-app.get("/principal", function (req, res) {
+app.get("/principal", (req, res) => {
   res.render("principal");
 });
 
@@ -482,6 +482,8 @@ app.post("/registro", function (req, res) {
   const correo = datos.correo.trim();
   const contrasenia = datos.contrasenia.trim();
   const conf_contrasenia = datos.conf_contrasenia.trim();
+
+  correoUsuario = correo;
 
   const saltRounds = 10;
   const formatoNombre = /^[a-zA-ZÁáÉéÍíÓóÚúÜü\s]*$/;
@@ -705,7 +707,7 @@ app.post("/registro", function (req, res) {
             if (err) {
               throw err;
             } else {
-              res.redirect("/verificación");
+              res.redirect("/verificacion/" + correo);
             }
           });
         }
@@ -714,11 +716,15 @@ app.post("/registro", function (req, res) {
   });
 });
 
+app.get("/verificacion/:correo", (req, res) => {
+  res.render("verificacion", { correo: req.params.correo })
+})
+
 app.listen(process.env.PORT, function () {
   console.log("Servidor activo: ", process.env.PORT);
 });
 
-app.get("/verificar-correo", function (req, res) {
+app.get("/verificar_correo", function (req, res) {
   const token = req.query.token;
 
   jwt.verify(token, "secreto", function (err, decoded) {

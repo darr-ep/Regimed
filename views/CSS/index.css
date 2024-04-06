@@ -30,7 +30,6 @@ body {
     flex-direction: column;
     justify-content: center;
     width: 100%;
-    color: rgb(11, 0, 43);
 }
 
 nav {
@@ -113,10 +112,6 @@ main {
 .inicio__contenido a {
     color: white;
     font-weight: 600;
-}
-
-.inicio__boton {
-    
 }
 
 .inicio__boton a{

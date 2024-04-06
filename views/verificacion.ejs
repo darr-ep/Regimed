@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Regimed | Verificación</title>
+    <link rel="icon" href="img/Logo/LogoPositive.png" type="image/png" />
+    <link rel="stylesheet" href="/CSS/verificacion.css" />
+  </head>
+  <body>
+    <%- include('includes/nav.ejs') %>
+    <main>
+      <div class="patron"></div>
+      <div class="contenido">
+        <h1>Casi listo...</h1>
+        <div class="contenido__texto">
+          <div class="contenido__superior">
+            <p>Por favor revisa tu correo <strong><%= correo %></strong> para confirmar tu cuenta</p>
+          </div>
+          <div class="contenido__inferior">
+            <p>
+              Si <strong><%= correo %></strong> no es tu dirección de correo electrónico,
+              por favor regresa e ingresa el correcto.
+            </p>
+            <p>
+              Si no has recibido el correo de verificación en 15 minutos, por
+              favor revisa el folder de spam.
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
