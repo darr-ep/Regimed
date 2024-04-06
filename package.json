@@ -1,25 +1,28 @@
 {
-  "dependencies": {
-    "bcrypt": "^5.1.1",
-    "ejs": "^3.1.9",
-    "express": "^4.19.2",
-    "express-session": "^1.18.0",
-    "jsonwebtoken": "^9.0.2",
-    "mysql": "^2.18.1",
-    "node": "^18.20.1",
-    "nodemailer": "^6.9.13",
-    "uuid": "^9.0.1"
-  },
-  "name": "prueba",
+  "name": "regimed",
   "version": "1.0.0",
-  "main": "index.js",
-  "devDependencies": {},
+  "description": "",
+  "main": "inicio.php",
+  "directories": {
+    "lib": "lib"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Edson David Pedraza Alarcón",
   "license": "ISC",
-  "description": ""
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.9",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "jsonwebtoken": "^9.0.2",
+    "mysql": "^2.18.1",
+    "nodemailer": "^6.9.13",
+    "pg": "^8.11.5",
+    "uuid": "^9.0.1"
+  }
 }

@@ -7,8 +7,22 @@ const mysql = require("mysql");
 const uuid = require("uuid");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
+// const pg = require ('pg')
+const dotenv = require ('dotenv')
+
+dotenv.config()
 
 const app = express();
+
+// const pool = new pg.Pool({
+//   connectionString: process.env.DATABASE_URL,
+//   ssl: true
+// })
+
+// app.get ('/ping', async (req, res) => {
+//   const result = await pool.query('SELECT NOW()')
+//   return res.json(result.rows[0])
+// })
 
 function generarClaveSecreta() {
   return crypto.randomBytes(32).toString("hex");
@@ -26,10 +40,10 @@ app.use(
 );
 
 let conexion = mysql.createConnection({
-  host: "localhost",
-  database: "regimed",
-  user: "root",
-  password: "",
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
 });
 
 app.set("view engine", "ejs");
@@ -41,11 +55,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "views")));
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.hostinger.com",
+  host: "smtp.privateemail.com",
   port: 465,
   secure: true,
   auth: {
-    user: "darr.pedraz@regimed.org",
+    user: "service@regimed.org",
     pass: "Ori-regimed.3312!",
   },
 });
@@ -59,7 +73,7 @@ function generarToken(usuario_id) {
 
 function enviarCorreoVerificacion(correo, token) {
   const mailOptions = {
-    from: "darr.pedraz@regimed.org",
+    from: "service@regimed.org",
     to: correo,
     subject: "Verifica tu dirección de correo electrónico",
     html: `
@@ -700,8 +714,9 @@ app.post("/registro", function (req, res) {
   });
 });
 
-app.listen(process.env.PORT || 3000)
-console.log('Servidor activo: ', process.env.PORT|| 3000);
+app.listen(process.env.PORT, function () {
+  console.log("Servidor activo: ", process.env.PORT);
+});
 
 app.get("/verificar-correo", function (req, res) {
   const token = req.query.token;
