@@ -3,7 +3,6 @@
 :root {
     --error-color: #ff4e4e;
     --error-background-color: #ffe0e0;
-    --placeholder-color: #ffffff;
     --div-color: #757575;
 
     --p-size: 16px;
@@ -31,15 +30,17 @@ body {
     background-position: center;
     height: 100vh;
     margin: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 nav {
     display: flex;
     align-items: center;
-    width: 100vw;
+    width: 100%;
     justify-content: space-between;
-    position: fixed;
-    padding: 25px 100px;
+    padding: 30px 100px;
+    top: 0;
     z-index: 1;
 }
 
@@ -49,14 +50,26 @@ nav {
 
 .nav__enlaces {
     display: flex;
-    gap: 40px;
+    gap: 60px;
     list-style: none;
     font-size: 20px;
 }
 
-.enlaces__enlace {
+.nav__enlace {
     text-decoration: none;
     color: white;
+}
+
+.nav__enlace--borde {
+    color: black;
+    background-color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 500;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
 }
 
 /* ----------- Izquierda ----------- */
@@ -361,6 +374,10 @@ nav {
 
 .formulario {
     height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 50px;
 }
 
 .formulario h2 {
@@ -369,13 +386,14 @@ nav {
 
 .derecha .contenedor {
     position: relative;
-    height: 90%;
-    left: 0;
-    top: 10%;
     padding: 70px 50px;
     background-color: #fafafa;
     width: 500px;
-    border-radius: 20px 20px 0 0;
+    border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    -ms-border-radius: 20px;
+    -o-border-radius: 20px;
 }
 
 .formulario .contenido {
@@ -432,6 +450,11 @@ nav {
     border-color: var(--error-color);
 }
 
+.formulario .error input::placeholder {
+    color: var(--error-color);
+    opacity: 30%;
+}
+
 .formulario .error_controlador {
     margin: 10px 0;
     color: var(--error-color);
@@ -448,10 +471,41 @@ nav {
     font-size: 18px;
 }
 
+.contrasenia {
+    display: flex;
+    align-items: center;
+}
+
+.contrasenia .icono {
+    display: flex;
+    justify-content: center;
+    width: 25px;
+    position: absolute;
+    right: 20px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
 .formulario .submit {
     background-color: black;
     color: white;
     border-color: black;
+    transition: ease-out 0.4s;
+    -webkit-transition: ease-out 0.4s;
+    -moz-transition: ease-out 0.4s;
+    -ms-transition: ease-out 0.4s;
+    -o-transition: ease-out 0.4s;
+    cursor: pointer;
+    box-shadow: inset 0 0 0 0 white;
+}
+
+.formulario .submit:hover {
+    color: var(--color-primary);
+    box-shadow: inset 0 -80px 0 0 white;
+}
+
+.formulario .submit:active {
+    transform: scale(0.9);
 }
 
 @media only screen and (max-width: 1500px) {

@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Regimed | Registro</title>
     <link rel="stylesheet" href="CSS/registro.css" />
-    <script src="js/registro.js"></script>
+    <script
+      src="https://kit.fontawesome.com/f5b8feb020.js"
+      crossorigin="anonymous"
+    ></script>
   </head>
   <body>
     <%- include('includes/nav.ejs') %>
@@ -71,104 +74,102 @@
         <div class="formulario">
           <div class="contenedor">
             <div class="contenido">
-              <div class="superior">
-                <p>COMENCEMOS</p>
-                <h2>Crea una cuenta</h2>
-                <form
-                  action="/registro"
-                  method="post"
-                  onsubmit="guardarDatos()"
+              <p>COMENCEMOS</p>
+              <h2>Crea una cuenta</h2>
+              <form action="/registro" method="post">
+                <div
+                  class="input <%= typeof errorField !== 'undefined' && errorField === 'nombre' ? 'error' : '' %>"
                 >
-                  <div
-                    class="input nombre <%= typeof errorField !== 'undefined' && errorField === 'nombre' ? 'error' : '' %>"
-                  >
-                    <p>Nombre</p>
-                    <input
-                      type="text"
-                      name="nombre"
-                      placeholder="Carlos Alberto"
-                      id="nombre"
-                      value="<%= formData.nombre || '' %>"
-                    />
-                  </div>
-
-                  <div
-                    class="input apellido_paterno <%= typeof errorField !== 'undefined' && errorField === 'apellido_paterno' ? 'error' : '' %>"
-                  >
-                    <p>Apellido Paterno</p>
-                    <input
-                      type="text"
-                      name="apellido_paterno"
-                      placeholder="Ramírez"
-                      id="apellido_paterno"
-                      value="<%= formData.apellido_paterno || '' %>"
-                    />
-                  </div>
-
-                  <div
-                    class="input apellido_materno <%= typeof errorField !== 'undefined' && errorField === 'apellido_materno' ? 'error' : '' %>"
-                  >
-                    <p>Apellido Materno</p>
-                    <input
-                      type="text"
-                      name="apellido_materno"
-                      placeholder="Rodríguez"
-                      id="apellido_materno"
-                      value="<%= formData.apellido_materno || '' %>"
-                    />
-                  </div>
-
-                  <div
-                    class="input correo <%= typeof errorField !== 'undefined' && errorField === 'correo' ? 'error' : '' %>"
-                  >
-                    <p>Correo electrónico</p>
-                    <input
-                      type="email"
-                      name="correo"
-                      placeholder="carlosram@nomail.com"
-                      id="email"
-                      value="<%= formData.correo || '' %>"
-                    />
-                  </div>
-
-                  <div
-                    class="input contrasenia <%= typeof errorField !== 'undefined' && errorField === 'contrasenia' ? 'error' : '' %>"
-                  >
-                    <p>Contraseña</p>
-                    <input
-                      type="password"
-                      name="contrasenia"
-                      placeholder="•••••••••••"
-                      id="contrasenia"
-                      value="<%= formData.contrasenia || '' %>"
-                    />
-                  </div>
-
-                  <div
-                    class="input conf_contrasenia <%= typeof errorField !== 'undefined' && errorField === 'conf_contrasenia' ? 'error' : '' %>"
-                  >
-                    <p>Confirmar contraseña</p>
-                    <input
-                      type="password"
-                      name="conf_contrasenia"
-                      placeholder="•••••••••••"
-                      id="conf_contrasenia"
-                      value="<%= formData.conf_contrasenia || '' %>"
-                    />
-                  </div>
-                  <% if (typeof error !== 'undefined') { %>
-                  <p class="error_controlador" id="error_controlador">
-                    <%= error %>
-                  </p>
-                  <% } %>
+                  <p>Nombre</p>
                   <input
-                    name="btn_registrar"
-                    class="submit"
-                    type="submit"
-                    value="REGISTRAR"
+                    type="text"
+                    name="nombre"
+                    placeholder="Carlos Alberto"
+                    id="nombre"
+                    value="<%= formData.nombre || '' %>"
                   />
-                </form>
-              </div>
+                </div>
+
+                <div
+                  class="input <%= typeof errorField !== 'undefined' && errorField === 'apellido_paterno' ? 'error' : '' %>"
+                >
+                  <p>Apellido Paterno</p>
+                  <input
+                    type="text"
+                    name="apellido_paterno"
+                    placeholder="Ramírez"
+                    id="apellido_paterno"
+                    value="<%= formData.apellido_paterno || '' %>"
+                  />
+                </div>
+
+                <div
+                  class="input <%= typeof errorField !== 'undefined' && errorField === 'apellido_materno' ? 'error' : '' %>"
+                >
+                  <p>Apellido Materno</p>
+                  <input
+                    type="text"
+                    name="apellido_materno"
+                    placeholder="Rodríguez"
+                    id="apellido_materno"
+                    value="<%= formData.apellido_materno || '' %>"
+                  />
+                </div>
+
+                <div
+                  class="input <%= typeof errorField !== 'undefined' && errorField === 'correo' ? 'error' : '' %>"
+                >
+                  <p>Correo electrónico</p>
+                  <input
+                    type="email"
+                    name="correo"
+                    placeholder="carlosram@nomail.com"
+                    id="email"
+                    value="<%= formData.correo || '' %>"
+                  />
+                </div>
+
+                <div
+                  class="input contrasenia <%= typeof errorField !== 'undefined' && (errorField === 'contrasenia' || errorField === 'dif_Contrasenia') ? 'error' : '' %>"
+                >
+                  <p>Contraseña</p>
+                  <input
+                    type="password"
+                    name="contrasenia"
+                    placeholder="••••••••"
+                    id="contrasenia"
+                  />
+                  <div class="icono">
+                    <i class="fa-solid fa-eye" id="icono1"></i>
+                  </div>
+                </div>
+
+                <div
+                  class="input contrasenia <%= typeof errorField !== 'undefined' && (errorField === 'conf_contrasenia' || errorField === 'dif_Contrasenia') ? 'error' : '' %>"
+                >
+                  <p>Confirmar contraseña</p>
+                  <input
+                    type="password"
+                    name="conf_contrasenia"
+                    placeholder="••••••••"
+                    id="conf_contrasenia"
+                  />
+                  <div class="icono">
+                    <i class="fa-solid fa-eye" id="icono2"></i>
+                  </div>
+                </div>
+                <% if (typeof error !== 'undefined') { %>
+                <p class="error_controlador" id="error_controlador">
+                  <%= error %>
+                </p>
+                <% } %>
+                <input
+                  name="btn_registrar"
+                  class="submit"
+                  type="submit"
+                  value="REGISTRAR"
+                />
+              </form>
               <p class="login">
                 ¿Ya tienes una cuenta?&nbsp<a href="./acceso">ENTRA AQUÍ</a>
               </p>
@@ -177,5 +178,6 @@
         </div>
       </div>
     </main>
+    <script src="JS/contraseñaRegistro.js"></script>
   </body>
 </html>

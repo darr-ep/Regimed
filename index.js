@@ -7,22 +7,11 @@ const mysql = require("mysql");
 const uuid = require("uuid");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
-// const pg = require ('pg')
-const dotenv = require ('dotenv')
+const dotenv = require("dotenv");
 
-dotenv.config()
+dotenv.config();
 
 const app = express();
-
-// const pool = new pg.Pool({
-//   connectionString: process.env.DATABASE_URL,
-//   ssl: true
-// })
-
-// app.get ('/ping', async (req, res) => {
-//   const result = await pool.query('SELECT NOW()')
-//   return res.json(result.rows[0])
-// })
 
 function generarClaveSecreta() {
   return crypto.randomBytes(32).toString("hex");
@@ -66,7 +55,7 @@ const transporter = nodemailer.createTransport({
 
 function generarToken(usuario_id) {
   return jwt.sign({ usuario_id }, "secreto", {
-    expiresIn: "1d",
+    expiresIn: "15m",
     issuer: "regimed.org",
   });
 }
@@ -331,7 +320,9 @@ img {
                         <center style="white-space:nowrap;display:inline-block;text-align:center;color:#ffffff;font-weight:700;font-family:Inter,Arial,sans-serif;font-size:14px;">Verificar email</center>
                         </v:roundrect>
                     <![endif]-->
-<a href="https://regimed.org/verificar_correo?token=${token}" style="white-space:nowrap;background-color:#00a3ff; display:inline-block;text-align:center;color:#ffffff;font-weight:700;font-family:Inter,Arial,sans-serif;font-size:14px;line-height:45px;width:147px; -webkit-text-size-adjust:none;mso-hide:all;box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.0430000014603138);">Verificar email</a>
+<a href="${
+      process.env.URL_TOKEN + token
+    }" style="white-space:nowrap;background-color:#00a3ff; display:inline-block;text-align:center;color:#ffffff;font-weight:700;font-family:Inter,Arial,sans-serif;font-size:14px;line-height:45px;width:147px; -webkit-text-size-adjust:none;mso-hide:all;box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.0430000014603138);">Verificar email</a>
 </div>
 </td>
 </tr>
@@ -465,12 +456,76 @@ app.get("/registro", function (req, res) {
   res.render("registro", { formData: req.session.formData });
 });
 
-app.get("/acceso", function (req, res) {
-  res.render("acceso");
+app.get("/principal", (req, res) => {
+  if (!req.session.idUsuario) {
+    res.redirect("/");
+  } else {
+    res.render("principal");
+  }
 });
 
-app.get("/principal", (req, res) => {
-  res.render("principal");
+app.get("/acceso", function (req, res) {
+  if (!req.session.correo) {
+    req.session.correo = "";
+  }
+  res.render("acceso", { correo: req.session.correo });
+});
+
+app.post("/acceso", function (req, res) {
+  const datos = req.body;
+
+  const correo = datos.correo.trim();
+  const contrasenia = datos.contrasenia.trim();
+
+  const hashCorreo = crypto.createHash("sha256");
+  hashCorreo.update(correo);
+  const correoHash = hashCorreo.digest("hex");
+
+  const buscar =
+    "SELECT * FROM registro_usuario WHERE correo = '" + correoHash + "'";
+
+  conexion.query(buscar, function (err, row) {
+    if (err) {
+      throw err;
+    } else if (correo === "") {
+      req.session.correo = correo;
+      return res.render("acceso", {
+        error: "Por favor, ingrese su correo.",
+        errorField: "correo",
+        correo: req.session.correo,
+      });
+    } else if (contrasenia === "") {
+      req.session.correo = correo;
+      return res.render("acceso", {
+        error: "Por favor, ingresa la contraseña.",
+        errorField: "contrasenia",
+        correo: req.session.correo,
+      });
+    } else if (row.length === 0) {
+      req.session.correo = correo;
+      console.log(contrasenia)
+      return res.render("acceso", {
+        error: "El correo o la contraseña es incorrecta. Inténtelo de nuevo.",
+        errorField: "noRes",
+        correo: req.session.correo,
+      });
+    } else {
+      bcrypt.compare(contrasenia, row[0].contrasenia, function (err, result) {
+        if (!result) {
+          req.session.correo = correo;
+          return res.render("acceso", {
+            error:
+              "El correo o la contraseña es incorrecta. Inténtelo de nuevo.",
+            errorField: "noRes",
+            correo: req.session.correo,
+          });
+        } else {
+          req.session.idUsuario = row[0].usuario_id;
+          res.redirect("/principal");
+        }
+      });
+    }
+  });
 });
 
 app.post("/registro", function (req, res) {
@@ -483,7 +538,14 @@ app.post("/registro", function (req, res) {
   const contrasenia = datos.contrasenia.trim();
   const conf_contrasenia = datos.conf_contrasenia.trim();
 
-  correoUsuario = correo;
+  function guardarDatosFormulario(req) {
+    req.session.formData = {
+      nombre: nombre,
+      apellido_paterno: apellido_paterno,
+      apellido_materno: apellido_materno,
+      correo: correo,
+    };
+  }
 
   const saltRounds = 10;
   const formatoNombre = /^[a-zA-ZÁáÉéÍíÓóÚúÜü\s]*$/;
@@ -505,126 +567,76 @@ app.post("/registro", function (req, res) {
     if (err) {
       throw err;
     } else if (row.length > 0) {
-      req.session.formData = {
-        nombre: nombre,
-        apellido_paterno: apellido_paterno,
-        apellido_materno: apellido_materno,
-        correo: correo,
-      };
+      guardarDatosFormulario(req);
       return res.render("registro", {
         error: "El correo ya está registrado.",
         errorField: "correo",
-        formData: req.session.formData, // Agregado para mantener los datos del formulario
+        formData: req.session.formData,
       });
     } else if (nombre === "") {
-      req.session.formData = {
-        nombre: nombre,
-        apellido_paterno: apellido_paterno,
-        apellido_materno: apellido_materno,
-        correo: correo,
-      };
+      guardarDatosFormulario(req);
       return res.render("registro", {
         error: "Por favor, ingrese su nombre.",
         errorField: "nombre",
-        formData: req.session.formData, // Agregado para mantener los datos del formulario
+        formData: req.session.formData,
       });
     } else if (!formatoNombre.test(nombre)) {
-      req.session.formData = {
-        nombre: nombre,
-        apellido_paterno: apellido_paterno,
-        apellido_materno: apellido_materno,
-        correo: correo,
-      };
+      guardarDatosFormulario(req);
       return res.render("registro", {
         error: "El nombre solo debe contener letras y espacios.",
         errorField: "nombre",
-        formData: req.session.formData, // Agregado para mantener los datos del formulario
+        formData: req.session.formData,
       });
     } else if (apellido_paterno === "") {
-      req.session.formData = {
-        nombre: nombre,
-        apellido_paterno: apellido_paterno,
-        apellido_materno: apellido_materno,
-        correo: correo,
-      };
+      guardarDatosFormulario(req);
       return res.render("registro", {
         error: "Por favor, ingrese su apellido paterno.",
         errorField: "apellido_paterno",
-        formData: req.session.formData, // Agregado para mantener los datos del formulario
+        formData: req.session.formData,
       });
     } else if (apellido_materno === "") {
-      req.session.formData = {
-        nombre: nombre,
-        apellido_paterno: apellido_paterno,
-        apellido_materno: apellido_materno,
-        correo: correo,
-      };
+      guardarDatosFormulario(req);
       return res.render("registro", {
         error: "Por favor, ingrese su apellido materno.",
         errorField: "apellido_materno",
-        formData: req.session.formData, // Agregado para mantener los datos del formulario
+        formData: req.session.formData,
       });
     } else if (
       !formatoNombre.test(apellido_paterno) ||
       !formatoNombre.test(apellido_materno)
     ) {
-      req.session.formData = {
-        nombre: nombre,
-        apellido_paterno: apellido_paterno,
-        apellido_materno: apellido_materno,
-        correo: correo,
-      };
+      guardarDatosFormulario(req);
       return res.render("registro", {
         error: "Los apellidos solo debe contener letras y espacios.",
         errorField: "apellido_paterno",
-        formData: req.session.formData, // Agregado para mantener los datos del formulario
+        formData: req.session.formData,
       });
     } else if (correo === "") {
-      req.session.formData = {
-        nombre: nombre,
-        apellido_paterno: apellido_paterno,
-        apellido_materno: apellido_materno,
-        correo: correo,
-      };
+      guardarDatosFormulario(req);
       return res.render("registro", {
         error: "Por favor, ingrese su correo.",
         errorField: "correo",
-        formData: req.session.formData, // Agregado para mantener los datos del formulario
+        formData: req.session.formData,
       });
     } else if (!formatoCorreo) {
-      req.session.formData = {
-        nombre: nombre,
-        apellido_paterno: apellido_paterno,
-        apellido_materno: apellido_materno,
-        correo: correo,
-      };
+      guardarDatosFormulario(req);
       return res.render("registro", {
         error: "El correo ingresado no tiene un formato válido.",
         errorField: "correo",
-        formData: req.session.formData, // Agregado para mantener los datos del formulario
+        formData: req.session.formData,
       });
     } else if (contrasenia === "") {
-      req.session.formData = {
-        nombre: nombre,
-        apellido_paterno: apellido_paterno,
-        apellido_materno: apellido_materno,
-        correo: correo,
-      };
+      guardarDatosFormulario(req);
       return res.render("registro", {
         error: "Por favor, ingresa una contraseña",
         errorField: "contrasenia",
-        formData: req.session.formData, // Agregado para mantener los datos del formulario
+        formData: req.session.formData,
       });
     } else if (
       contrasenia.length < longMinContraseña ||
       contrasenia.length > longMaxContraseña
     ) {
-      req.session.formData = {
-        nombre: nombre,
-        apellido_paterno: apellido_paterno,
-        apellido_materno: apellido_materno,
-        correo: correo,
-      };
+      guardarDatosFormulario(req);
       return res.render("registro", {
         error:
           "La contraseña debe tener entre " +
@@ -633,44 +645,29 @@ app.post("/registro", function (req, res) {
           longMaxContraseña +
           " caracteres.",
         errorField: "contrasenia",
-        formData: req.session.formData, // Agregado para mantener los datos del formulario
+        formData: req.session.formData,
       });
     } else if (!passWithMay || !passWithMin || !passWithEsp) {
-      req.session.formData = {
-        nombre: nombre,
-        apellido_paterno: apellido_paterno,
-        apellido_materno: apellido_materno,
-        correo: correo,
-      };
+      guardarDatosFormulario(req);
       return res.render("registro", {
         error:
           "La contraseña debe contener al menos una letra mayúscula, una letra minúscula y un carácter especial.",
         errorField: "contrasenia",
-        formData: req.session.formData, // Agregado para mantener los datos del formulario
+        formData: req.session.formData,
       });
     } else if (conf_contrasenia === "") {
-      req.session.formData = {
-        nombre: nombre,
-        apellido_paterno: apellido_paterno,
-        apellido_materno: apellido_materno,
-        correo: correo,
-      };
+      guardarDatosFormulario(req);
       return res.render("registro", {
         error: "Por favor, ingresa nuevamente la contraseña",
         errorField: "conf_contrasenia",
-        formData: req.session.formData, // Agregado para mantener los datos del formulario
+        formData: req.session.formData,
       });
     } else if (contrasenia !== conf_contrasenia) {
-      req.session.formData = {
-        nombre: nombre,
-        apellido_paterno: apellido_paterno,
-        apellido_materno: apellido_materno,
-        correo: correo,
-      };
+      guardarDatosFormulario(req);
       return res.render("registro", {
         error: "Las contraseñas no coinciden.",
-        errorField: ["contrasenia", "conf_contrasenia"],
-        formData: req.session.formData, // Agregado para mantener los datos del formulario
+        errorField: "dif_Contrasenia",
+        formData: req.session.formData,
       });
     } else {
       bcrypt.hash(contrasenia, saltRounds, function (err, hash) {
@@ -685,6 +682,7 @@ app.post("/registro", function (req, res) {
           const uuidHash = hashUUID.digest("hex");
 
           const token = generarToken(uuidHash);
+          console.log(token);
 
           enviarCorreoVerificacion(correo, token);
 
@@ -716,9 +714,19 @@ app.post("/registro", function (req, res) {
   });
 });
 
+app.get("/cerrarSesion", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.redirect("/");
+    }
+  });
+});
+
 app.get("/verificacion/:correo", (req, res) => {
-  res.render("verificacion", { correo: req.params.correo })
-})
+  res.render("verificacion", { correo: req.params.correo });
+});
 
 app.listen(process.env.PORT, function () {
   console.log("Servidor activo: ", process.env.PORT);
@@ -749,12 +757,12 @@ app.get("/verificar_correo", function (req, res) {
           console.error("Error al mover usuario verificado: ", err);
           res.send("Error al mover usuario verificado");
         } else {
-          // Después de mover los datos, eliminamos el usuario no verificado
           conexion.query(eliminarUsuarioNoVerificado, function (err) {
             if (err) {
               console.error("Error al eliminar usuario no verificado: ", err);
               res.send("Error al eliminar usuario no verificado");
             } else {
+              req.session.idUsuario = decoded.usuario_id;
               res.redirect("/principal");
             }
           });

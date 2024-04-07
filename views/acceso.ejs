@@ -4,7 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Regimed | Acceso</title>
-    <link rel="stylesheet" href="../css/acceso.css" />
+    <link rel="stylesheet" href="CSS/acceso.css" />
+    <script
+      src="https://kit.fontawesome.com/f5b8feb020.js"
+      crossorigin="anonymous"
+    ></script>
   </head>
   <body>
     <%- include('includes/nav.ejs') %>
@@ -70,41 +74,48 @@
         <div class="formulario">
           <div class="contenedor">
             <div class="contenido">
-              <div class="superior">
-                <p>BIENVENIDO DE VUELTA</p>
-                <h2>Ingrese a su cuenta</h2>
-                <form action="/acceso" method="post">
-                  <div class="input correo">
-                    <p>Correo electrónico</p>
-                    <input
-                      type="email"
-                      name="correo"
-                      placeholder="carlosram@nomail.com"
-                      id="nombre"
-                    />
-                  </div>
-                  <div class="input contrasenia">
-                    <p>Contraseña</p>
-                    <input
-                      type="password"
-                      name="contrasenia"
-                      placeholder="•••••••••••"
-                      id="contraseña"
-                    />
-                  </div>
-                  <% if (typeof error !== 'undefined') { %>
-                    <p class="error_controlador" id="error_controlador">
-                      <%= error %>
-                    </p>
-                    <% } %>
+              <p>BIENVENIDO DE VUELTA</p>
+              <h2>Ingrese a su cuenta</h2>
+              <form action="/acceso" method="post">
+                <div
+                  class="input correo <%= typeof errorField !== 'undefined' && (errorField === 'correo' || errorField === 'noRes') ? 'error' : '' %>"
+                >
+                  <p>Correo electrónico</p>
                   <input
-                    name="btn_ingresar"
-                    class="submit"
-                    type="submit"
-                    value="INGRESAR"
+                    type="email"
+                    name="correo"
+                    placeholder="carlosram@nomail.com"
+                    id="correo"
+                    value="<%= correo || '' %>"
                   />
-                </form>
-              </div>
+                </div>
+
+                <div
+                  class="input contrasenia <%= typeof errorField !== 'undefined' && (errorField === 'contrasenia' || errorField === 'noRes') ? 'error' : '' %>"
+                >
+                  <p>Contraseña</p>
+                  <input
+                    type="password"
+                    name="contrasenia"
+                    placeholder="•••••••••••"
+                    id="contrasenia"
+                  />
+                  <div class="icono">
+                    <i class="fa-solid fa-eye" id="icono"></i>
+                  </div>
+                </div>
+                <% if (typeof error !== 'undefined') { %>
+                <p class="error_controlador" id="error_controlador">
+                  <%= error %>
+                </p>
+                <% } %>
+                <input
+                  name="btn_ingresar"
+                  class="submit"
+                  type="submit"
+                  value="INGRESAR"
+                />
+              </form>
               <p class="login">
                 ¿Nuevo usuario?&nbsp<a href="./registro">REGISTRATE AQUÍ</a>
               </p>
@@ -113,5 +124,6 @@
         </div>
       </div>
     </main>
+    <script src="JS/contraseñaAcceso.js"></script>
   </body>
 </html>
