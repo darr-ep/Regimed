@@ -13,9 +13,9 @@
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
         integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
     <script defer src="JS/app.js"></script>
     <script defer src="JS/codigoTemporal.js"></script>
+    <script defer src="JS/datosPersonales.js"></script>
 </head>
 
 <body>
@@ -80,129 +80,87 @@
         </aside>
         <main>
             <div class="seccion">
-                <div class="titulo-seccion">
+                <div class="seccion__titulo">
                     <i class="fa-solid fa-user"></i>
                     <h2>Información General</h2>
                 </div>
-                <div class="columna informacion_general">
-                    <form action="inicio.php" method="post" class="contenedor datos-personales"
-                        enctype="multipart/form-data">
-                        <div class="titulo-contenedor">
+                <div class="seccion__columna seccion__columna--informacion_general">
+                    <div class="seccion__fila">
+                        <div class="contenedor__titulo">
                             <h3>Datos Personales</h3>
-                            <button type="submit" name="editar-datos-personales" class="boton-datos">
-                                <i class='fa-solid fa-pen-to-square'></i>&nbsp;
-                                <?php echo $_SESSION['editar-datos-personales'] == 0 ? 'Editar información' : 'Guardar información' ?>
+                            <button type="button" name="botonDatosPersonales" class="boton-datos" id="abrir__datosPersonales">
+                                <i class='fa-solid fa-pen-to-square'></i>
+                                <p id="texto_boton">Editar información</p>
                             </button>
                         </div>
-                        <div class="datos">
-                            <div class="izq">
-                                <div class="imagen">
-                                    <div class="contenido-imagen">
-                                        <img src="../../img/users/<?php echo $imagen_usuario != null ? $imagen_usuario : 'Usuario.png'; ?>" alt="">
-                                    </div>
-                                    <div
-                                        class="<?php echo ($_SESSION['editar-datos-personales'] == 0 ? '' : 'editar-imagen') ?>">
-                                        <?php echo ($_SESSION['editar-datos-personales'] == 0 ? '' : '<i class="fa-solid fa-camera"></i>') ?>
-                                        <input type="file" name="imagen_usuario" id="imagen_usuario" <?php echo $_SESSION['editar-datos-personales'] == 0 ? 'disabled' : '' ?>>
-                                    </div>
-
+                        <div class="seccion__datosPersonales">
+                            <div class="seccion__izquierda">
+                                <div class="contenidoImagen">
+                                    <img src="img/users/Usuario.png" alt="">
                                 </div>
-                                <div class="dato nombre">
+                                <div class="seccion__datoPersonal nombre">
                                     <strong>Nombre</strong>
-                                    <input type="text" name="nombre_usuario"
-                                        class="<?php echo $_SESSION['editar-datos-personales'] == 0 ? 'readonly' : '' ?>"
-                                        value="<?php echo $nombre_usuario; ?>" <?php echo $_SESSION['editar-datos-personales'] == 0 ? 'readonly' : '' ?>>
+                                    <% if (typeof nombre !== 'undefined' && nombre !== null && nombre !== '') { %>
+                                        <p><%= nombre %></p>
+                                    <% } else { %>
+                                        <p class="vacio">Vacío</p>
+                                    <% } %>
                                 </div>
                             </div>
-                            <div class="der">
-                                <div class="dato curp">
+                            <div class="seccion__derecha">
+                                <div class="seccion__datoPersonal curp">
                                     <strong>CURP</strong>
-                                    <input type="text" name="curp_usuario"
-                                        class="<?php echo $_SESSION['editar-datos-personales'] == 0 ? 'readonly' : '' ?>"
-                                        value="<?php echo $curp_usuario; ?>" <?php echo $_SESSION['editar-datos-personales'] == 0 ? 'readonly' : '' ?>
-                                        placeholder="Vacío">
+                                    <% if (typeof curp !== 'undefined' && curp !== null && curp !== '') { %>
+                                        <p><%= curp %></p>
+                                    <% } else { %>
+                                        <p class="vacio">Vacío</p>
+                                    <% } %>
                                 </div>
-                                <div class="dato telefono">
+                                <div class="seccion__datoPersonal telefono">
                                     <strong>Teléfono</strong>
-                                    <input type="text" name="telefono_usuario"
-                                        class="<?php echo $_SESSION['editar-datos-personales'] == 0 ? 'readonly' : '' ?>"
-                                        value="<?php echo $_SESSION['editar-datos-personales'] == 0 ? $telefono_formato_usuario : $telefono_usuario ?>"
-                                        <?php echo $_SESSION['editar-datos-personales'] == 0 ? 'readonly' : '' ?>
-                                        placeholder="Vacío">
+                                    <p>7751567242</p>
                                 </div>
-                                <div class="varios">
-                                    <div class="triple edad-peso-nacionalidad">
-                                        <div class="dato fecha-nacimiento">
+                                <div class="seccion__multiplesDatosPersonales">
+                                    <div class="seccion__divisorDatos">
+                                        <div class="seccion__datoPersonal">
                                             <strong>Nacimiento</strong>
-                                            <?php echo $_SESSION['editar-datos-personales'] == 0 && $fecha_nac_usuario == 'Vacío' ? "<p class='vacio'>$fecha_nac_usuario</p>" : "<input type='date' name='fecha_nac_usuario' id='fecha_nac' class='" . ($_SESSION['editar-datos-personales'] == 0 ? 'readonly' : '') . "' value='$fecha_nac_usuario' " . ($_SESSION['editar-datos-personales'] == 0 ? 'readonly' : '') . ">"; ?>
+                                            <p>08/10/2003</p>
                                         </div>
-                                        <div class="dato peso">
+                                        <div class="seccion__datoPersonal">
                                             <strong>Peso</strong>
-                                            <input type="text" name="peso_usuario"
-                                                class="<?php echo $_SESSION['editar-datos-personales'] == 0 ? 'readonly' : ''; ?>"
-                                                value="<?php echo $_SESSION['editar-datos-personales'] == 0 ? $peso_formato_usuario : $peso_usuario; ?>"
-                                                <?php echo $_SESSION['editar-datos-personales'] == 0 ? 'readonly' : '' ?>
-                                                placeholder="Vacío">
+                                            <p>58 kg</p>
                                         </div>
-                                        <div class="dato imc">
+                                        <div class="seccion__datoPersonal">
                                             <strong>IMC</strong>
-                                            <p class="<?php echo $imc == 'Incalculado' ? 'vacio' : ''; ?>">
-                                                <?php echo $imc ?>
-                                            </p>
+                                            <p>Tanto</p>
                                         </div>
-                                        <div class="dato nacionalidad">
+                                        <div class="seccion__datoPersonal">
                                             <strong>Nacionalidad</strong>
-                                            <input type="text" name="nacionalidad_usuario"
-                                                class="<?php echo $_SESSION['editar-datos-personales'] == 0 ? 'readonly' : '' ?>"
-                                                value="<?php echo $nacionalidad_usuario; ?>" <?php echo $_SESSION['editar-datos-personales'] == 0 ? 'readonly' : '' ?>
-                                                placeholder="Vacío">
+                                            <p>Mexicana</p>
                                         </div>
                                     </div>
-
-                                    <div class="triple estatura-sexo-sangre">
-                                        <div class="dato edad">
+                                    <div class="seccion__divisorDatos">
+                                        <div class="seccion__datoPersonal">
                                             <strong>Edad</strong>
-                                            <p class="<?php echo $edad_usuario == 'Incalculado' ? 'vacio' : ''; ?>">
-                                                <?php echo $edad_usuario ?>
-                                            </p>
+                                            <p>20 años</p>
                                         </div>
-                                        <div class=" dato estatura">
+                                        <div class=" seccion__datoPersonal">
                                             <strong>Estatura</strong>
-                                            <input type="text" name="estatura_usuario"
-                                                class="<?php echo $_SESSION['editar-datos-personales'] == 0 ? 'readonly' : '' ?>"
-                                                value="<?php echo $_SESSION['editar-datos-personales'] == 0 ? $estatura_formato_usuario : $estatura_usuario; ?>"
-                                                <?php echo $_SESSION['editar-datos-personales'] == 0 ? 'readonly' : '' ?>
-                                                placeholder="Vacío">
+                                            <p>1.78 mts</p>
                                         </div>
-                                        <div class="dato sexo">
+                                        <div class="seccion__datoPersonal">
                                             <strong>Sexo</strong>
-                                            <?php echo $_SESSION['editar-datos-personales'] == 0 && $sexo_usuario == '' ? '<p class="vacio">Selecciona</p>' : '
-                        <select name="sexo_usuario" id="sexo"' . ($_SESSION['editar-datos-personales'] == 0 ? 'disabled' : '') . '>
-                            <option value="" disabled ' . ($sexo_usuario == '' ? 'selected' : '') . '>Selecciona</option>
-                            <option value="Hombre" ' . ($sexo_usuario == 'Hombre' ? 'selected' : '') . '>Hombre</option>
-                            <option value="Mujer" ' . ($sexo_usuario == 'Mujer' ? 'selected' : '') . '>Mujer</option>
-                        </select>' ?>
+                                            <p>Masculino</p>
                                         </div>
-                                        <div class="dato sangre">
+                                        <div class="seccion__datoPersonal">
                                             <strong>Tipo de sangre</strong>
-                                            <?php echo $_SESSION['editar-datos-personales'] == 0 && $tipo_sangre_usuario == '' ? '<p class="vacio">Selecciona</p>' : '
-                        <select name="tipo_sangre_usuario" id="tipo_sangre"' . ($_SESSION['editar-datos-personales'] == 0 ? 'disabled' : '') . '>
-                            <option value="" disabled ' . ($tipo_sangre_usuario == '' ? 'selected' : '') . '>Selecciona</option>
-                            <option value="A+" ' . ($tipo_sangre_usuario == 'A+' ? 'selected' : '') . '>A+</option>
-                            <option value="A-" ' . ($tipo_sangre_usuario == 'A-' ? 'selected' : '') . '>A-</option>
-                            <option value="B+" ' . ($tipo_sangre_usuario == 'B+' ? 'selected' : '') . '>B+</option>
-                            <option value="B-" ' . ($tipo_sangre_usuario == 'B-' ? 'selected' : '') . '>B-</option>
-                            <option value="AB+" ' . ($tipo_sangre_usuario == 'AB+' ? 'selected' : '') . '>AB+</option>
-                            <option value="AB-" ' . ($tipo_sangre_usuario == 'AB-' ? 'selected' : '') . '>AB-</option>
-                            <option value="O+" ' . ($tipo_sangre_usuario == 'O+' ? 'selected' : '') . '>O+</option>
-                            <option value="O-" ' . ($tipo_sangre_usuario == 'O-' ? 'selected' : '') . '>O-</option>
-                        </select>' ?>
+                                            <p>O+</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </form>
+                    </div>
                     <form action="inicio.php" method="post" class="contenedor contactos">
                         <div class="titulo-contenedor">
                             <h3>Contactos de emergencia</h3>
@@ -306,7 +264,7 @@
                         </div>
                     </form>
                 </div>
-                <div class="columna">
+                <div class="seccion__columna">
                     <div class="contenedor alergias">
                         <h3>Alergias</h3>
                         <div class="datos">
@@ -359,7 +317,7 @@
                     <i class="fa-solid fa-syringe"></i>
                     <h2>Vacunas</h2>
                 </div>
-                <div class="columna">
+                <div class="seccion__columna">
                     <div class="contenedor vacunas-preestablecidas">
                         <h3>Vacunas preestablecidas</h3>
                         <div class="tabla">
@@ -678,7 +636,7 @@
                             <img src="../../img/users/descarga.jpeg" alt="">
                             <p>Diosito</p>
                         </button>
-                        <button id="abrir-agregar-registro" class="agregar-registro">
+                        <button id="abrir__agregarRegistro" class="agregar-registro">
                             <i class="fa-solid fa-plus"></i>
                             <p>Agregar registro</p>
                         </button>
@@ -687,58 +645,142 @@
             </div>
         </main>
     </div>
-    <div id="contenedor-agregar-registro" class="fondo-agregar-registro">
-        <div id="ventana-agregar-registro" class="ventana-agregar-registro">
-            <div class="contenido-agregar-registro">
-                <div class="titulo-agregar-registro">
-                    <h2>Agregar registro</h2>
-                </div>
-                <div class="opciones-agregar-registro">
-                    <div class="datos-agregar-registro">
-                        <div class="ingresar-agregar-registro">
-                            <h2>Ingresar registro</h2>
-                            <span>Ingresa el código de la persona a registrar</span>
-                            <!-- <input type="text" placeholder="000000"> -->
-                            <div class="codigo-agregar-registro">
-                                <input type="text" maxlength="1" class="digit-input" id="digit1">
-                                <input type="text" maxlength="1" class="digit-input" id="digit2">
-                                <input type="text" maxlength="1" class="digit-input" id="digit3">
-                                <p>-</p>
-                                <input type="text" maxlength="1" class="digit-input" id="digit4">
-                                <input type="text" maxlength="1" class="digit-input" id="digit5">
-                                <input type="text" maxlength="1" class="digit-input" id="digit6">
-                            </div>
-                            <p>o</p>
-                            <button class="boton-datos">
-                                <i class="fa-solid fa-camera"></i>
-                                Escanear código
-                            </button>
-                        </div>
-                    </div>
-                    <div class="datos-agregar-registro">
-                        <div class="compartir-registro">
-                            <h2>Compartir registro</h2>
-                            <span>Escanea el código qr para registrarte automaticamente</span>
-                            <div id="contenedorQR" class="contenedorQR"></div>
-                            <p>o</p>
-                            <span>Ingresa el siguiente código en otro registro</span>
-                            <strong>
-                                <?php echo $codigoAleatorio; ?>
-                            </strong>
-                            <span id="temporizadorCodigo">El código espirará en <span
-                                    id="tiempoRestante"></span></span>
-                            <span id="regenerarCodigo">El código ha expirado, <a href="#"
-                                    onclick="iniciarTemporizador()">regeneralo aquí</span>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="cancelar-agregar-registro">
-                    <button id="cerrar-agregar-registro" class="boton-datos">Cancelar</button>
+<!-- * ------------------------ Contenedores ------------------------ * -->
+
+    <div id="fondo__datosPersonales" class="fondoVentana">
+        <div id="ventana__datosPersonales" class="ventana">
+            <div class="ventana__titulo">
+                <h2>Datos Personales</h2>
+                <span>Ingresa o modifica tus datos</span>
+            </div>
+            <form class="seccion__datosPersonales" enctype="multipart/form-data" id="formularioDatosPersonales">
+                <div class="seccion__izquierda">
+                    <div class="contenidoImagen">
+                        <img src="img/users/Usuario.png" id="imagenPrevisualizada">
+                        <div class="editar-imagen">
+                            <i class="fa-solid fa-camera"></i>
+                            <input type="file" name="imagen_usuario" id="imagenUsuario">
+                        </div>
+                    </div>
+                    <div class="seccion__datoPersonal nombre">
+                        <strong>Nombre</strong>
+                        <input type="text" id="nombreUsuario" value="<%= nombre %>">
+                    </div>
                 </div>
+                <div class="seccion__derecha">
+                    <div class="seccion__datoPersonal curp">
+                        <strong>CURP</strong>
+                        <input type="text" id="curpUsuario">
+                    </div>
+                    <div class="seccion__datoPersonal telefono">
+                        <strong>Teléfono</strong>
+                        <input type="text" id="telefonoUsuario">
+                    </div>
+                    <div class="seccion__multiplesDatosPersonales">
+                        <div class="seccion__divisorDatos">
+                            <div class="seccion__datoPersonal">
+                                <strong>Nacimiento</strong>
+                                <input type="date" id="nacimientoUsuario">
+                            </div>
+                            <div class="seccion__datoPersonal">
+                                <strong>Peso</strong>
+                                <input type="text" id="pesoUsuario">
+                            </div>
+                            <div class="seccion__datoPersonal">
+                                <strong>Nacionalidad</strong>
+                                <input type="text" id="nacionalidadUsuario">
+                            </div>
+                        </div>
+
+                        <div class="seccion__divisorDatos">
+                            <div class=" seccion__datoPersonal">
+                                <strong>Estatura</strong>
+                                <input type="text" id="estaturaUsuario">
+                            </div>
+                            <div class="seccion__datoPersonal">
+                                <strong>Sexo</strong>
+                                <select id="sexoUsuario">
+                                    <option value="" disabled selected>Selecciona</option>
+                                    <option value="Hombre">Hombre</option>
+                                    <option value="Mujer">Mujer</option>
+                                </select>                
+                            </div>
+                            <div class="seccion__datoPersonal">
+                                <strong>Tipo de sangre</strong>
+                                <select id="sangreUsuario">
+                                    <option value="" disabled selected>Selecciona</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                </select>
+                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="botones__agregarRegistro">
+                <button id="guardar__datosPersonales" class="boton-datos">Guardar</button>
+                <button id="cerrar__datosPersonales" class="boton-datos cerrarVentana">Cancelar</button>
             </div>
         </div>
     </div>
+
+<div id="fondo__agregarRegistro" class="fondoVentana">
+    <div id="ventana__agregarRegistro" class="ventana">
+            <div class="titulo-agregar-registro">
+                <h2>Agregar registro</h2>
+            </div>
+            <div class="ventana__contenido">
+                <div class="datos-agregar-registro">
+                    <div class="ingresar-agregar-registro">
+                        <h2>Ingresar registro</h2>
+                        <span>Ingresa el código de la persona a registrar</span>
+                        <div class="codigo-agregar-registro">
+                            <input type="text" maxlength="1" class="digit-input" id="digit1">
+                            <input type="text" maxlength="1" class="digit-input" id="digit2">
+                            <input type="text" maxlength="1" class="digit-input" id="digit3">
+                            <p>-</p>
+                            <input type="text" maxlength="1" class="digit-input" id="digit4">
+                            <input type="text" maxlength="1" class="digit-input" id="digit5">
+                            <input type="text" maxlength="1" class="digit-input" id="digit6">
+                        </div>
+                        <p>o</p>
+                        <button class="boton-datos">
+                            <i class="fa-solid fa-camera"></i>
+                            Escanear código
+                        </button>
+                    </div>
+                </div>
+                <div class="datos-agregar-registro">
+                    <div class="compartir-registro">
+                        <h2>Compartir registro</h2>
+                        <span>Escanea el código qr para registrarte automaticamente</span>
+                        <div id="contenedorQR" class="contenedorQR"></div>
+                        <p>o</p>
+                        <span>Ingresa el siguiente código en otro registro</span>
+                        <strong>
+                            <?php echo $codigoAleatorio; ?>
+                        </strong>
+                        <span id="temporizadorCodigo">El código espirará en <span
+                                id="tiempoRestante"></span></span>
+                        <span id="regenerarCodigo">El código ha expirado, <a href="#"
+                                onclick="iniciarTemporizador()">regeneralo aquí</a></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cancelar-agregarRegistro">
+                <button type="button" id="cerrar__agregarRegistro" class="boton-datos cerrarVentana">Cancelar</button>
+            </div>
+    </div>
+</div>
 </body>
 
 </html>

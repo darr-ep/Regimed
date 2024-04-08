@@ -2,10 +2,10 @@
 // const mysql = require('mysql');
 
 const contenedorQR = document.getElementById("contenedorQR");
-const open = document.getElementById("abrir-agregar-registro");
-const container = document.getElementById("contenedor-agregar-registro");
-const close = document.getElementById("cerrar-agregar-registro");
-const ventana = document.getElementById("ventana-agregar-registro");
+const open = document.getElementById("abrir__agregarRegistro");
+const container = document.getElementById("fondo__agregarRegistro");
+const close = document.getElementById("cerrar__agregarRegistro");
+const ventana = document.getElementById("ventana__agregarRegistro");
 
 // function nuevoQR() {
 //     new QRCode(document.getElementById("contenedorQR"), {
@@ -18,24 +18,24 @@ const ventana = document.getElementById("ventana-agregar-registro");
 //     });
 // }
 
-new QRCode(document.getElementById("contenedorQR"), {
-	text: usuario_id,
-	width: 150,
-	height: 150,
-	colorDark : "#000000",
-	colorLight : "#ffffff",
-	correctLevel : QRCode.CorrectLevel.H
-});
+// new QRCode(document.getElementById("contenedorQR"), {
+// 	text: usuario_id,
+// 	width: 150,
+// 	height: 150,
+// 	colorDark : "#000000",
+// 	colorLight : "#ffffff",
+// 	correctLevel : QRCode.CorrectLevel.H
+// });
 
 open.addEventListener('click', () => {
-    container.classList.add('mostrar-agregar-registro');
-    ventana.classList.add('agrandar-ventana-agregar-registro');
+    container.classList.add('mostrar-ventana');
+    ventana.classList.add('agrandar-ventana');
     iniciarTemporizador();
 })
 
 close.addEventListener('click', () => {
-    container.classList.remove('mostrar-agregar-registro');
-    ventana.classList.remove('agrandar-ventana-agregar-registro');
+    container.classList.remove('mostrar-ventana');
+    ventana.classList.remove('agrandar-ventana');
 })
 
 const inputs = document.querySelectorAll('.digit-input');

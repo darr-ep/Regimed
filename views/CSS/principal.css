@@ -174,11 +174,12 @@ strong {
 }
 
 main .seccion {
+    border-bottom: 1px solid #3a3a3a48;
     display: flex;
     flex-direction: column;
 }
 
-.titulo-seccion {
+.seccion__titulo {
     display: flex;
     align-items: center;
     gap: 20px;
@@ -186,17 +187,21 @@ main .seccion {
     padding-bottom: 0;
 }
 
-main .titulo-seccion i {
+main .seccion__titulo i {
     width: 35px;
     display: flex;
     justify-content: center;
     font-size: var(--ico-section-size);
 }
 
-main .titulo-contenedor {
+main .contenedor__titulo {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+button p {
+    display: inline;
 }
 
 button.boton-datos {
@@ -259,46 +264,54 @@ main .datos-personales {
     justify-content: space-between;
 }
 
-main .datos-personales .datos {
-    display: flex;
+.seccion__datosPersonales {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     justify-content: space-between;
     gap: 20px;
 }
 
-main .columna {
-    border-bottom: 1px solid #3a3a3a48;
+.seccion__fila {
+    padding: 30px;
     display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-main .columna.informacion_general {
-    height: 460px;
+.seccion__columna {
+    display: grid;
+}
+
+.seccion__columna--informacion_general {
     border-bottom: 1px solid #3a3a3a48;
-    display: flex;
+    grid-template-columns: 1fr 1fr;
 }
 
 main .datos-personales {
     display: flex;
 }
 
-main .datos-personales .contenido-imagen {
+.contenidoImagen {
     width: 250px;
     height: 250px;
+    position: relative;
 }
 
-main .datos-personales .contenido-imagen img {
+.contenidoImagen img {
     width: 250px;
     aspect-ratio: 1 / 1;
     border-radius: 50%;
     object-fit: cover;
 }
 
-main .datos-personales .dato {
+.seccion__datoPersonal {
+    width: 100%;
     display: flex;
     flex-direction: column;
     white-space: nowrap;
 }
 
-main input {
+input {
     border: none;
     font-size: var(--main-size);
     background-color: transparent;
@@ -309,7 +322,7 @@ main input {
     max-width: 100%;
 }
 
-main select {
+select {
     border: none;
     font-size: var(--main-size);
     background-color: transparent;
@@ -320,30 +333,31 @@ main select {
     display: flex;
 }
 
-main select:disabled {
+select:disabled {
     border-bottom: 2px solid transparent;
     color: black;
     opacity: 100%;
     appearance: none;
 }
 
-main select option.vacio {
+select option.vacio {
     color: #757575;
 }
 
-main p.vacio {
-    border-bottom: 2px solid transparent;
+p.vacio {
+    color: #757575;
 }
 
 main input.readonly {
     border-bottom: 2px solid transparent;
 }
 
-main .datos-personales .izq {
-    position: relative;
+.seccion__izquierda {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    align-items: center;
+    gap: 20px;
 }
 
 main .datos-personales .valor {
@@ -360,24 +374,24 @@ main .datos-personales .izq .nombre {
     text-align: start;
 }
 
-main .datos-personales .der {
+.seccion__derecha {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    gap: 18px;
+    gap: 30px;
 }
 
-main .datos-personales .der .triple {
+.seccion__divisorDatos {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 30px;
     justify-content: space-between;
     max-width: 125px;
 }
 
-main .datos-personales .der .varios {
-    display: flex;
-    gap: 10px;
+.seccion__multiplesDatosPersonales {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
 }
 
 main .contactos {
@@ -562,12 +576,15 @@ main .vacunas .vacunas-preestablecidas .sr {
 }
 
 .editar-imagen {
-    background-color: #30303079;
+    background-color: #30303080;
     width: 250px;
     height: 250px;
     border-radius: 50%;
     position: absolute;
     top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
     color: #f4f4f4;
     display: flex;
     justify-content: center;
@@ -575,7 +592,7 @@ main .vacunas .vacunas-preestablecidas .sr {
     font-size: 80px;
 }
 
-.imagen input {
+.editar-imagen input {
     opacity: 0;
     width: 250px;
     height: 250px;
@@ -584,7 +601,7 @@ main .vacunas .vacunas-preestablecidas .sr {
     top: 0;
 }
 
-.imagen input:not(:disabled) {
+.editar-imagen input:not(:disabled) {
     cursor: pointer;
 }
 
@@ -698,7 +715,7 @@ main .vacunas .vacunas-preestablecidas .sr {
     transform: scale(0.9);
 }
 
-.fondo-agregar-registro {
+.fondoVentana {
     background-color: rgba(0, 0, 0, 0.452);
     height: 100vh;
     width: 100vw;
@@ -709,38 +726,35 @@ main .vacunas .vacunas-preestablecidas .sr {
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.3s ease;
-    -webkit-transition: opacity 0.3s ease;
-    -moz-transition: opacity 0.3s ease;
-    -ms-transition: opacity 0.3s ease;
-    -o-transition: opacity 0.3s ease;
 }
 
-.ventana-agregar-registro {
+.ventana {
     background-color: rgb(255, 255, 255);
-    width: calc(50vw - 5%);
-    height: calc(70vh - 5%);
     border-radius: 30px;
-    -webkit-border-radius: 30px;
-    -moz-border-radius: 30px;
-    -ms-border-radius: 30px;
-    -o-border-radius: 30px;
-    text-align: center;
     transition: height 0.4s ease, width 0.4s ease;
-    -webkit-transition: height 0.4s ease, width 0.4s ease;
-    -moz-transition: height 0.4s ease, width 0.4s ease;
-    -ms-transition: height 0.4s ease, width 0.4s ease;
-    -o-transition: height 0.4s ease, width 0.4s ease;
-}
-
-.titulo-agregar-registro {
-    margin-top: 50px;
-}
-
-.contenido-agregar-registro {
+    padding: 50px 70px;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    height: 100%;
+    gap: 30px;
+}
+
+.ventana__titulo{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.botones__agregarRegistro {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.ventana__contenido {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-auto-columns: auto;
 }
 
 .opciones-agregar-registro {
@@ -750,8 +764,7 @@ main .vacunas .vacunas-preestablecidas .sr {
 }
 
 .datos-agregar-registro {
-    width: 50%;
-    display: flex;
+    width: 100%;
     justify-content: center;
 }
 
@@ -836,25 +849,24 @@ main .vacunas .vacunas-preestablecidas .sr {
     width: 100%;
 }
 
-.cancelar-agregar-registro button{
+button.cerrarVentana{
     background-color: var(--color-cancel);
     border-color: var(--color-cancel);
-    margin-bottom: 30px;
 }
 
-.cancelar-agregar-registro button:hover{
+button.cerrarVentana:hover{
     color: var(--color-cancel);
 }
 
-.mostrar-agregar-registro {
+.mostrar-ventana {
     pointer-events: auto;
     opacity: 1;
 }
 
-.agrandar-ventana-agregar-registro {
+/* .agrandar-ventana {
     width: 50vw;
     height: 80vh;
-}
+} */
 
 @media only screen and (max-width: 2200px) {
     .contenido {

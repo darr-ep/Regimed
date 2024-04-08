@@ -8,10 +8,11 @@ const uuid = require("uuid");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-
-dotenv.config();
+const multer = require("multer");
 
 const app = express();
+
+dotenv.config();
 
 function generarClaveSecreta() {
   return crypto.randomBytes(32).toString("hex");
@@ -38,10 +39,13 @@ let conexion = mysql.createConnection({
 app.set("view engine", "ejs");
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-// app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, "views")));
+
+app.listen(process.env.PORT, function () {
+  console.log("Servidor activo: ", process.env.PORT);
+});
 
 const transporter = nodemailer.createTransport({
   host: "smtp.privateemail.com",
@@ -445,11 +449,13 @@ img {
   });
 }
 
-app.get("/", function (req, res) {
+// * -------------------------- GETS -------------------------- * //
+
+app.get("/", (req, res) => {
   res.render("index");
 });
 
-app.get("/registro", function (req, res) {
+app.get("/registro", (req, res) => {
   if (!req.session.formData) {
     req.session.formData = {};
   }
@@ -460,18 +466,93 @@ app.get("/principal", (req, res) => {
   if (!req.session.idUsuario) {
     res.redirect("/");
   } else {
-    res.render("principal");
+    const buscar =
+      "SELECT * FROM datos_personales WHERE usuario_id = '" +
+      req.session.idUsuario +
+      "'";
+
+    conexion.query(buscar, function (err, row) {
+      if (err) {
+        throw err;
+      } else {
+        if (row && row.length > 0) {
+          const nombre = row[0].nombre;
+          const curp = row[0].curp;
+          res.render("principal", { nombre: nombre, curp: curp });
+        } else {
+          const nombre = "";
+          const curp = "";
+          res.render("principal", { nombre: nombre, curp: curp });
+        }
+      }
+    });
   }
 });
 
-app.get("/acceso", function (req, res) {
+app.get("/acceso", (req, res) => {
   if (!req.session.correo) {
     req.session.correo = "";
   }
   res.render("acceso", { correo: req.session.correo });
 });
 
-app.post("/acceso", function (req, res) {
+app.get("/cerrarSesion", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.redirect("/");
+    }
+  });
+});
+
+app.get("/verificacion/:correo", (req, res) => {
+  res.render("verificacion", { correo: req.params.correo });
+});
+
+app.get("/verificar_correo", (req, res) => {
+  const token = req.query.token;
+
+  jwt.verify(token, "secreto", function (err, decoded) {
+    if (err) {
+      console.log("Token inválido");
+      res.send("Token inválido");
+    } else {
+      console.log("Token válido. Usuario verificado:", decoded.usuario_id);
+      // Mover los datos del usuario de la tabla de usuarios no verificados a la tabla de usuarios verificados
+      const moverUsuarioVerificado =
+        "INSERT INTO registro_usuario SELECT * FROM usuarios_no_registrados WHERE usuario_id = '" +
+        decoded.usuario_id +
+        "';";
+
+      const eliminarUsuarioNoVerificado =
+        "DELETE FROM usuarios_no_registrados WHERE usuario_id = '" +
+        decoded.usuario_id +
+        "'";
+
+      conexion.query(moverUsuarioVerificado, function (err) {
+        if (err) {
+          console.error("Error al mover usuario verificado: ", err);
+          res.send("Error al mover usuario verificado");
+        } else {
+          conexion.query(eliminarUsuarioNoVerificado, function (err) {
+            if (err) {
+              console.error("Error al eliminar usuario no verificado: ", err);
+              res.send("Error al eliminar usuario no verificado");
+            } else {
+              req.session.idUsuario = decoded.usuario_id;
+              res.redirect("/principal");
+            }
+          });
+        }
+      });
+    }
+  });
+});
+
+// * -------------------------- POSTS -------------------------- * //
+
+app.post("/acceso", (req, res) => {
   const datos = req.body;
 
   const correo = datos.correo.trim();
@@ -503,7 +584,7 @@ app.post("/acceso", function (req, res) {
       });
     } else if (row.length === 0) {
       req.session.correo = correo;
-      console.log(contrasenia)
+      console.log(contrasenia);
       return res.render("acceso", {
         error: "El correo o la contraseña es incorrecta. Inténtelo de nuevo.",
         errorField: "noRes",
@@ -528,7 +609,7 @@ app.post("/acceso", function (req, res) {
   });
 });
 
-app.post("/registro", function (req, res) {
+app.post("/registro", (req, res) => {
   const datos = req.body;
 
   const nombre = datos.nombre.trim();
@@ -714,60 +795,70 @@ app.post("/registro", function (req, res) {
   });
 });
 
-app.get("/cerrarSesion", (req, res) => {
-  req.session.destroy((err) => {
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "Views/img/users");
+  },
+  filename: function (req, file, cb) {
+    const nuevoNombre = Date.now() + req.session.idUsuario.slice(-5);
+    cb(null, nuevoNombre);
+  },
+});
+
+const upload = multer({ storage: storage });
+
+app.post("/datosPersonales", upload.single("imagen"), (req, res) => {
+  const datos = req.body;
+
+  const nombre = datos.nombre;
+  const curp = datos.curp;
+  const telefono = datos.telefono;
+  const nacimiento = datos.nacimiento;
+  const peso = datos.peso;
+  const nacionalidad = datos.nacionalidad;
+  const estatura = datos.estatura;
+  const sexo = datos.sexo;
+  const sangre = datos.sangre;
+  const imagen = req.file.filename;
+
+  const buscar = `SELECT * FROM datos_personales WHERE usuario_id = '${req.session.idUsuario}'`;
+
+  conexion.query(buscar, (err, rows) => {
     if (err) {
-      console.log(err);
+      throw err;
     } else {
-      res.redirect("/");
-    }
-  });
-});
+      if (rows.length > 0) {
+        const actualizar = `UPDATE datos_personales 
+      SET nombre = '${nombre}', 
+          curp = '${curp}', 
+          telefono = '${telefono}', 
+          fecha_nac = '${nacimiento}', 
+          peso = '${peso}', 
+          estatura = '${estatura}', 
+          sexo = '${sexo}', 
+          nacionalidad = '${nacionalidad}', 
+          tipo_sangre = '${sangre}', 
+          imagen = '${imagen}'
+      WHERE usuario_id = '${req.session.idUsuario}'`;
 
-app.get("/verificacion/:correo", (req, res) => {
-  res.render("verificacion", { correo: req.params.correo });
-});
+        conexion.query(actualizar, (err, rows) => {
+          if (err) {
+            throw err;
+          } else {
+            res.redirect('/principala');
+          }
+        });
+      } else {
+        const insertar = `INSERT INTO datos_personales (usuario_id, nombre, curp, telefono, fecha_nac, peso, estatura, sexo, nacionalidad, tipo_sangre, imagen)
+      VALUES ('${req.session.idUsuario}', '${nombre}', '${curp}', '${telefono}', '${nacimiento}', '${peso}', '${estatura}', '${sexo}', '${nacionalidad}', '${sangre}', '${imagen}')`;
 
-app.listen(process.env.PORT, function () {
-  console.log("Servidor activo: ", process.env.PORT);
-});
-
-app.get("/verificar_correo", function (req, res) {
-  const token = req.query.token;
-
-  jwt.verify(token, "secreto", function (err, decoded) {
-    if (err) {
-      console.log("Token inválido");
-      res.send("Token inválido");
-    } else {
-      console.log("Token válido. Usuario verificado:", decoded.usuario_id);
-      // Mover los datos del usuario de la tabla de usuarios no verificados a la tabla de usuarios verificados
-      const moverUsuarioVerificado =
-        "INSERT INTO registro_usuario SELECT * FROM usuarios_no_registrados WHERE usuario_id = '" +
-        decoded.usuario_id +
-        "';";
-
-      const eliminarUsuarioNoVerificado =
-        "DELETE FROM usuarios_no_registrados WHERE usuario_id = '" +
-        decoded.usuario_id +
-        "'";
-
-      conexion.query(moverUsuarioVerificado, function (err) {
-        if (err) {
-          console.error("Error al mover usuario verificado: ", err);
-          res.send("Error al mover usuario verificado");
-        } else {
-          conexion.query(eliminarUsuarioNoVerificado, function (err) {
-            if (err) {
-              console.error("Error al eliminar usuario no verificado: ", err);
-              res.send("Error al eliminar usuario no verificado");
-            } else {
-              req.session.idUsuario = decoded.usuario_id;
-              res.redirect("/principal");
-            }
-          });
-        }
-      });
+        conexion.query(insertar, (err, rows) => {
+          if (err) {
+            throw err;
+          }
+        });
+        res.redirect('/principala');
+      }
     }
   });
 });
