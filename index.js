@@ -892,7 +892,7 @@ app.post("/datosPersonales", upload.single("imagen"), (req, res) => {
   const imagen = req.file ? req.file.filename : datos.imagen;
   const imagenGuardada = datos.imagenGuardada;
 
-  if (imagenGuardada !== "Usuario.png") {
+  if (imagenGuardada !== "usuario.png") {
     fs.unlink("views/img/users/" + imagenGuardada, (err) => {
       if (err) {
         // Manejar el error aquí
@@ -902,6 +902,9 @@ app.post("/datosPersonales", upload.single("imagen"), (req, res) => {
       }
     });
   }
+
+  console.log(imagen)
+  console.log(imagenGuardada)
 
   const buscar = `SELECT * FROM datos_personales WHERE usuario_id = '${req.session.idUsuario}'`;
 
