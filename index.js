@@ -587,7 +587,7 @@ app.get("/verificar_correo", (req, res) => {
             if (err) {
               throw err;
             } else {
-              const ingresarNombreUsuario = `INSERT INTO datos_personales (nombre, usuario_id) VALUES ('${rows[0].nombre} ${rows[0].apellido_paterno} ${rows[0].apellido_materno}', '${decoded.usuario_id}')`;
+              const ingresarNombreUsuario = `INSERT INTO datos_personales (nombre, curp, usuario_id) VALUES ('${rows[0].nombre} ${rows[0].apellido_paterno} ${rows[0].apellido_materno}', '', '${decoded.usuario_id}')`;
               conexion.query(ingresarNombreUsuario, (err) => {
                 if (err) {
                   console.error("Error al ingresar datos del usuario: ", err);
@@ -878,7 +878,7 @@ app.post("/datosPersonales", upload.single("imagen"), (req, res) => {
   const telefono = datos.telefono;
   const nacimiento = datos.nacimiento;
   const peso = datos.peso;
-  const nacionalidad = datos.nacionalidad;
+  const nacionalidad = datos.nacionalidad ? datos.nacionalidad : "0000-00-00";
   const estatura = datos.estatura / 100;
   const sexo = datos.sexo;
   const sangre = datos.sangre;
