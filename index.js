@@ -471,18 +471,63 @@ app.get("/principal", (req, res) => {
       req.session.idUsuario +
       "'";
 
-    conexion.query(buscar, function (err, row) {
+    conexion.query(buscar, (err, row) => {
       if (err) {
         throw err;
       } else {
         if (row && row.length > 0) {
           const nombre = row[0].nombre;
           const curp = row[0].curp;
-          res.render("principal", { nombre: nombre, curp: curp });
+          const imagen = row[0].imagen;
+          const telefono = row[0].telefono;
+          const nacimiento = row[0].fecha_nac;
+          const nacimientoFormateado = nacimiento.toISOString().split("T")[0];
+          console.log(nacimientoFormateado);
+          const peso = row[0].peso;
+          const estatura = row[0].estatura;
+          const sexo = row[0].sexo;
+          const nacionalidad = row[0].nacionalidad;
+          const sangre = row[0].tipo_sangre;
+
+          const imagenAMostrar = imagen
+            ? imagen
+            : "Views/img/users/Usuario.png";
+
+          res.render("principal", {
+            nombre: nombre,
+            curp: curp,
+            imagenAMostrar: imagenAMostrar,
+            telefono: telefono,
+            nacimiento: nacimientoFormateado,
+            peso: peso,
+            estatura: estatura,
+            sexo: sexo,
+            nacionalidad: nacionalidad,
+            sangre: sangre,
+          });
         } else {
           const nombre = "";
           const curp = "";
-          res.render("principal", { nombre: nombre, curp: curp });
+          const imagenAMostrar = "";
+          const telefono = "";
+          const nacimiento = "";
+          const peso = "";
+          const estatura = "";
+          const sexo = "";
+          const nacionalidad = "";
+          const sangre = "";
+          res.render("principal", {
+            nombre: nombre,
+            curp: curp,
+            imagenAMostrar: imagenAMostrar,
+            telefono: telefono,
+            nacimiento: nacimiento,
+            peso: peso,
+            estatura: estatura,
+            sexo: sexo,
+            nacionalidad: nacionalidad,
+            sangre: sangre,
+          });
         }
       }
     });
@@ -519,7 +564,7 @@ app.get("/verificar_correo", (req, res) => {
       res.send("Token inválido");
     } else {
       console.log("Token válido. Usuario verificado:", decoded.usuario_id);
-      // Mover los datos del usuario de la tabla de usuarios no verificados a la tabla de usuarios verificados
+      
       const moverUsuarioVerificado =
         "INSERT INTO registro_usuario SELECT * FROM usuarios_no_registrados WHERE usuario_id = '" +
         decoded.usuario_id +
@@ -530,18 +575,37 @@ app.get("/verificar_correo", (req, res) => {
         decoded.usuario_id +
         "'";
 
+      const consultarDatos = `SELECT * FROM registro_usuario WHERE usuario_id = '${decoded.usuario_id}'`;
+
       conexion.query(moverUsuarioVerificado, function (err) {
         if (err) {
           console.error("Error al mover usuario verificado: ", err);
           res.send("Error al mover usuario verificado");
         } else {
-          conexion.query(eliminarUsuarioNoVerificado, function (err) {
+          conexion.query(consultarDatos, (err, rows) => {
             if (err) {
-              console.error("Error al eliminar usuario no verificado: ", err);
-              res.send("Error al eliminar usuario no verificado");
+              throw err;
             } else {
-              req.session.idUsuario = decoded.usuario_id;
-              res.redirect("/principal");
+              const ingresarNombreUsuario = `INSERT INTO datos_personales (nombre, usuario_id) VALUES ('${rows[0].nombre} ${rows[0].apellido_paterno} ${rows[0].apellido_materno}', ${decoded.usuario_id})`;
+              conexion.query(ingresarNombreUsuario, (err) => {
+                if (err) {
+                  console.error("Error al ingresar datos del usuario: ", err);
+                  res.send("Error al ingresar datos del usuario");
+                } else {
+                  conexion.query(eliminarUsuarioNoVerificado, function (err) {
+                    if (err) {
+                      console.error(
+                        "Error al eliminar usuario no verificado: ",
+                        err
+                      );
+                      res.send("Error al eliminar usuario no verificado");
+                    } else {
+                      req.session.idUsuario = decoded.usuario_id;
+                      res.redirect("/principal");
+                    }
+                  });
+                }
+              });
             }
           });
         }
@@ -584,7 +648,6 @@ app.post("/acceso", (req, res) => {
       });
     } else if (row.length === 0) {
       req.session.correo = correo;
-      console.log(contrasenia);
       return res.render("acceso", {
         error: "El correo o la contraseña es incorrecta. Inténtelo de nuevo.",
         errorField: "noRes",
@@ -819,7 +882,9 @@ app.post("/datosPersonales", upload.single("imagen"), (req, res) => {
   const estatura = datos.estatura;
   const sexo = datos.sexo;
   const sangre = datos.sangre;
-  const imagen = req.file.filename;
+  const imagen = req.file ? req.file.filename : datos.imagen;
+
+  console.log(imagen);
 
   const buscar = `SELECT * FROM datos_personales WHERE usuario_id = '${req.session.idUsuario}'`;
 
@@ -828,7 +893,7 @@ app.post("/datosPersonales", upload.single("imagen"), (req, res) => {
       throw err;
     } else {
       if (rows.length > 0) {
-        const actualizar = `UPDATE datos_personales 
+        const actualizar = `UPDATE datos_personales
       SET nombre = '${nombre}', 
           curp = '${curp}', 
           telefono = '${telefono}', 
@@ -845,7 +910,7 @@ app.post("/datosPersonales", upload.single("imagen"), (req, res) => {
           if (err) {
             throw err;
           } else {
-            res.redirect('/principala');
+            res.redirect("/principal/");
           }
         });
       } else {
@@ -857,7 +922,7 @@ app.post("/datosPersonales", upload.single("imagen"), (req, res) => {
             throw err;
           }
         });
-        res.redirect('/principala');
+        res.redirect("/principal/");
       }
     }
   });

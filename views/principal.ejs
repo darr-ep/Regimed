@@ -96,7 +96,7 @@
                         <div class="seccion__datosPersonales">
                             <div class="seccion__izquierda">
                                 <div class="contenidoImagen">
-                                    <img src="img/users/Usuario.png" alt="">
+                                    <img src="img/users/<%= imagenAMostrar %>" alt="">
                                 </div>
                                 <div class="seccion__datoPersonal nombre">
                                     <strong>Nombre</strong>
@@ -118,43 +118,96 @@
                                 </div>
                                 <div class="seccion__datoPersonal telefono">
                                     <strong>Teléfono</strong>
-                                    <p>7751567242</p>
+                                    <% if (typeof telefono !== 'undefined' && telefono !== null && telefono !== '') { %>
+                                        <p><%= telefono %></p>
+                                    <% } else { %>
+                                        <p class="vacio">Vacío</p>
+                                    <% } %>
                                 </div>
                                 <div class="seccion__multiplesDatosPersonales">
                                     <div class="seccion__divisorDatos">
                                         <div class="seccion__datoPersonal">
                                             <strong>Nacimiento</strong>
-                                            <p>08/10/2003</p>
+                                            <% if (typeof nacimiento !== 'undefined' && nacimiento !== null && nacimiento !== '') { %>
+                                                <p><%= nacimiento %></p>
+                                            <% } else { %>
+                                                <p class="vacio">Vacío</p>
+                                            <% } %>
                                         </div>
                                         <div class="seccion__datoPersonal">
                                             <strong>Peso</strong>
-                                            <p>58 kg</p>
+                                            <% if (typeof peso !== 'undefined' && peso !== null && peso !== '' && peso !== 0) { %>
+                                                <p><%= peso %></p>
+                                            <% } else { %>
+                                                <p class="vacio">Vacío</p>
+                                            <% } %>
                                         </div>
                                         <div class="seccion__datoPersonal">
                                             <strong>IMC</strong>
-                                            <p>Tanto</p>
+                                            <% if (typeof peso !== 'undefined' && typeof estatura !== 'undefined' && peso !== null && estatura !== null && peso !== '' && estatura !== '') { %>
+                                                <% var imc = peso / (estatura * estatura); %>
+                                                <p>IMC: <%= imc.toFixed(2) %></p>
+                                            <% } else { %>
+                                                <p class="vacio">Vacío</p>
+                                            <% } %>                                            
                                         </div>
                                         <div class="seccion__datoPersonal">
                                             <strong>Nacionalidad</strong>
-                                            <p>Mexicana</p>
+                                            <% if (typeof Nacionalidad !== 'undefined' && nacionalidad !== null && nacionalidad !== '') { %>
+                                                <p><%= nacionalidad %></p>
+                                            <% } else { %>
+                                                <p class="vacio">Vacío</p>
+                                            <% } %>
                                         </div>
                                     </div>
                                     <div class="seccion__divisorDatos">
                                         <div class="seccion__datoPersonal">
                                             <strong>Edad</strong>
-                                            <p>20 años</p>
+                                            <% if (typeof nacimiento !== 'undefined' && nacimiento !== null && nacimiento !== '') { %>
+                                                <% 
+                                                // Convertir la fecha de nacimiento a objeto Date
+                                                var fechaNacimiento = new Date(nacimiento);
+                                                
+                                                // Calcular la fecha actual
+                                                var fechaActual = new Date();
+                                                
+                                                // Calcular la diferencia de años entre la fecha actual y la fecha de nacimiento
+                                                var edad = fechaActual.getFullYear() - fechaNacimiento.getFullYear();
+                                                
+                                                // Ajustar la edad si aún no se ha cumplido el aniversario de nacimiento este año
+                                                if (fechaActual.getMonth() < fechaNacimiento.getMonth() || (fechaActual.getMonth() === fechaNacimiento.getMonth() && fechaActual.getDate() < fechaNacimiento.getDate())) {
+                                                    edad--;
+                                                }
+                                                %>
+                                                <p><%= edad %> años</p>
+                                            <% } else { %>
+                                                <p class="vacio">Vacío</p>
+                                            <% } %>
+                                            
                                         </div>
                                         <div class=" seccion__datoPersonal">
                                             <strong>Estatura</strong>
-                                            <p>1.78 mts</p>
+                                            <% if (typeof estatura !== 'undefined' && estatura !== null && estatura !== '' && estatura !== 0) { %>
+                                                <p><%= estatura %></p>
+                                            <% } else { %>
+                                                <p class="vacio">Vacío</p>
+                                            <% } %>
                                         </div>
                                         <div class="seccion__datoPersonal">
                                             <strong>Sexo</strong>
-                                            <p>Masculino</p>
+                                            <% if (typeof sexo !== 'undefined' && sexo !== null && sexo !== '') { %>
+                                                <p><%= sexo %></p>
+                                            <% } else { %>
+                                                <p class="vacio">Vacío</p>
+                                            <% } %>
                                         </div>
                                         <div class="seccion__datoPersonal">
                                             <strong>Tipo de sangre</strong>
-                                            <p>O+</p>
+                                            <% if (typeof sangre !== 'undefined' && sangre !== null && sangre !== '') { %>
+                                                <p><%= sangre %></p>
+                                            <% } else { %>
+                                                <p class="vacio">Vacío</p>
+                                            <% } %>
                                         </div>
                                     </div>
                                 </div>
@@ -657,7 +710,7 @@
             <form class="seccion__datosPersonales" enctype="multipart/form-data" id="formularioDatosPersonales">
                 <div class="seccion__izquierda">
                     <div class="contenidoImagen">
-                        <img src="img/users/Usuario.png" id="imagenPrevisualizada">
+                        <img src="img/users/<%= imagenAMostrar %>" id="imagenPrevisualizada">
                         <div class="editar-imagen">
                             <i class="fa-solid fa-camera"></i>
                             <input type="file" name="imagen_usuario" id="imagenUsuario">
@@ -665,27 +718,47 @@
                     </div>
                     <div class="seccion__datoPersonal nombre">
                         <strong>Nombre</strong>
-                        <input type="text" id="nombreUsuario" value="<%= nombre %>">
+                        <% if (typeof nombre !== 'undefined' && nombre !== null && nombre !== '') { %>
+                            <input type="text" id="nombreUsuario" value="<%= nombre %>">
+                        <% } else { %>
+                            <input type="text" id="nombreUsuario" placeholder="Vacío">
+                        <% } %>
                     </div>
                 </div>
                 <div class="seccion__derecha">
                     <div class="seccion__datoPersonal curp">
                         <strong>CURP</strong>
-                        <input type="text" id="curpUsuario">
+                        <% if (typeof curp !== 'undefined' && curp !== null && curp !== '') { %>
+                            <input type="text" id="curpUsuario" value="<%= curp %>">
+                        <% } else { %>
+                            <input type="text" id="curpUsuario" placeholder="Vacío">
+                        <% } %>
                     </div>
                     <div class="seccion__datoPersonal telefono">
                         <strong>Teléfono</strong>
-                        <input type="text" id="telefonoUsuario">
+                        <% if (typeof telefono !== 'undefined' && telefono !== null && telefono !== '') { %>
+                            <input type="text" id="telefonoUsuario" value="<%= telefono %>">
+                        <% } else { %>
+                            <input type="text" id="telefonoUsuario" placeholder="Vacío">
+                        <% } %>
                     </div>
                     <div class="seccion__multiplesDatosPersonales">
                         <div class="seccion__divisorDatos">
                             <div class="seccion__datoPersonal">
                                 <strong>Nacimiento</strong>
-                                <input type="date" id="nacimientoUsuario">
+                                <% if (typeof nacimiento !== 'undefined' && nacimiento !== null && nacimiento !== '') { %>
+                                    <input type="date" id="nacimientoUsuario" value="<%= nacimiento %>">
+                                <% } else { %>
+                                    <input type="date" id="nacimientoUsuario">
+                                <% } %>
                             </div>
                             <div class="seccion__datoPersonal">
                                 <strong>Peso</strong>
-                                <input type="text" id="pesoUsuario">
+                                <% if (typeof peso !== 'undefined' && peso !== null && peso !== '' && peso !== 0) { %>
+                                    <input type="text" id="pesoUsuario" value="<%= peso %>">
+                                <% } else { %>
+                                    <input type="text" id="pesoUsuario" placeholder="Vacío">
+                                <% } %>
                             </div>
                             <div class="seccion__datoPersonal">
                                 <strong>Nacionalidad</strong>
@@ -696,7 +769,11 @@
                         <div class="seccion__divisorDatos">
                             <div class=" seccion__datoPersonal">
                                 <strong>Estatura</strong>
-                                <input type="text" id="estaturaUsuario">
+                                <% if (typeof estatura !== 'undefined' && estatura !== null && estatura !== '' && estatura !== 0) { %>
+                                    <input type="text" id="estaturaUsuario" value="<%= estatura %>">
+                                <% } else { %>
+                                    <input type="text" id="estaturaUsuario" placeholder="Vacío">
+                                <% } %>
                             </div>
                             <div class="seccion__datoPersonal">
                                 <strong>Sexo</strong>

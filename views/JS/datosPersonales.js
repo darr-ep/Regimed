@@ -59,10 +59,25 @@ document
     formData.append("sexo", document.getElementById("sexoUsuario").value);
     formData.append("sangre", document.getElementById("sangreUsuario").value);
 
+    const imagenPrevisualizada = document.getElementById("imagenPrevisualizada")
     const inputImagenUsuario = document.getElementById("imagenUsuario");
     if (inputImagenUsuario.files.length > 0) {
       formData.append("imagen", inputImagenUsuario.files[0]);
+    } else {
+      const nombreImagen = imagenPrevisualizada.src
+      var nombreDeLaImagen = obtenerNombreDeImagen(nombreImagen);
+      formData.append("imagen", nombreDeLaImagen);
+      console.log(nombreDeLaImagen)
     }
+
+    function obtenerNombreDeImagen(src) {
+      // Separar la URL por "/"
+      var partesDeLaUrl = src.split('/');
+      // Obtener la última parte que contiene el nombre del archivo
+      var nombreDelArchivo = partesDeLaUrl[partesDeLaUrl.length - 1];
+      // Devolver el nombre del archivo completo
+      return nombreDelArchivo;
+  }
 
     fetch("/datosPersonales", {
       method: "POST",
@@ -75,4 +90,8 @@ document
         // Manejar errores
         console.error("Error al enviar el formulario:", error);
       });
+
+    setTimeout(function () {
+      location.reload();
+    }, 500);
   });

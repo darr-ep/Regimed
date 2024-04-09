@@ -18,14 +18,14 @@ const ventana = document.getElementById("ventana__agregarRegistro");
 //     });
 // }
 
-// new QRCode(document.getElementById("contenedorQR"), {
-// 	text: usuario_id,
-// 	width: 150,
-// 	height: 150,
-// 	colorDark : "#000000",
-// 	colorLight : "#ffffff",
-// 	correctLevel : QRCode.CorrectLevel.H
-// });
+new QRCode(document.getElementById("contenedorQR"), {
+	text: "https://www.youtube.com/watch?v=SQCENEglsSc",
+	width: 150,
+	height: 150,
+	colorDark : "#000000",
+	colorLight : "#ffffff",
+	correctLevel : QRCode.CorrectLevel.H
+});
 
 open.addEventListener('click', () => {
     container.classList.add('mostrar-ventana');
@@ -124,7 +124,7 @@ function iniciarTemporizador() {
     
     contenedorQR.style.filter = "blur(0)";
     contenedorQR.style.border = "2px solid black";
-    let tiempoRestante = 2;
+    let tiempoRestante = 10;
   
     mostrarTiempo(tiempoRestante);
   
