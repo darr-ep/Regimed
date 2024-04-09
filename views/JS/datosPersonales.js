@@ -33,9 +33,69 @@ inputImagenUsuario.addEventListener("change", (e) => {
   }
 });
 
+function formatoTelefono(input) {
+  var formatted = input.value.replace(/\D/g, '');
+
+  if (formatted.length > 3) {
+    formatted = formatted.substring(0, 3) + ' ' + formatted.substring(3);
+  }
+  if (formatted.length > 7) {
+    formatted = formatted.substring(0, 7) + ' ' + formatted.substring(7);
+  }
+
+  input.value = formatted;
+}
+
+function formatoEstatura(input) {
+  var formatted = input.value.replace(/\D/g, '');
+
+  input.value = formatted;
+}
+
+function formatoPeso(input) {
+  var formatted = input.value.replace(/[^\d.]/g, '');
+
+  var partes = formatted.split('.');
+  if (partes.length > 1) {
+    partes[0] = partes[0].slice(0, 3);
+    partes[1] = partes[1].slice(0, 2);
+    formatted = partes.join('.');
+  } else {
+    formatted = formatted.slice(0, 3);
+  }
+
+  input.value = formatted;
+}
+
+function formatoNombre(input) {
+  var formatted = input.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+
+  input.value = formatted;
+}
+
+function formatoCURP(input) {
+  var formatted = input.value.replace(/[^a-zA-Z0-9]/g, '');
+
+  input.value = formatted.toUpperCase();
+}
+
+function formatoNacionalidad(input) {
+  var formatted = input.value.replace(/[^a-zA-Z]/g, '');
+
+  input.value = formatted;
+}
+
 document
   .getElementById("guardar__datosPersonales")
   .addEventListener("click", () => {
+    contenedorDatosPersonales.classList.remove("mostrar-ventana");
+    ventanaDatosPersonales.classList.remove("agrandar-ventana");
+    Swal.fire({
+      icon: "success",
+      title: "Los datos han sido guardados",
+      showConfirmButton: false,
+      timer: 1500
+    });
     const formData = new FormData();
     formData.append("nombre", document.getElementById("nombreUsuario").value);
     formData.append("curp", document.getElementById("curpUsuario").value);
@@ -67,7 +127,6 @@ document
       const nombreImagen = imagenPrevisualizada.src
       var nombreDeLaImagen = obtenerNombreDeImagen(nombreImagen);
       formData.append("imagen", nombreDeLaImagen);
-      console.log(nombreDeLaImagen)
     }
 
     function obtenerNombreDeImagen(src) {
@@ -93,5 +152,5 @@ document
 
     setTimeout(function () {
       location.reload();
-    }, 500);
+    }, 1500);
   });

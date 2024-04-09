@@ -478,27 +478,25 @@ app.get("/principal", (req, res) => {
         if (row && row.length > 0) {
           const nombre = row[0].nombre;
           const curp = row[0].curp;
-          const imagen = row[0].imagen;
+          const imagen = row[0].imagen ? row[0].imagen : "Usuario.png";
           const telefono = row[0].telefono;
-          const nacimiento = row[0].fecha_nac;
-          const nacimientoFormateado = nacimiento.toISOString().split("T")[0];
-          console.log(nacimientoFormateado);
+          var nacimiento = row[0].fecha_nac;
+          if (nacimiento !== "0000-00-00") {
+            const fechaNacimiento = new Date(nacimiento);
+            nacimiento = fechaNacimiento.toISOString().split("T")[0];
+          }
           const peso = row[0].peso;
           const estatura = row[0].estatura;
           const sexo = row[0].sexo;
           const nacionalidad = row[0].nacionalidad;
           const sangre = row[0].tipo_sangre;
 
-          const imagenAMostrar = imagen
-            ? imagen
-            : "Views/img/users/Usuario.png";
-
           res.render("principal", {
             nombre: nombre,
             curp: curp,
-            imagenAMostrar: imagenAMostrar,
+            imagenAMostrar: imagen,
             telefono: telefono,
-            nacimiento: nacimientoFormateado,
+            nacimiento: nacimiento,
             peso: peso,
             estatura: estatura,
             sexo: sexo,
@@ -564,7 +562,7 @@ app.get("/verificar_correo", (req, res) => {
       res.send("Token inválido");
     } else {
       console.log("Token válido. Usuario verificado:", decoded.usuario_id);
-      
+
       const moverUsuarioVerificado =
         "INSERT INTO registro_usuario SELECT * FROM usuarios_no_registrados WHERE usuario_id = '" +
         decoded.usuario_id +
@@ -575,7 +573,10 @@ app.get("/verificar_correo", (req, res) => {
         decoded.usuario_id +
         "'";
 
-      const consultarDatos = `SELECT * FROM registro_usuario WHERE usuario_id = '${decoded.usuario_id}'`;
+      const consultarDatos =
+        "SELECT * FROM registro_usuario WHERE usuario_id = '" +
+        decoded.usuario_id +
+        "';";
 
       conexion.query(moverUsuarioVerificado, function (err) {
         if (err) {
@@ -586,7 +587,7 @@ app.get("/verificar_correo", (req, res) => {
             if (err) {
               throw err;
             } else {
-              const ingresarNombreUsuario = `INSERT INTO datos_personales (nombre, usuario_id) VALUES ('${rows[0].nombre} ${rows[0].apellido_paterno} ${rows[0].apellido_materno}', ${decoded.usuario_id})`;
+              const ingresarNombreUsuario = `INSERT INTO datos_personales (nombre, usuario_id) VALUES ('${rows[0].nombre} ${rows[0].apellido_paterno} ${rows[0].apellido_materno}', '${decoded.usuario_id}')`;
               conexion.query(ingresarNombreUsuario, (err) => {
                 if (err) {
                   console.error("Error al ingresar datos del usuario: ", err);
@@ -826,7 +827,6 @@ app.post("/registro", (req, res) => {
           const uuidHash = hashUUID.digest("hex");
 
           const token = generarToken(uuidHash);
-          console.log(token);
 
           enviarCorreoVerificacion(correo, token);
 
@@ -879,12 +879,10 @@ app.post("/datosPersonales", upload.single("imagen"), (req, res) => {
   const nacimiento = datos.nacimiento;
   const peso = datos.peso;
   const nacionalidad = datos.nacionalidad;
-  const estatura = datos.estatura;
+  const estatura = datos.estatura / 100;
   const sexo = datos.sexo;
   const sangre = datos.sangre;
   const imagen = req.file ? req.file.filename : datos.imagen;
-
-  console.log(imagen);
 
   const buscar = `SELECT * FROM datos_personales WHERE usuario_id = '${req.session.idUsuario}'`;
 
@@ -892,8 +890,7 @@ app.post("/datosPersonales", upload.single("imagen"), (req, res) => {
     if (err) {
       throw err;
     } else {
-      if (rows.length > 0) {
-        const actualizar = `UPDATE datos_personales
+      const actualizar = `UPDATE datos_personales
       SET nombre = '${nombre}', 
           curp = '${curp}', 
           telefono = '${telefono}', 
@@ -906,24 +903,13 @@ app.post("/datosPersonales", upload.single("imagen"), (req, res) => {
           imagen = '${imagen}'
       WHERE usuario_id = '${req.session.idUsuario}'`;
 
-        conexion.query(actualizar, (err, rows) => {
-          if (err) {
-            throw err;
-          } else {
-            res.redirect("/principal/");
-          }
-        });
-      } else {
-        const insertar = `INSERT INTO datos_personales (usuario_id, nombre, curp, telefono, fecha_nac, peso, estatura, sexo, nacionalidad, tipo_sangre, imagen)
-      VALUES ('${req.session.idUsuario}', '${nombre}', '${curp}', '${telefono}', '${nacimiento}', '${peso}', '${estatura}', '${sexo}', '${nacionalidad}', '${sangre}', '${imagen}')`;
-
-        conexion.query(insertar, (err, rows) => {
-          if (err) {
-            throw err;
-          }
-        });
-        res.redirect("/principal/");
-      }
+      conexion.query(actualizar, (err, rows) => {
+        if (err) {
+          throw err;
+        } else {
+          // res.redirect("/principal");
+        }
+      });
     }
   });
 });

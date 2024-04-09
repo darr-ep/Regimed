@@ -647,6 +647,10 @@ main .vacunas .vacunas-preestablecidas .sr {
     -o-border-radius: 20px;
 }
 
+.swal2-popup {
+    border-radius: 30px;
+  }
+
 .registro p {
     position: absolute;
     background-color: rgba(0, 0, 0, 0.7);
@@ -715,6 +719,23 @@ main .vacunas .vacunas-preestablecidas .sr {
     transform: scale(0.9);
 }
 
+@keyframes bounceIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+    80% {
+      transform: scale(0.95);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
 .fondoVentana {
     background-color: rgba(0, 0, 0, 0.452);
     height: 100vh;
@@ -731,11 +752,11 @@ main .vacunas .vacunas-preestablecidas .sr {
 .ventana {
     background-color: rgb(255, 255, 255);
     border-radius: 30px;
-    transition: height 0.4s ease, width 0.4s ease;
     padding: 50px 70px;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
+    animation-duration: 0.3s;
     gap: 30px;
 }
 
@@ -863,10 +884,9 @@ button.cerrarVentana:hover{
     opacity: 1;
 }
 
-/* .agrandar-ventana {
-    width: 50vw;
-    height: 80vh;
-} */
+.agrandar-ventana {
+    animation-name: bounceIn;
+}
 
 @media only screen and (max-width: 2200px) {
     .contenido {
