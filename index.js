@@ -587,7 +587,7 @@ app.get("/verificar_correo", (req, res) => {
             if (err) {
               throw err;
             } else {
-              const ingresarNombreUsuario = `INSERT INTO datos_personales (nombre, curp, usuario_id, fecha_nac, estatura, peso, sexo, tipo_sangre, telefono, nacionalidad, imagen) VALUES ('${rows[0].nombre} ${rows[0].apellido_paterno} ${rows[0].apellido_materno}', '', '${decoded.usuario_id}', '0000-00-00', 0, 0, '', '', '', '')`;
+              const ingresarNombreUsuario = `INSERT INTO datos_personales (nombre, curp, usuario_id, fecha_nac, estatura, peso, sexo, tipo_sangre, telefono, nacionalidad, imagen) VALUES ('${rows[0].nombre} ${rows[0].apellido_paterno} ${rows[0].apellido_materno}', '', '${decoded.usuario_id}', '0000-00-00', 0, 0, '', '', '', '', '')`;
               
               conexion.query(ingresarNombreUsuario, (err) => {
                 if (err) {
