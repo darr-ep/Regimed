@@ -122,6 +122,11 @@ document
     const imagenPrevisualizada = document.getElementById(
       "imagenPrevisualizada"
     );
+
+    const imagenGuardada = document.getElementById(
+      "imagenGuardada"
+    );
+
     const inputImagenUsuario = document.getElementById("imagenUsuario");
     if (inputImagenUsuario.files.length > 0) {
       formData.append("imagen", inputImagenUsuario.files[0]);
@@ -130,6 +135,10 @@ document
       var nombreDeLaImagen = obtenerNombreDeImagen(nombreImagen);
       formData.append("imagen", nombreDeLaImagen);
     }
+
+    const nombreImagen = imagenGuardada.src;
+    var nombreDeLaImagen = obtenerNombreDeImagen(nombreImagen);
+    formData.append("imagenGuardada", nombreDeLaImagen);
 
     function obtenerNombreDeImagen(src) {
       var partesDeLaUrl = src.split("/");

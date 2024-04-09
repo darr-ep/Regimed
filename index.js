@@ -9,6 +9,7 @@ const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const multer = require("multer");
+const fs = require("fs");
 
 const app = express();
 
@@ -588,7 +589,7 @@ app.get("/verificar_correo", (req, res) => {
               throw err;
             } else {
               const ingresarNombreUsuario = `INSERT INTO datos_personales (nombre, curp, usuario_id, fecha_nac, estatura, peso, sexo, tipo_sangre, telefono, nacionalidad, imagen) VALUES ('${rows[0].nombre} ${rows[0].apellido_paterno} ${rows[0].apellido_materno}', '', '${decoded.usuario_id}', '0000-00-00', 0, 0, '', '', '', '', '')`;
-              
+
               conexion.query(ingresarNombreUsuario, (err) => {
                 if (err) {
                   console.error("Error al ingresar datos del usuario: ", err);
@@ -865,13 +866,14 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     // Obtener la extensión del archivo original
-    const extension = file.originalname.split('.').pop();
+    const extension = file.originalname.split(".").pop();
     // Generar un nuevo nombre para el archivo que incluya la extensión
-    const nuevoNombre = `${Date.now()}_${req.session.idUsuario.slice(-5)}.${extension}`;
+    const nuevoNombre = `${Date.now()}_${req.session.idUsuario.slice(
+      -5
+    )}.${extension}`;
     cb(null, nuevoNombre);
   },
 });
-
 
 const upload = multer({ storage: storage });
 
@@ -888,8 +890,18 @@ app.post("/datosPersonales", upload.single("imagen"), (req, res) => {
   const sexo = datos.sexo;
   const sangre = datos.sangre;
   const imagen = req.file ? req.file.filename : datos.imagen;
+  const imagenGuardada = datos.imagenGuardada;
 
-  console.log(imagen)
+  if (imagenGuardada !== "Usuario.png") {
+    fs.unlink("views/img/users/" + imagenGuardada, (err) => {
+      if (err) {
+        // Manejar el error aquí
+        console.error("Error al eliminar el archivo:", err);
+      } else {
+        console.log("Archivo eliminado exitosamente");
+      }
+    });
+  }
 
   const buscar = `SELECT * FROM datos_personales WHERE usuario_id = '${req.session.idUsuario}'`;
 
