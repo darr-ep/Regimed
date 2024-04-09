@@ -893,7 +893,7 @@ app.post("/datosPersonales", upload.single("imagen"), (req, res) => {
   const imagenGuardada = datos.imagenGuardada;
 
   if (imagenGuardada !== "usuario.png") {
-    fs.unlink("views/img/users/" + imagenGuardada, (err) => {
+    fs.unlink("/views/img/users/" + imagenGuardada, (err) => {
       if (err) {
         // Manejar el error aquí
         console.error("Error al eliminar el archivo:", err);
