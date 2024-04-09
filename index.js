@@ -864,10 +864,14 @@ const storage = multer.diskStorage({
     cb(null, "Views/img/users");
   },
   filename: function (req, file, cb) {
-    const nuevoNombre = Date.now() + req.session.idUsuario.slice(-5);
+    // Obtener la extensión del archivo original
+    const extension = file.originalname.split('.').pop();
+    // Generar un nuevo nombre para el archivo que incluya la extensión
+    const nuevoNombre = `${Date.now()}_${req.session.idUsuario.slice(-5)}.${extension}`;
     cb(null, nuevoNombre);
   },
 });
+
 
 const upload = multer({ storage: storage });
 
@@ -884,6 +888,8 @@ app.post("/datosPersonales", upload.single("imagen"), (req, res) => {
   const sexo = datos.sexo;
   const sangre = datos.sangre;
   const imagen = req.file ? req.file.filename : datos.imagen;
+
+  console.log(imagen)
 
   const buscar = `SELECT * FROM datos_personales WHERE usuario_id = '${req.session.idUsuario}'`;
 

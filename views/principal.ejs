@@ -774,9 +774,9 @@
                             <div class=" seccion__datoPersonal">
                                 <strong>Estatura (cm)</strong>
                                 <% if (typeof estatura !== 'undefined' && estatura !== null && estatura !== '' && estatura !== 0) { %>
-                                    <input type="text" id="estaturaUsuario" maxlength="3" oninput="formatoEstatura(this)" value="<%= estatura * 100 %>">
+                                    <input type="text" id="estaturaUsuario" placeholder="Vacío" maxlength="3" oninput="formatoEstatura(this)" value="<%= estatura * 100 %>">
                                 <% } else { %>
-                                    <input type="text" id="estaturaUsuario" maxlength="3" oninput="formatoEstatura(this)" >
+                                    <input type="text" id="estaturaUsuario" placeholder="Vacío" maxlength="3" oninput="formatoEstatura(this)" >
                                 <% } %>
                             </div>
                             <div class="seccion__datoPersonal">
