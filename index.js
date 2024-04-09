@@ -892,7 +892,7 @@ app.post("/datosPersonales", upload.single("imagen"), (req, res) => {
   const imagen = req.file ? req.file.filename : datos.imagen;
   const imagenGuardada = datos.imagenGuardada;
 
-  if (imagenGuardada !== "Usuario.png") {
+  if (imagenGuardada !== "Usuario.png" && imagenGuardada !== imagen) {
     fs.unlink("views/img/users/" + imagenGuardada, (err) => {
       if (err) {
         // Manejar el error aquí
