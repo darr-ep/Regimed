@@ -34,32 +34,32 @@ inputImagenUsuario.addEventListener("change", (e) => {
 });
 
 function formatoTelefono(input) {
-  var formatted = input.value.replace(/\D/g, '');
+  var formatted = input.value.replace(/\D/g, "");
 
   if (formatted.length > 3) {
-    formatted = formatted.substring(0, 3) + ' ' + formatted.substring(3);
+    formatted = formatted.substring(0, 3) + " " + formatted.substring(3);
   }
   if (formatted.length > 7) {
-    formatted = formatted.substring(0, 7) + ' ' + formatted.substring(7);
+    formatted = formatted.substring(0, 7) + " " + formatted.substring(7);
   }
 
   input.value = formatted;
 }
 
 function formatoEstatura(input) {
-  var formatted = input.value.replace(/\D/g, '');
+  var formatted = input.value.replace(/\D/g, "");
 
   input.value = formatted;
 }
 
 function formatoPeso(input) {
-  var formatted = input.value.replace(/[^\d.]/g, '');
+  var formatted = input.value.replace(/[^\d.]/g, "");
 
-  var partes = formatted.split('.');
+  var partes = formatted.split(".");
   if (partes.length > 1) {
     partes[0] = partes[0].slice(0, 3);
     partes[1] = partes[1].slice(0, 2);
-    formatted = partes.join('.');
+    formatted = partes.join(".");
   } else {
     formatted = formatted.slice(0, 3);
   }
@@ -68,19 +68,19 @@ function formatoPeso(input) {
 }
 
 function formatoNombre(input) {
-  var formatted = input.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+  var formatted = input.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
 
   input.value = formatted;
 }
 
 function formatoCURP(input) {
-  var formatted = input.value.replace(/[^a-zA-Z0-9]/g, '');
+  var formatted = input.value.replace(/[^a-zA-Z0-9]/g, "");
 
   input.value = formatted.toUpperCase();
 }
 
 function formatoNacionalidad(input) {
-  var formatted = input.value.replace(/[^a-zA-Z]/g, '');
+  var formatted = input.value.replace(/[^a-zA-Z]/g, "");
 
   input.value = formatted;
 }
@@ -94,7 +94,7 @@ document
       icon: "success",
       title: "Los datos han sido guardados",
       showConfirmButton: false,
-      timer: 1500
+      timer: 1500,
     });
     const formData = new FormData();
     formData.append("nombre", document.getElementById("nombreUsuario").value);
@@ -119,24 +119,25 @@ document
     formData.append("sexo", document.getElementById("sexoUsuario").value);
     formData.append("sangre", document.getElementById("sangreUsuario").value);
 
-    const imagenPrevisualizada = document.getElementById("imagenPrevisualizada")
+    const imagenPrevisualizada = document.getElementById(
+      "imagenPrevisualizada"
+    );
     const inputImagenUsuario = document.getElementById("imagenUsuario");
     if (inputImagenUsuario.files.length > 0) {
       formData.append("imagen", inputImagenUsuario.files[0]);
     } else {
-      const nombreImagen = imagenPrevisualizada.src
+      const nombreImagen = imagenPrevisualizada.src;
       var nombreDeLaImagen = obtenerNombreDeImagen(nombreImagen);
       formData.append("imagen", nombreDeLaImagen);
     }
 
     function obtenerNombreDeImagen(src) {
-      // Separar la URL por "/"
-      var partesDeLaUrl = src.split('/');
-      // Obtener la última parte que contiene el nombre del archivo
+      var partesDeLaUrl = src.split("/");
+
       var nombreDelArchivo = partesDeLaUrl[partesDeLaUrl.length - 1];
-      // Devolver el nombre del archivo completo
+
       return nombreDelArchivo;
-  }
+    }
 
     fetch("/datosPersonales", {
       method: "POST",

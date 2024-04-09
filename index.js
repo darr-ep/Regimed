@@ -861,7 +861,7 @@ app.post("/registro", (req, res) => {
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "Views/img/users");
+    cb(null, "views/img/users");
   },
   filename: function (req, file, cb) {
     // Obtener la extensión del archivo original
