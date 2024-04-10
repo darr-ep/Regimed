@@ -10,6 +10,8 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const multer = require("multer");
 const fs = require("fs");
+const { random } = require("lodash");
+const setTimeout = require("timers").setTimeout;
 
 const app = express();
 
@@ -58,8 +60,8 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-function generarToken(usuario_id) {
-  return jwt.sign({ usuario_id }, "secreto", {
+function generarToken(payload) {
+  return jwt.sign(payload, "secreto", {
     expiresIn: "15m",
     issuer: "regimed.org",
   });
@@ -617,6 +619,72 @@ app.get("/verificar_correo", (req, res) => {
   });
 });
 
+app.get("/generarTokenRegistro", (req, res) => {
+  const numeroAleatorio = random(111111, 999999);
+  const token = process.env.URL_AGREGAR_REGISTRO + generarToken({
+    usuarioId: req.session.idUsuario,
+    numero: numeroAleatorio,
+  });
+  const tiempoActual = new Date();
+
+  const consulta = `SELECT * FROM codigos_temporales WHERE usuario_id = '${req.session.idUsuario}'`;
+
+  conexion.query(consulta, (err, row) => {
+    if (err) {
+      throw err;
+    } else if (row.length === 0) {
+      const ingreso = `INSERT INTO codigos_temporales (usuario_id, codigo, hora_registro) VALUES ('${req.session.idUsuario}', '${numeroAleatorio}', NOW())`;
+
+      conexion.query(ingreso, (err, row) => {
+        if (err) {
+          throw err;
+        } else {
+          res.json({ token });
+          const tiempoEspera = 15 * 60 * 1000;
+          setTimeout(() => {
+            const borrado = `DELETE FROM codigos_temporales WHERE usuario_id = '${req.session.idUsuario}' AND codigo = '${numeroAleatorio}'`;
+            conexion.query(borrado);
+          }, tiempoEspera);
+        }
+      });
+    } else {
+      const tiempoAnterior = new Date(row[0].hora_registro);
+      const tiempoRestante = Math.round((Math.round(tiempoAnterior) - (Math.round(tiempoActual) - 20000))/ 1000);
+
+      const token = generarToken({
+        usuarioId: row[0].usuario_id,
+        numero: row[0].codigo,
+      });
+      res.json({ token, tiempoRestante });
+    }
+  });
+});
+
+app.get("/agregarRegistro", (req, res) => {
+  const token = req.query.token;
+
+  jwt.verify(token, "secreto", function (err, decoded) {
+    if (err) {
+      console.log("Token inválido");
+      res.send("Token inválido");
+    } else {
+      const consulta = `SELECT * FROM codigos_temporales WHERE usuario_id = '${decoded.usuarioId}' AND codigo = '${decoded.numero}'`;
+
+      conexion.query(consulta, (err, row) => {
+        if (err) {
+          throw err;
+        } else if (row.length === 0) {
+          res.send("Token inválido");
+        } else {
+          console.log(
+            "Aqui tienes que guardar los registros para que tengan relacion"
+          );
+        }
+      });
+    }
+  });
+});
+
 // * -------------------------- POSTS -------------------------- * //
 
 app.post("/acceso", (req, res) => {
@@ -828,7 +896,9 @@ app.post("/registro", (req, res) => {
           hashUUID.update(uuidGen);
           const uuidHash = hashUUID.digest("hex");
 
-          const token = generarToken(uuidHash);
+          const token = generarToken({
+            usuario_id: uuidHash
+          });
 
           enviarCorreoVerificacion(correo, token);
 
@@ -903,8 +973,8 @@ app.post("/datosPersonales", upload.single("imagen"), (req, res) => {
     });
   }
 
-  console.log(imagen)
-  console.log(imagenGuardada)
+  console.log(imagen);
+  console.log(imagenGuardada);
 
   const buscar = `SELECT * FROM datos_personales WHERE usuario_id = '${req.session.idUsuario}'`;
 

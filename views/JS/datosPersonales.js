@@ -1,12 +1,12 @@
-const abrirDatosPersonales = document.getElementById("abrir__datosPersonales");
 const contenedorDatosPersonales = document.getElementById(
   "fondo__datosPersonales"
 );
-const cerrarDatosPersonales = document.getElementById(
-  "cerrar__datosPersonales"
-);
 const ventanaDatosPersonales = document.getElementById(
   "ventana__datosPersonales"
+);
+const abrirDatosPersonales = document.getElementById("abrir__datosPersonales");
+const cerrarDatosPersonales = document.getElementById(
+  "cerrar__datosPersonales"
 );
 
 abrirDatosPersonales.addEventListener("click", () => {
@@ -123,9 +123,7 @@ document
       "imagenPrevisualizada"
     );
 
-    const imagenGuardada = document.getElementById(
-      "imagenGuardada"
-    );
+    const imagenGuardada = document.getElementById("imagenGuardada");
 
     const inputImagenUsuario = document.getElementById("imagenUsuario");
     if (inputImagenUsuario.files.length > 0) {

@@ -16,6 +16,9 @@
     <script defer src="JS/app.js"></script>
     <script defer src="JS/codigoTemporal.js"></script>
     <script defer src="JS/datosPersonales.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script defer src="JS/agregarRegistro.js"></script>
 </head>
 
 <body>
@@ -814,56 +817,55 @@
         </div>
     </div>
 
-<div id="fondo__agregarRegistro" class="fondoVentana">
-    <div id="ventana__agregarRegistro" class="ventana">
-            <div class="titulo-agregar-registro">
-                <h2>Agregar registro</h2>
-            </div>
-            <div class="ventana__contenido">
-                <div class="datos-agregar-registro">
-                    <div class="ingresar-agregar-registro">
-                        <h2>Ingresar registro</h2>
-                        <span>Ingresa el código de la persona a registrar</span>
-                        <div class="codigo-agregar-registro">
-                            <input type="text" maxlength="1" class="digit-input" id="digit1">
-                            <input type="text" maxlength="1" class="digit-input" id="digit2">
-                            <input type="text" maxlength="1" class="digit-input" id="digit3">
-                            <p>-</p>
-                            <input type="text" maxlength="1" class="digit-input" id="digit4">
-                            <input type="text" maxlength="1" class="digit-input" id="digit5">
-                            <input type="text" maxlength="1" class="digit-input" id="digit6">
+    <div id="fondo__agregarRegistro" class="fondoVentana">
+        <div id="ventana__agregarRegistro" class="ventana">
+                <div class="titulo-agregar-registro">
+                    <h2>Agregar registro</h2>
+                </div>
+                <div class="ventana__contenido">
+                    <div class="datos-agregar-registro">
+                        <div class="ingresar-agregar-registro">
+                            <h2>Ingresar registro</h2>
+                            <span>Ingresa el código de la persona a registrar</span>
+                            <div class="codigo-agregar-registro">
+                                <input type="text" maxlength="1" class="digit-input" id="digit1">
+                                <input type="text" maxlength="1" class="digit-input" id="digit2">
+                                <input type="text" maxlength="1" class="digit-input" id="digit3">
+                                <p>-</p>
+                                <input type="text" maxlength="1" class="digit-input" id="digit4">
+                                <input type="text" maxlength="1" class="digit-input" id="digit5">
+                                <input type="text" maxlength="1" class="digit-input" id="digit6">
+                            </div>
+                            <p>o</p>
+                            <button class="boton-datos">
+                                <i class="fa-solid fa-camera"></i>
+                                Escanear código
+                            </button>
                         </div>
-                        <p>o</p>
-                        <button class="boton-datos">
-                            <i class="fa-solid fa-camera"></i>
-                            Escanear código
-                        </button>
+                    </div>
+                    <div class="datos-agregar-registro">
+                        <div class="compartir-registro">
+                            <h2>Compartir registro</h2>
+                            <span>Escanea el código qr para registrarte automaticamente</span>
+                                <div id="contenedorQR" class="contenedorQR"></div>
+                            <p>o</p>
+                            <span>Ingresa el siguiente código en otro registro</span>
+                            <strong>
+                                <?php echo $codigoAleatorio; ?>
+                            </strong>
+                            <span id="temporizadorCodigo">El código espirará en <span
+                                    id="tiempoRestante"></span></span>
+                            <span id="regenerarCodigo">El código ha expirado, <a href="#"
+                                    onclick="iniciarTemporizador()">regeneralo aquí</a></span>
+                        </div>
                     </div>
                 </div>
-                <div class="datos-agregar-registro">
-                    <div class="compartir-registro">
-                        <h2>Compartir registro</h2>
-                        <span>Escanea el código qr para registrarte automaticamente</span>
-                        <div id="contenedorQR" class="contenedorQR"></div>
-                        <p>o</p>
-                        <span>Ingresa el siguiente código en otro registro</span>
-                        <strong>
-                            <?php echo $codigoAleatorio; ?>
-                        </strong>
-                        <span id="temporizadorCodigo">El código espirará en <span
-                                id="tiempoRestante"></span></span>
-                        <span id="regenerarCodigo">El código ha expirado, <a href="#"
-                                onclick="iniciarTemporizador()">regeneralo aquí</a></span>
-                    </div>
-                </div>
-            </div>
 
-            <div class="cancelar-agregarRegistro">
-                <button type="button" id="cerrar__agregarRegistro" class="boton-datos cerrarVentana">Cancelar</button>
-            </div>
+                <div class="cancelar-agregarRegistro">
+                    <button type="button" id="cerrar__agregarRegistro" class="boton-datos cerrarVentana">Cancelar</button>
+                </div>
+        </div>
     </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 
 </html>
