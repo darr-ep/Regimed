@@ -12,6 +12,7 @@ const multer = require("multer");
 const fs = require("fs");
 const { random } = require("lodash");
 const setTimeout = require("timers").setTimeout;
+const fetch = require("node-fetch");
 
 const app = express();
 
@@ -63,6 +64,13 @@ const transporter = nodemailer.createTransport({
 function generarToken(payload) {
   return jwt.sign(payload, "secreto", {
     expiresIn: "15m",
+    issuer: "regimed.org",
+  });
+}
+
+function generarToken3m(payload) {
+  return jwt.sign(payload, "secreto", {
+    expiresIn: "3m",
     issuer: "regimed.org",
   });
 }
@@ -455,14 +463,19 @@ img {
 // * -------------------------- GETS -------------------------- * //
 
 app.get("/", (req, res) => {
-  res.render("index");
+  res.render("index", {
+    sesion: req.session.idUsuario
+  });
 });
 
 app.get("/registro", (req, res) => {
   if (!req.session.formData) {
     req.session.formData = {};
   }
-  res.render("registro", { formData: req.session.formData });
+  res.render("registro", {
+    formData: req.session.formData,
+    sesion: req.session.idUsuario
+  });
 });
 
 app.get("/principal", (req, res) => {
@@ -478,60 +491,69 @@ app.get("/principal", (req, res) => {
       if (err) {
         throw err;
       } else {
+        var nombre = "";
+        var curp = "";
+        var imagen = "";
+        var telefono = "";
+        var nacimiento = "";
+        var peso = "";
+        var estatura = "";
+        var sexo = "";
+        var nacionalidad = "";
+        var sangre = "";
         if (row && row.length > 0) {
-          const nombre = row[0].nombre;
-          const curp = row[0].curp;
-          const imagen = row[0].imagen ? row[0].imagen : "Usuario.png";
-          const telefono = row[0].telefono;
-          var nacimiento = row[0].fecha_nac;
+          nombre = row[0].nombre;
+          curp = row[0].curp;
+          imagen = row[0].imagen ? row[0].imagen : "usuario.png";
+          telefono = row[0].telefono;
+          nacimiento = row[0].fecha_nac;
           if (nacimiento !== "0000-00-00") {
             const fechaNacimiento = new Date(nacimiento);
             nacimiento = fechaNacimiento.toISOString().split("T")[0];
           }
-          const peso = row[0].peso;
-          const estatura = row[0].estatura;
-          const sexo = row[0].sexo;
-          const nacionalidad = row[0].nacionalidad;
-          const sangre = row[0].tipo_sangre;
-
-          res.render("principal", {
-            nombre: nombre,
-            curp: curp,
-            imagenAMostrar: imagen,
-            telefono: telefono,
-            nacimiento: nacimiento,
-            peso: peso,
-            estatura: estatura,
-            sexo: sexo,
-            nacionalidad: nacionalidad,
-            sangre: sangre,
-          });
-        } else {
-          const nombre = "";
-          const curp = "";
-          const imagenAMostrar = "";
-          const telefono = "";
-          const nacimiento = "";
-          const peso = "";
-          const estatura = "";
-          const sexo = "";
-          const nacionalidad = "";
-          const sangre = "";
-          res.render("principal", {
-            nombre: nombre,
-            curp: curp,
-            imagenAMostrar: imagenAMostrar,
-            telefono: telefono,
-            nacimiento: nacimiento,
-            peso: peso,
-            estatura: estatura,
-            sexo: sexo,
-            nacionalidad: nacionalidad,
-            sangre: sangre,
-          });
+          peso = row[0].peso;
+          estatura = row[0].estatura;
+          sexo = row[0].sexo;
+          nacionalidad = row[0].nacionalidad;
+          sangre = row[0].tipo_sangre;
         }
+
+        const consulta = `
+  SELECT registros_compartidos.*, datos_personales.*
+  FROM registros_compartidos
+  INNER JOIN datos_personales
+  ON registros_compartidos.usuarioCompartido_id = datos_personales.usuario_id
+  WHERE registros_compartidos.usuario_id = '${req.session.idUsuario}'
+`;
+
+        conexion.query(consulta, (err, row) => {
+          if (err) {
+            throw err;
+          } else {
+            res.render("principal", {
+              nombre: nombre,
+              curp: curp,
+              imagenAMostrar: imagen,
+              telefono: telefono,
+              nacimiento: nacimiento,
+              peso: peso,
+              estatura: estatura,
+              sexo: sexo,
+              nacionalidad: nacionalidad,
+              sangre: sangre,
+              registros: row,
+              sesion: req.session.idUsuario
+            });
+          }
+        });
       }
     });
+  }
+});
+
+app.get("/usuario", (req, res) => {
+  if (!req.session.idUsuario) {
+    res.render("usuario");
   }
 });
 
@@ -539,7 +561,10 @@ app.get("/acceso", (req, res) => {
   if (!req.session.correo) {
     req.session.correo = "";
   }
-  res.render("acceso", { correo: req.session.correo });
+  res.render("acceso", {
+    correo: req.session.correo,
+    sesion: req.session.idUsuario
+  });
 });
 
 app.get("/cerrarSesion", (req, res) => {
@@ -590,7 +615,7 @@ app.get("/verificar_correo", (req, res) => {
             if (err) {
               throw err;
             } else {
-              const ingresarNombreUsuario = `INSERT INTO datos_personales (nombre, curp, usuario_id, fecha_nac, estatura, peso, sexo, tipo_sangre, telefono, nacionalidad, imagen) VALUES ('${rows[0].nombre} ${rows[0].apellido_paterno} ${rows[0].apellido_materno}', '', '${decoded.usuario_id}', '0000-00-00', 0, 0, '', '', '', '', '')`;
+              const ingresarNombreUsuario = `INSERT INTO datos_personales (nombre, curp, usuario_id, fecha_nac, estatura, peso, sexo, tipo_sangre, telefono, nacionalidad, imagen) VALUES ('${rows[0].nombre} ${rows[0].apellido_paterno} ${rows[0].apellido_materno}', '', '${decoded.usuario_id}', '0000-00-00', 0, 0, '', '', '', '', 'usuario.png')`;
 
               conexion.query(ingresarNombreUsuario, (err) => {
                 if (err) {
@@ -620,45 +645,70 @@ app.get("/verificar_correo", (req, res) => {
 });
 
 app.get("/generarTokenRegistro", (req, res) => {
-  const numeroAleatorio = random(111111, 999999);
-  const token = process.env.URL_AGREGAR_REGISTRO + generarToken({
-    usuarioId: req.session.idUsuario,
-    numero: numeroAleatorio,
-  });
+  generarNumeroAleatorioUnico(req, res);
+});
+
+function generarNumeroAleatorioUnico(req, res) {
+  const numeroAleatorio = random(100000, 999999);
   const tiempoActual = new Date();
 
-  const consulta = `SELECT * FROM codigos_temporales WHERE usuario_id = '${req.session.idUsuario}'`;
+  const consultaUsuario = `SELECT * FROM codigos_temporales WHERE usuario_id = '${req.session.idUsuario}'`;
 
-  conexion.query(consulta, (err, row) => {
+  conexion.query(consultaUsuario, (err, rowsUsuario) => {
     if (err) {
       throw err;
-    } else if (row.length === 0) {
-      const ingreso = `INSERT INTO codigos_temporales (usuario_id, codigo, hora_registro) VALUES ('${req.session.idUsuario}', '${numeroAleatorio}', NOW())`;
+    } else if (rowsUsuario.length === 0) {
+      const consultaNumero = `SELECT * FROM codigos_temporales WHERE codigo = '${numeroAleatorio}'`;
 
-      conexion.query(ingreso, (err, row) => {
+      conexion.query(consultaNumero, (err, rowsNumero) => {
         if (err) {
           throw err;
+        } else if (rowsNumero.length === 0) {
+          const ingreso = `INSERT INTO codigos_temporales (usuario_id, codigo, hora_registro) VALUES ('${req.session.idUsuario}', '${numeroAleatorio}', NOW())`;
+
+          conexion.query(ingreso, (err, result) => {
+            if (err) {
+              throw err;
+            } else {
+              const token =
+                process.env.URL_AGREGAR_REGISTRO +
+                generarToken3m({
+                  usuarioId: req.session.idUsuario,
+                  numero: numeroAleatorio,
+                });
+              res.json({ token, numeroAleatorio });
+              const tiempoEspera = 3 * 60 * 1000;
+              setTimeout(() => {
+                console.log("Borrado: " + numeroAleatorio);
+                const borrado = `DELETE FROM codigos_temporales WHERE usuario_id = '${req.session.idUsuario}' AND codigo = '${numeroAleatorio}'`;
+                conexion.query(borrado);
+              }, tiempoEspera);
+            }
+          });
         } else {
-          res.json({ token });
-          const tiempoEspera = 15 * 60 * 1000;
-          setTimeout(() => {
-            const borrado = `DELETE FROM codigos_temporales WHERE usuario_id = '${req.session.idUsuario}' AND codigo = '${numeroAleatorio}'`;
-            conexion.query(borrado);
-          }, tiempoEspera);
+          generarNumeroAleatorioUnico(req, res);
         }
       });
     } else {
-      const tiempoAnterior = new Date(row[0].hora_registro);
-      const tiempoRestante = Math.round((Math.round(tiempoAnterior) - (Math.round(tiempoActual) - 20000))/ 1000);
+      const tiempoAnterior = new Date(rowsUsuario[0].hora_registro);
+      const tiempoRestante = Math.round(
+        (Math.round(tiempoAnterior) - (Math.round(tiempoActual) - 180000)) /
+          1000
+      );
+
+      const numeroAleatorio = rowsUsuario[0].codigo;
 
       const token = generarToken({
-        usuarioId: row[0].usuario_id,
-        numero: row[0].codigo,
+        usuarioId: rowsUsuario[0].usuario_id,
+        numero: rowsUsuario[0].codigo,
       });
-      res.json({ token, tiempoRestante });
+
+      console.log(tiempoRestante);
+
+      res.json({ token, numeroAleatorio, tiempoRestante });
     }
   });
-});
+}
 
 app.get("/agregarRegistro", (req, res) => {
   const token = req.query.token;
@@ -897,7 +947,7 @@ app.post("/registro", (req, res) => {
           const uuidHash = hashUUID.digest("hex");
 
           const token = generarToken({
-            usuario_id: uuidHash
+            usuario_id: uuidHash,
           });
 
           enviarCorreoVerificacion(correo, token);
@@ -962,7 +1012,7 @@ app.post("/datosPersonales", upload.single("imagen"), (req, res) => {
   const imagen = req.file ? req.file.filename : datos.imagen;
   const imagenGuardada = datos.imagenGuardada;
 
-  if (imagenGuardada !== "Usuario.png" && imagenGuardada !== imagen) {
+  if (imagenGuardada !== "usuario.png" && imagenGuardada !== imagen) {
     fs.unlink("views/img/users/" + imagenGuardada, (err) => {
       if (err) {
         // Manejar el error aquí
@@ -998,10 +1048,57 @@ app.post("/datosPersonales", upload.single("imagen"), (req, res) => {
       conexion.query(actualizar, (err, rows) => {
         if (err) {
           throw err;
-        } else {
-          // res.redirect("/principal");
         }
       });
     }
   });
+});
+
+app.post("/verificarRegistro/:codigo/:captcha", async (req, res) => {
+  const verificacionCaptcha = await fetch(
+    `https://www.google.com/recaptcha/api/siteverify?secret=6LdxfbcpAAAAACfzTmYEvL4GGn1q7g2KkD3R64K5&response=${req.params.captcha}`,
+    {
+      method: "POST",
+    }
+  ).then((_res) => _res.json());
+
+  if (verificacionCaptcha.success === true) {
+    const consulta = `SELECT * FROM codigos_temporales WHERE codigo = ${req.params.codigo}`;
+
+    conexion.query(consulta, (err, rows) => {
+      if (err) {
+        throw err;
+      } else if (rows.length === 0) {
+        res.json({ usuario: "Inexistente" });
+      } else if (rows[0].usuario_id === req.session.idUsuario) {
+        res.json({ usuario: "Mismo" });
+      } else {
+        const consulta = `SELECT * FROM registros_compartidos WHERE usuario_id = '${req.session.idUsuario}' AND usuarioCompartido_id = '${rows[0].usuario_id}' OR usuario_id = '${rows[0].usuario_id}' AND usuarioCompartido_id = '${req.session.idUsuario}'`;
+
+        conexion.query(consulta, (err, row) => {
+          if (err) {
+            throw err;
+          } else if (row.length === 0) {
+            const ingreso1ro = `INSERT INTO registros_compartidos (usuario_id, usuarioCompartido_id) values ('${req.session.idUsuario}', '${rows[0].usuario_id}')`;
+            const ingreso2do = `INSERT INTO registros_compartidos (usuario_id, usuarioCompartido_id) values ('${rows[0].usuario_id}', '${req.session.idUsuario}')`;
+            conexion.query(ingreso1ro, (err, row) => {
+              if (err) {
+                throw err;
+              } else {
+                conexion.query(ingreso2do, (err, row) => {
+                  if (err) {
+                    throw err;
+                  } else {
+                    res.json({ usuario: "Ingresado" });
+                  }
+                });
+              }
+            });
+          } else {
+            res.json({ usuario: "Existente" });
+          }
+        });
+      }
+    });
+  }
 });

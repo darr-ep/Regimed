@@ -30,39 +30,39 @@
 //     fetch('/logout', { method: 'POST' });
 // });
 
-const inputs = document.querySelectorAll('.digit-input');
+// const inputs = document.querySelectorAll('.digit-input');
 
-inputs.forEach((input, index) => {
-    input.addEventListener('input', (event) => {
-        const value = event.target.value;
-        if (value !== '') {
-            input.classList.add('filled');
-            // En lugar de mover el foco al siguiente campo solo si hay un valor, 
-            // movemos el foco al siguiente campo en cualquier caso.
-            if (index < inputs.length - 1) {
-                inputs[index + 1].focus();
-            }
-        } else {
-            input.classList.remove('filled');
-        }
-    });
+// inputs.forEach((input, index) => {
+//     input.addEventListener('input', (event) => {
+//         const value = event.target.value;
+//         if (value !== '') {
+//             input.classList.add('filled');
+//             // En lugar de mover el foco al siguiente campo solo si hay un valor, 
+//             // movemos el foco al siguiente campo en cualquier caso.
+//             if (index < inputs.length - 1) {
+//                 inputs[index + 1].focus();
+//             }
+//         } else {
+//             input.classList.remove('filled');
+//         }
+//     });
 
-    input.addEventListener('keydown', (event) => {
-        const key = event.key;
-        if (key === 'Backspace' && index > 0 && event.target.value === '') {
-            inputs[index - 1].focus();
-        }
-    });
+//     input.addEventListener('keydown', (event) => {
+//         const key = event.key;
+//         if (key === 'Backspace' && index > 0 && event.target.value === '') {
+//             inputs[index - 1].focus();
+//         }
+//     });
 
-    input.addEventListener('focus', () => {
-        for (let i = index - 1; i >= 0; i--) {
-            if (inputs[i].value === '') {
-                inputs[i].focus();
-                break;
-            }
-        }
-    });
-});
+//     input.addEventListener('focus', () => {
+//         for (let i = index - 1; i >= 0; i--) {
+//             if (inputs[i].value === '') {
+//                 inputs[i].focus();
+//                 break;
+//             }
+//         }
+//     });
+// });
 
 // * Token
 
