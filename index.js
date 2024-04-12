@@ -578,7 +578,10 @@ app.get("/cerrarSesion", (req, res) => {
 });
 
 app.get("/verificacion/:correo", (req, res) => {
-  res.render("verificacion", { correo: req.params.correo });
+  res.render("verificacion", {
+    correo: req.params.correo,
+    sesion: req.session.idUsuario
+  });
 });
 
 app.get("/verificar_correo", (req, res) => {

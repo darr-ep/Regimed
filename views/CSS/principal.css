@@ -321,6 +321,11 @@ main .datos-personales {
     grid-template-columns: 1fr 1fr;
 }
 
+.seccion__columna--historial_medico {
+    border-bottom: 1px solid #3a3a3a48;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
 main .datos-personales {
     display: flex;
 }
@@ -960,6 +965,12 @@ button.cerrarVentana:hover{
 
 .agrandar-ventana {
     animation-name: bounceIn;
+}
+
+.tarjeta {
+    aspect-ratio: 5.5/9;
+    background-image: url(../img/background/Martin\ Péchy.jpeg);
+    background-size: cover;
 }
 
 @media only screen and (max-width: 2200px) {

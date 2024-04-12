@@ -20,6 +20,7 @@
     <script defer src="JS/agregarRegistro.js"></script>
     <script defer src="https://www.google.com/recaptcha/api.js" async defer></script>
     <script defer src="JS/nav.js"></script>
+    <script defer src="JS/tarjetaDatos.js"></script>
 </head>
 
 <body>
@@ -66,10 +67,10 @@
             <div class="inferior">
                 <ul>
                     <li>
-                        <a href="" class="opcion">
-                            <i class="fa-solid fa-address-card"></i>
-                            <p>Cuenta</p>
-                        </a>
+                        <button type="button" id="abrir__tarjetaDatos" class="opcion">
+                            <i class="fa-solid fa-id-card"></i>
+                            <p>Tarjeta</p>
+                        </button>
                     </li>
                 </ul>
             </div>
@@ -670,9 +671,34 @@
                 </div>
 
                 <div class="seccion historial" id="historial">
-                    <div class="titulo-seccion">
+                    <div class="seccion__titulo">
                         <i class="fa-solid fa-file-medical"></i>
                         <h2>Historial médico</h2>
+                    </div>
+                    <div class="seccion__columna seccion__columna--historial_medico">
+                        <div class="seccion__fila">
+                            <strong>1.- Hospitalización por lesiones:</strong>
+                            <strong>2.- Reacciones alergicas:</strong>
+                            <strong>3.- Problemas de corazón:</strong>
+                            <strong>4.- Marcapasos o desfribilador:</strong>
+                            <strong>5.- Antecedentes de endocarditis:</strong>
+                        </div>
+                        <div class="seccion__fila">
+                            <strong>1.- Hospitalización por lesiones:</strong>
+                            <strong>2.- Reacciones alergicas:</strong>
+                            <strong>________________________</strong>
+                            <strong>3.- Problemas de corazón:</strong>
+                            <strong>4.- Marcapasos o desfribilador:</strong>
+                            <strong>5.- Antecedentes de endocarditis:</strong>
+                        </div>
+                        <div class="seccion__fila">
+                            <strong>1.- Hospitalización por lesiones:</strong>
+                            <strong>2.- Reacciones alergicas:</strong>
+                            <strong>________________________</strong>
+                            <strong>3.- Problemas de corazón:</strong>
+                            <strong>4.- Marcapasos o desfribilador:</strong>
+                            <strong>5.- Antecedentes de endocarditis:</strong>
+                        </div>
                     </div>
                 </div>
 
@@ -859,6 +885,25 @@
                         <p>Escanea el código QR para registrarte automaticamente</p>
                         <div id="contenedorQR" class="contenedorQR"></div>
                     </div>
+                </div>
+            </div>
+
+            <div class="ventana__botones">
+                <button type="button" id="cerrar__agregarRegistro" class="boton-datos cerrarVentana">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="fondo__tarjetaDatos" class="fondoVentana">
+        <div id="ventana__tarjetaDatos" class="ventana">
+            <div class="ventana__titulo">
+                <h2>Tarjeta Regimed</h2>
+                <span>Hazte con tu tarjeta para visualizar tus datos desde cualquier lugar</span>
+            </div>
+            <div class="ventana__seccion">
+                <div class="tarjeta">
+                </div>
+                <div class="tarjeta">
                 </div>
             </div>
 
