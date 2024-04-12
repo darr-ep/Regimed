@@ -12,7 +12,6 @@ const cerrarDatosPersonales = document.getElementById(
 abrirDatosPersonales.addEventListener("click", () => {
   contenedorDatosPersonales.classList.add("mostrar-ventana");
   ventanaDatosPersonales.classList.add("agrandar-ventana");
-  iniciarTemporizador();
 });
 
 cerrarDatosPersonales.addEventListener("click", () => {
