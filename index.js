@@ -527,6 +527,9 @@ app.get("/principal", (req, res) => {
   WHERE registros_compartidos.usuario_id = '${req.session.idUsuario}'
 `;
 
+
+console.log(imagen)
+
         conexion.query(consulta, (err, row) => {
           if (err) {
             throw err;
