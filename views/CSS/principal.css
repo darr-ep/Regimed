@@ -300,6 +300,8 @@ main .datos-personales {
 }
 
 .ventana__seccion {
+    aspect-ratio: 10/9;
+    height: 40vh;
     display: grid;
     grid-template-columns: 1fr 1fr;
     justify-content: space-between;
@@ -968,9 +970,21 @@ button.cerrarVentana:hover{
 }
 
 .tarjeta {
-    aspect-ratio: 5.5/9;
     background-image: url(../img/background/Martin\ Péchy.jpeg);
     background-size: cover;
+    background-position: center;
+    border-radius: 10%;
+}
+
+.tarjeta img{
+    aspect-ratio: 1;
+    width: 100%;
+    border-top-left-radius: 3%;
+    border-bottom-right-radius: 10%;
+}
+
+.tarjeta__datos {
+    height: 10px;
 }
 
 @media only screen and (max-width: 2200px) {

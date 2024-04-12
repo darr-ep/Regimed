@@ -20,7 +20,7 @@ const contenedorTarjetaDatos = document.getElementById(
     iniciarTemporizador(tiempoRestante);
   });
   
-  cerrarRegistroUsuarios.addEventListener("click", () => {
-    contenedorRegistroUsuarios.classList.remove("mostrar-ventana");
-    ventanaRegistroUsuarios.classList.remove("agrandar-ventana");
+  cerrarTarjetaDatos.addEventListener("click", () => {
+    contenedorTarjetaDatos.classList.remove("mostrar-ventana");
+    ventanaTarjetaDatos.classList.remove("agrandar-ventana");
   });

@@ -13,6 +13,8 @@ const fs = require("fs");
 const { random } = require("lodash");
 const setTimeout = require("timers").setTimeout;
 const fetch = require("node-fetch");
+const { PDFDocument, rgb } = require("pdf-lib");
+
 
 const app = express();
 
@@ -552,9 +554,7 @@ app.get("/principal", (req, res) => {
 });
 
 app.get("/usuario", (req, res) => {
-  if (!req.session.idUsuario) {
-    res.render("usuario");
-  }
+  res.render("usuario");
 });
 
 app.get("/acceso", (req, res) => {
@@ -736,6 +736,90 @@ app.get("/agregarRegistro", (req, res) => {
       });
     }
   });
+});
+
+async function cargarFuente(font, pdfDoc) {
+  return await pdfDoc.embedFont(font);
+}
+
+function calcularPosicionTexto(page, text, fontSize, font) {
+  const textWidth = font.widthOfTextAtSize(text, fontSize);
+  return textX = page.getWidth() / 4 - textWidth / 2;
+}
+
+function agregarTexto(page, text, fontSize, font, y, xValue) {
+  const x = calcularPosicionTexto(page, text, fontSize, font);
+  page.drawText(text, {
+      x: xValue !== undefined ? xValue : x,
+      y,
+      size: fontSize,
+      font,
+      color: rgb(4/255, 68/255, 115/255),
+      weight: '600'
+  });
+}
+
+async function agregarImagen(page, imagePath, x, pdfDoc) {
+  try {
+    const size = page.getWidth() / 2;
+    const y = page.getHeight() - size;
+
+    const imageBytes = fs.readFileSync(imagePath); // Lee la imagen sin convertirla a PNG
+    
+    // Carga la imagen en el PDF
+    const pdfImage = await pdfDoc.embedJpg(imageBytes);
+    
+    // Dibuja la imagen en la página del PDF
+    page.drawImage(pdfImage, {
+      x,
+      y,
+      width: size,
+      height: size,
+    });
+  } catch (error) {
+    console.error('Error al leer o cargar la imagen:', error);
+    throw error; // Propaga el error hacia arriba
+  }
+}
+
+
+app.get('/modificar', async (req, res) => {
+  try {
+      // Lee el archivo PDF
+      const existingPdfBytes = fs.readFileSync('pdf/tarjeta.pdf');
+      
+      // Carga el PDF
+      const pdfDoc = await PDFDocument.load(existingPdfBytes);
+      const page = pdfDoc.getPages()[0];
+
+      await agregarImagen(page, 'views/img/users/1710546350_20240202_140723.jpg', 0, pdfDoc);
+
+      // Carga la fuente de texto
+      const hel = await cargarFuente("Helvetica", pdfDoc);
+      const helBold = await cargarFuente("Helvetica-Bold", pdfDoc);
+      
+      // Agrega texto al PDF
+      agregarTexto(page, 'Edson David', 16, helBold, 90);
+      agregarTexto(page, 'Pedraza Alarcón', 12, hel, 75);
+      agregarTexto(page, 'CURP: ', 7, helBold, 50, 7);
+      agregarTexto(page, 'PEAE031008HHGDLDA2', 7, hel, 50, 32);
+      agregarTexto(page, 'T/S: ', 7, helBold, 40, 7);
+      agregarTexto(page, 'O+', 7, hel, 40, 22);
+      
+      // Guarda el PDF modificado
+      const modifiedPdfBytes = await pdfDoc.save();
+      const outputFilePath = path.join(__dirname, 'pdf', 'tarjeta2.pdf');
+      fs.writeFileSync(outputFilePath, modifiedPdfBytes);
+      // Envía el PDF modificado como respuesta con el encabezado para descargarlo
+      res.contentType('application/pdf');
+      res.sendFile(outputFilePath);
+      // res.setHeader('Content-Type', 'application/pdf');
+      // res.setHeader('Content-Disposition', 'attachment; filename="tarjeta2.pdf"');
+      // res.sendFile(outputFilePath);
+  } catch (error) {
+      console.error('Error al modificar el título del PDF:', error);
+      res.status(500).send('Error al modificar el título del PDF: ' + error.message);
+  }
 });
 
 // * -------------------------- POSTS -------------------------- * //
