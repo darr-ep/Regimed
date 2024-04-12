@@ -15,7 +15,6 @@ const setTimeout = require("timers").setTimeout;
 const fetch = require("node-fetch");
 const { PDFDocument, rgb } = require("pdf-lib");
 
-
 const app = express();
 
 dotenv.config();
@@ -466,7 +465,7 @@ img {
 
 app.get("/", (req, res) => {
   res.render("index", {
-    sesion: req.session.idUsuario
+    sesion: req.session.idUsuario,
   });
 });
 
@@ -476,7 +475,7 @@ app.get("/registro", (req, res) => {
   }
   res.render("registro", {
     formData: req.session.formData,
-    sesion: req.session.idUsuario
+    sesion: req.session.idUsuario,
   });
 });
 
@@ -544,7 +543,7 @@ app.get("/principal", (req, res) => {
               nacionalidad: nacionalidad,
               sangre: sangre,
               registros: row,
-              sesion: req.session.idUsuario
+              sesion: req.session.idUsuario,
             });
           }
         });
@@ -563,7 +562,7 @@ app.get("/acceso", (req, res) => {
   }
   res.render("acceso", {
     correo: req.session.correo,
-    sesion: req.session.idUsuario
+    sesion: req.session.idUsuario,
   });
 });
 
@@ -580,7 +579,7 @@ app.get("/cerrarSesion", (req, res) => {
 app.get("/verificacion/:correo", (req, res) => {
   res.render("verificacion", {
     correo: req.params.correo,
-    sesion: req.session.idUsuario
+    sesion: req.session.idUsuario,
   });
 });
 
@@ -744,18 +743,18 @@ async function cargarFuente(font, pdfDoc) {
 
 function calcularPosicionTexto(page, text, fontSize, font) {
   const textWidth = font.widthOfTextAtSize(text, fontSize);
-  return textX = page.getWidth() / 4 - textWidth / 2;
+  return (textX = page.getWidth() / 4 - textWidth / 2);
 }
 
 function agregarTexto(page, text, fontSize, font, y, xValue) {
   const x = calcularPosicionTexto(page, text, fontSize, font);
   page.drawText(text, {
-      x: xValue !== undefined ? xValue : x,
-      y,
-      size: fontSize,
-      font,
-      color: rgb(4/255, 68/255, 115/255),
-      weight: '600'
+    x: xValue !== undefined ? xValue : x,
+    y,
+    size: fontSize,
+    font,
+    color: rgb(4 / 255, 68 / 255, 115 / 255),
+    weight: "600",
   });
 }
 
@@ -764,12 +763,21 @@ async function agregarImagen(page, imagePath, x, pdfDoc) {
     const size = page.getWidth() / 2;
     const y = page.getHeight() - size;
 
-    const imageBytes = fs.readFileSync(imagePath); // Lee la imagen sin convertirla a PNG
-    
-    // Carga la imagen en el PDF
-    const pdfImage = await pdfDoc.embedJpg(imageBytes);
-    
-    // Dibuja la imagen en la página del PDF
+    // Determinar el tipo de archivo basado en su extensión
+    const extension = imagePath.split('.').pop().toLowerCase();
+    let pdfImage;
+
+    if (extension === 'png') {
+      const imageBytes = fs.readFileSync(imagePath);
+      pdfImage = await pdfDoc.embedPng(imageBytes);
+    } else if (extension === 'jpg' || extension === 'jpeg') {
+      const imageBytes = fs.readFileSync(imagePath);
+      pdfImage = await pdfDoc.embedJpg(imageBytes);
+    } else {
+      throw new Error('Formato de imagen no compatible. Solo se admiten archivos PNG y JPG/JPEG.');
+    }
+
+    // Dibujar la imagen en la página del PDF
     page.drawImage(pdfImage, {
       x,
       y,
@@ -777,49 +785,67 @@ async function agregarImagen(page, imagePath, x, pdfDoc) {
       height: size,
     });
   } catch (error) {
-    console.error('Error al leer o cargar la imagen:', error);
-    throw error; // Propaga el error hacia arriba
+    console.error("Error al leer o cargar la imagen:", error);
+    throw error; // Propagar el error hacia arriba
   }
 }
 
 
-app.get('/modificar', async (req, res) => {
-  try {
-      // Lee el archivo PDF
-      const existingPdfBytes = fs.readFileSync('pdf/tarjeta.pdf');
-      
-      // Carga el PDF
-      const pdfDoc = await PDFDocument.load(existingPdfBytes);
-      const page = pdfDoc.getPages()[0];
+app.get("/tarjeta", async (req, res) => {
+  const datos = `SELECT * FROM datos_personales WHERE usuario_id = '${req.session.idUsuario}'`;
 
-      await agregarImagen(page, 'views/img/users/1710546350_20240202_140723.jpg', 0, pdfDoc);
+  conexion.query(datos, async (errDatos, rowDatos) => {
+    if (errDatos) {
+      throw errDatos;
+    } else {
+      try {
+        // Lee el archivo PDF
+        const existingPdfBytes = fs.readFileSync("pdf/tarjeta.pdf");
 
-      // Carga la fuente de texto
-      const hel = await cargarFuente("Helvetica", pdfDoc);
-      const helBold = await cargarFuente("Helvetica-Bold", pdfDoc);
-      
-      // Agrega texto al PDF
-      agregarTexto(page, 'Edson David', 16, helBold, 90);
-      agregarTexto(page, 'Pedraza Alarcón', 12, hel, 75);
-      agregarTexto(page, 'CURP: ', 7, helBold, 50, 7);
-      agregarTexto(page, 'PEAE031008HHGDLDA2', 7, hel, 50, 32);
-      agregarTexto(page, 'T/S: ', 7, helBold, 40, 7);
-      agregarTexto(page, 'O+', 7, hel, 40, 22);
-      
-      // Guarda el PDF modificado
-      const modifiedPdfBytes = await pdfDoc.save();
-      const outputFilePath = path.join(__dirname, 'pdf', 'tarjeta2.pdf');
-      fs.writeFileSync(outputFilePath, modifiedPdfBytes);
-      // Envía el PDF modificado como respuesta con el encabezado para descargarlo
-      res.contentType('application/pdf');
-      res.sendFile(outputFilePath);
-      // res.setHeader('Content-Type', 'application/pdf');
-      // res.setHeader('Content-Disposition', 'attachment; filename="tarjeta2.pdf"');
-      // res.sendFile(outputFilePath);
-  } catch (error) {
-      console.error('Error al modificar el título del PDF:', error);
-      res.status(500).send('Error al modificar el título del PDF: ' + error.message);
-  }
+        // Carga el PDF
+        const pdfDoc = await PDFDocument.load(existingPdfBytes);
+        const page = pdfDoc.getPages()[0];
+
+        await agregarImagen(
+          page,
+          "views/img/users/" + rowDatos[0].imagen,
+          0,
+          pdfDoc
+        );
+
+        // Carga la fuente de texto
+        const hel = await cargarFuente("Helvetica", pdfDoc);
+        const helBold = await cargarFuente("Helvetica-Bold", pdfDoc);
+
+        // Extraer valores del nombre
+        const nombreCompleto = rowDatos[0].nombre;
+        const partesNombre = nombreCompleto.split(" ");
+        const apellidos = partesNombre.slice(-2).join(" ");
+        const nombres = partesNombre.slice(0, -2).join(" ");
+
+        // Agrega texto al PDF
+        agregarTexto(page, nombres, 16, helBold, 90);
+        agregarTexto(page, apellidos, 12, hel, 75);
+        agregarTexto(page, "CURP: ", 7, helBold, 50, 7);
+        agregarTexto(page, rowDatos[0].curp, 7, hel, 50, 32);
+        agregarTexto(page, "T/S: ", 7, helBold, 40, 7);
+        agregarTexto(page, rowDatos[0].tipo_sangre, 7, hel, 40, 22);
+
+        // Guarda el PDF modificado
+        const modifiedPdfBytes = await pdfDoc.save();
+        const outputFilePath = path.join(__dirname, "pdf", "tarjeta2.pdf");
+        fs.writeFileSync(outputFilePath, modifiedPdfBytes);
+        // Envía el PDF modificado como respuesta con el encabezado para descargarlo
+        res.contentType("application/pdf");
+        res.sendFile(outputFilePath);
+      } catch (error) {
+        console.error("Error al modificar el título del PDF:", error);
+        res
+          .status(500)
+          .send("Error al modificar el título del PDF: " + error.message);
+      }
+    }
+  });
 });
 
 // * -------------------------- POSTS -------------------------- * //
