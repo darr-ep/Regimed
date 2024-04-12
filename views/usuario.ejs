@@ -80,14 +80,23 @@
                   <li>
                     <a class="nav__enlace" href="/" id="navInicio">Inicio</a>
                   </li>
+                  <% if (sesion) {%>
                   <li>
                     <a class="nav__enlace" href="/principal" id="navPerfil">Perfil</a>
                   </li>
                   <li>
                     <a class="nav__enlace" href="/cerrarSesion">Cerrar Sesión</a>
                   </li>
+                  <%} else {%>
+                  <li>
+                    <a class="nav__enlace" href="/registro" id="navRegistro">Registrate</a>
+                  </li>
+                  <li>
+                    <a class="nav__enlace nav__enlace--borde" href="/acceso" id="navAcceso">Iniciar sesión</a>
+                  </li>
+                  <%}%>
                 </ul>
-              </nav>
+              </nav>              
             <main>
                 <div class="seccion">
                     <div class="seccion__titulo">

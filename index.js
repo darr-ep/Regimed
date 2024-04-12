@@ -553,7 +553,9 @@ app.get("/principal", (req, res) => {
 });
 
 app.get("/usuario", (req, res) => {
-  res.render("usuario");
+  res.render("usuario", {
+    sesion: req.session.idUsuario
+  });
 });
 
 app.get("/acceso", (req, res) => {
@@ -872,6 +874,7 @@ app.post("/acceso", (req, res) => {
         error: "Por favor, ingrese su correo.",
         errorField: "correo",
         correo: req.session.correo,
+        sesion: req.session.idUsuario
       });
     } else if (contrasenia === "") {
       req.session.correo = correo;
@@ -879,6 +882,7 @@ app.post("/acceso", (req, res) => {
         error: "Por favor, ingresa la contraseña.",
         errorField: "contrasenia",
         correo: req.session.correo,
+        sesion: req.session.idUsuario
       });
     } else if (row.length === 0) {
       req.session.correo = correo;
@@ -886,6 +890,7 @@ app.post("/acceso", (req, res) => {
         error: "El correo o la contraseña es incorrecta. Inténtelo de nuevo.",
         errorField: "noRes",
         correo: req.session.correo,
+        sesion: req.session.idUsuario
       });
     } else {
       bcrypt.compare(contrasenia, row[0].contrasenia, function (err, result) {
@@ -896,6 +901,7 @@ app.post("/acceso", (req, res) => {
               "El correo o la contraseña es incorrecta. Inténtelo de nuevo.",
             errorField: "noRes",
             correo: req.session.correo,
+        sesion: req.session.idUsuario
           });
         } else {
           req.session.idUsuario = row[0].usuario_id;
@@ -950,6 +956,7 @@ app.post("/registro", (req, res) => {
         error: "El correo ya está registrado.",
         errorField: "correo",
         formData: req.session.formData,
+        sesion: req.session.idUsuario
       });
     } else if (nombre === "") {
       guardarDatosFormulario(req);
@@ -957,6 +964,7 @@ app.post("/registro", (req, res) => {
         error: "Por favor, ingrese su nombre.",
         errorField: "nombre",
         formData: req.session.formData,
+        sesion: req.session.idUsuario
       });
     } else if (!formatoNombre.test(nombre)) {
       guardarDatosFormulario(req);
@@ -964,6 +972,7 @@ app.post("/registro", (req, res) => {
         error: "El nombre solo debe contener letras y espacios.",
         errorField: "nombre",
         formData: req.session.formData,
+        sesion: req.session.idUsuario
       });
     } else if (apellido_paterno === "") {
       guardarDatosFormulario(req);
@@ -971,6 +980,7 @@ app.post("/registro", (req, res) => {
         error: "Por favor, ingrese su apellido paterno.",
         errorField: "apellido_paterno",
         formData: req.session.formData,
+        sesion: req.session.idUsuario
       });
     } else if (apellido_materno === "") {
       guardarDatosFormulario(req);
@@ -978,6 +988,7 @@ app.post("/registro", (req, res) => {
         error: "Por favor, ingrese su apellido materno.",
         errorField: "apellido_materno",
         formData: req.session.formData,
+        sesion: req.session.idUsuario
       });
     } else if (
       !formatoNombre.test(apellido_paterno) ||
@@ -988,6 +999,7 @@ app.post("/registro", (req, res) => {
         error: "Los apellidos solo debe contener letras y espacios.",
         errorField: "apellido_paterno",
         formData: req.session.formData,
+        sesion: req.session.idUsuario
       });
     } else if (correo === "") {
       guardarDatosFormulario(req);
@@ -995,6 +1007,7 @@ app.post("/registro", (req, res) => {
         error: "Por favor, ingrese su correo.",
         errorField: "correo",
         formData: req.session.formData,
+        sesion: req.session.idUsuario
       });
     } else if (!formatoCorreo) {
       guardarDatosFormulario(req);
@@ -1002,6 +1015,7 @@ app.post("/registro", (req, res) => {
         error: "El correo ingresado no tiene un formato válido.",
         errorField: "correo",
         formData: req.session.formData,
+        sesion: req.session.idUsuario
       });
     } else if (contrasenia === "") {
       guardarDatosFormulario(req);
@@ -1009,6 +1023,7 @@ app.post("/registro", (req, res) => {
         error: "Por favor, ingresa una contraseña",
         errorField: "contrasenia",
         formData: req.session.formData,
+        sesion: req.session.idUsuario
       });
     } else if (
       contrasenia.length < longMinContraseña ||
@@ -1024,6 +1039,7 @@ app.post("/registro", (req, res) => {
           " caracteres.",
         errorField: "contrasenia",
         formData: req.session.formData,
+        sesion: req.session.idUsuario
       });
     } else if (!passWithMay || !passWithMin || !passWithEsp) {
       guardarDatosFormulario(req);
@@ -1032,6 +1048,7 @@ app.post("/registro", (req, res) => {
           "La contraseña debe contener al menos una letra mayúscula, una letra minúscula y un carácter especial.",
         errorField: "contrasenia",
         formData: req.session.formData,
+        sesion: req.session.idUsuario
       });
     } else if (conf_contrasenia === "") {
       guardarDatosFormulario(req);
@@ -1039,6 +1056,7 @@ app.post("/registro", (req, res) => {
         error: "Por favor, ingresa nuevamente la contraseña",
         errorField: "conf_contrasenia",
         formData: req.session.formData,
+        sesion: req.session.idUsuario
       });
     } else if (contrasenia !== conf_contrasenia) {
       guardarDatosFormulario(req);
@@ -1046,6 +1064,7 @@ app.post("/registro", (req, res) => {
         error: "Las contraseñas no coinciden.",
         errorField: "dif_Contrasenia",
         formData: req.session.formData,
+        sesion: req.session.idUsuario
       });
     } else {
       bcrypt.hash(contrasenia, saltRounds, function (err, hash) {
