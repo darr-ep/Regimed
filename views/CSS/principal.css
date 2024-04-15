@@ -410,7 +410,7 @@ main input.readonly {
 }
 
 .ventana__datos {
-    width: 400px;
+    /* width: 400px; */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -432,9 +432,9 @@ main input.readonly {
     font-weight: 500;
 }
 
-.ventana__datos:not(:last-child) {
+/* .ventana__datos:not(:last-child) {
     border-right: 1px solid var(--color-border);
-}
+} */
 
 main .datos-personales .valor {
     display: flex;
