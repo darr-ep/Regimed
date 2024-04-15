@@ -29,9 +29,8 @@ nav {
     z-index: 1;
 }
 
-.nav__enlace {
-    text-decoration: none;
-    color: white;
+ul {
+    list-style: none;
 }
 
 .nav__logo {
@@ -40,26 +39,15 @@ nav {
 
 .nav__enlaces {
     display: flex;
-    gap: 60px;
-    list-style: none;
+    gap: 50px;
     font-size: 20px;
 }
 
 .nav__enlace {
+    display: block;
     text-decoration: none;
     color: white;
-}
-
-.nav__enlace--borde {
-    color: black;
-    background-color: white;
-    padding: 10px 20px;
-    border-radius: 10px;
-    font-weight: 500;
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
-    -ms-border-radius: 10px;
-    -o-border-radius: 10px;
+    padding: 10px;
 }
 
 main {
@@ -69,7 +57,6 @@ main {
     width: 100%;
     height: 100vh;
     display: flex;
-    justify-content: center;
     align-items: center;
 }
 
@@ -82,12 +69,9 @@ main {
 }
 
 .contenido {
-    padding: 50px;
+    margin-left: 300px;
+    width: 700px;
     border-radius: 30px;
-    -webkit-border-radius: 30px;
-    -moz-border-radius: 30px;
-    -ms-border-radius: 30px;
-    -o-border-radius: 30px;
     z-index: 1;
     display: flex;
     flex-direction: column;

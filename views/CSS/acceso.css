@@ -44,13 +44,8 @@ nav {
     z-index: 1;
 }
 
-.nav__enlace.activo {
-    border-bottom: 4px solid white;
-    transition: ease-out 0.1s;
-}
-
-.nav__enlace:hover {
-    border-bottom: 4px solid white;
+ul {
+    list-style: none;
 }
 
 .nav__logo {
@@ -60,18 +55,15 @@ nav {
 .nav__enlaces {
     display: flex;
     gap: 50px;
-    list-style: none;
     font-size: 20px;
 }
 
 .nav__enlace {
+    display: block;
     text-decoration: none;
     color: white;
     padding: 10px;
-    border-bottom: 0px solid white;
-    transition: ease-out 0.1s;
 }
-
 
 /* ----------- Izquierda ----------- */
 

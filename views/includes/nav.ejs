@@ -1,9 +1,7 @@
 <nav>
-  <a href="/"><img class="nav__logo" src="../img/Logo/LogoCompPositive.png" alt=""></a>
+  <a href="/"><img class="nav__logo" src="/img/Logo/LogoCompPositive.png" alt=""></a>
   <ul class="nav__enlaces">
-    <li>
-      <a class="nav__enlace" href="/" id="navInicio">Inicio</a>
-    </li>
+    <li><a class="nav__enlace" href="/" id="navInicio">Inicio</a></li>
     <% if (sesion) {%>
     <li>
       <a class="nav__enlace" href="/principal" id="navPerfil">Perfil</a>
@@ -13,7 +11,7 @@
     </li>
     <%} else {%>
     <li>
-      <a class="nav__enlace" href="/registro" id="navRegistro">Registrate</a>
+      <a class="nav__enlace" href="/registro">Registrate</a>
     </li>
     <li>
       <a class="nav__enlace nav__enlace--borde" href="/acceso" id="navAcceso">Iniciar sesión</a>

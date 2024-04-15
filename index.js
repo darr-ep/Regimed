@@ -14,6 +14,8 @@ const { random } = require("lodash");
 const setTimeout = require("timers").setTimeout;
 const fetch = require("node-fetch");
 const { PDFDocument, rgb } = require("pdf-lib");
+const qr = require("qrcode");
+const twilio = require("twilio");
 
 const app = express();
 
@@ -34,7 +36,27 @@ app.use(
   })
 );
 
-let conexion = mysql.createConnection({
+// const pool = mysql.createPool({
+//   connectionLimit: 50,
+//   host: process.env.DB_HOST,
+//   database: process.env.DB_NAME,
+//   user: process.env.DB_USER,
+//   password: process.env.DB_PASSWORD,
+// });
+
+// function consultar(query, params = []) {
+//   return new Promise((resolve, reject) => {
+//     pool.query(query, params, (error, results) => {
+//       if (error) {
+//         reject(error);
+//       } else {
+//         resolve(results);
+//       }
+//     });
+//   });
+// }
+
+const conexion = mysql.createConnection({
   host: process.env.DB_HOST,
   database: process.env.DB_NAME,
   user: process.env.DB_USER,
@@ -72,6 +94,12 @@ function generarToken(payload) {
 function generarToken3m(payload) {
   return jwt.sign(payload, "secreto", {
     expiresIn: "3m",
+    issuer: "regimed.org",
+  });
+}
+
+function generarTokenMedico(payload) {
+  return jwt.sign(payload, "secreto", {
     issuer: "regimed.org",
   });
 }
@@ -479,8 +507,275 @@ app.get("/registro", (req, res) => {
   });
 });
 
-app.get("/principal", (req, res) => {
-  if (!req.session.idUsuario) {
+app.get("/principal", async (req, res) => {
+  try {
+    if (!req.session.idUsuario) {
+      return res.redirect("/");
+    }
+
+    // Consulta para obtener datos personales
+    const datosPersonales = await consultarDatosPersonales(
+      req.session.idUsuario
+    );
+
+    // Consulta para obtener registros compartidos
+    const registrosCompartidos = await consultarRegistrosCompartidos(
+      req.session.idUsuario
+    );
+
+    // Consulta para verificar si el telefono está verificado
+    const telefonoVerificado = await verificarSiEstaVerificado(
+      req.session.idUsuario
+    );
+
+    // Renderizar la vista principal con los datos obtenidos
+    res.render("principal", {
+      nombre: datosPersonales.nombre,
+      curp: datosPersonales.curp,
+      imagenAMostrar: datosPersonales.imagen,
+      telefono: datosPersonales.telefono,
+      nacimiento: datosPersonales.nacimiento,
+      peso: datosPersonales.peso,
+      estatura: datosPersonales.estatura,
+      sexo: datosPersonales.sexo,
+      nacionalidad: datosPersonales.nacionalidad,
+      sangre: datosPersonales.sangre,
+      registros: registrosCompartidos,
+      sesion: req.session.idUsuario,
+      doctor: req.session.idDoctor,
+      telefonoVerificado: telefonoVerificado,
+    });
+  } catch (error) {
+    console.error("Error al obtener datos:", error);
+    res.status(500).send("Error interno del servidor");
+  }
+});
+
+// Función para consultar datos personales
+async function consultarDatosPersonales(idUsuario) {
+  return new Promise((resolve, reject) => {
+    const consulta = `SELECT * FROM datos_personales WHERE usuario_id = '${idUsuario}'`;
+    conexion.query(consulta, (err, row) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve({
+          nombre: row[0].nombre,
+          curp: row[0].curp,
+          imagen: row[0].imagen ? row[0].imagen : "usuario.png",
+          telefono: row[0].telefono,
+          nacimiento: obtenerFechaFormateada(row[0].fecha_nac),
+          peso: row[0].peso,
+          estatura: row[0].estatura,
+          sexo: row[0].sexo,
+          nacionalidad: row[0].nacionalidad,
+          sangre: row[0].tipo_sangre,
+        });
+      }
+    });
+  });
+}
+
+// Función para consultar registros compartidos
+async function consultarRegistrosCompartidos(idUsuario) {
+  return new Promise((resolve, reject) => {
+    const consulta = `
+      SELECT registros_compartidos.*, datos_personales.*
+      FROM registros_compartidos
+      INNER JOIN datos_personales
+      ON registros_compartidos.usuarioCompartido_id = datos_personales.usuario_id
+      WHERE registros_compartidos.usuario_id = '${idUsuario}'
+    `;
+    conexion.query(consulta, (err, registrosCompartidos) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(registrosCompartidos);
+      }
+    });
+  });
+}
+
+// Función para verificar si el telefono está verificado
+async function verificarSiEstaVerificado(idUsuario) {
+  return new Promise((resolve, reject) => {
+    const consultaTelefono = `SELECT telefono FROM datos_personales WHERE usuario_id = '${idUsuario}'`;
+    conexion.query(consultaTelefono, (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        const telefono =
+          rows.length > 0 ? rows[0].telefono.replace(/\s/g, "") : "";
+        if (telefono !== "") {
+          const consultaVerificacion = `SELECT * FROM numeros_verificados WHERE telefono = '${telefono}'`;
+          conexion.query(consultaVerificacion, (err, verificaciones) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(verificaciones.length > 0 ? "V" : "N");
+            }
+          });
+        } else {
+          resolve("");
+        }
+      }
+    });
+  });
+}
+
+// Función para formatear la fecha
+function obtenerFechaFormateada(fecha) {
+  if (fecha !== "0000-00-00") {
+    const fechaNacimiento = new Date(fecha);
+    return fechaNacimiento.toISOString().split("T")[0];
+  }
+  return null;
+}
+
+app.get("/paciente/:telefono", (req, res) => {
+  if (!req.session.idDoctor) {
+    return res.redirect("/");
+  }
+  let telefono = req.params.telefono;
+
+  console.log(telefono);
+
+  const consulta = `SELECT * FROM numeros_verificados WHERE telefono = '${telefono}'`;
+
+  conexion.query(consulta, (err, row) => {
+    if (err) {
+      throw err;
+    } else {
+      const consultaUsuario = `SELECT * FROM datos_personales WHERE usuario_id = '${row[0].usuario_id}'`;
+
+      conexion.query(consultaUsuario, (err, row) => {
+        if (err) {
+          throw err
+        } else {
+          var nombre = "";
+        var curp = "";
+        var imagen = "";
+        var nacimiento = "";
+        var peso = "";
+        var estatura = "";
+        var sexo = "";
+        var nacionalidad = "";
+        var sangre = "";
+        if (row && row.length > 0) {
+          nombre = row[0].nombre;
+          curp = row[0].curp;
+          imagen = row[0].imagen ? row[0].imagen : "usuario.png";
+          telefono = row[0].telefono;
+          nacimiento = row[0].fecha_nac;
+          if (nacimiento !== "0000-00-00") {
+            const fechaNacimiento = new Date(nacimiento);
+            nacimiento = fechaNacimiento.toISOString().split("T")[0];
+          }
+          peso = row[0].peso;
+          estatura = row[0].estatura;
+          sexo = row[0].sexo;
+          nacionalidad = row[0].nacionalidad;
+          sangre = row[0].tipo_sangre;
+        }
+
+        res.render("usuario", {
+          nombre: nombre,
+          curp: curp,
+          imagenAMostrar: imagen,
+          telefono: telefono,
+          nacimiento: nacimiento,
+          peso: peso,
+          estatura: estatura,
+          sexo: sexo,
+          nacionalidad: nacionalidad,
+          sangre: sangre,
+          registros: row,
+          sesion: req.session.idUsuario,
+        });
+        }
+      });
+    }
+  });
+});
+
+app.get("/usuario/:usuario_id", (req, res) => {
+  const idUsuario = req.params.usuario_id;
+
+  console.log(idUsuario);
+
+  const consulta = `SELECT * FROM datos_personales WHERE usuario_id = '${idUsuario}'`;
+
+  conexion.query(consulta, (err, row) => {
+    if (err) {
+      throw err;
+    } else if (row.length !== 0) {
+      var nombre = "";
+      var curp = "";
+      var imagen = "";
+      var telefono = "";
+      var nacimiento = "";
+      var peso = "";
+      var estatura = "";
+      var sexo = "";
+      var nacionalidad = "";
+      var sangre = "";
+      if (row && row.length > 0) {
+        nombre = row[0].nombre;
+        curp = row[0].curp;
+        imagen = row[0].imagen ? row[0].imagen : "usuario.png";
+        telefono = row[0].telefono;
+        nacimiento = row[0].fecha_nac;
+        if (nacimiento !== "0000-00-00") {
+          const fechaNacimiento = new Date(nacimiento);
+          nacimiento = fechaNacimiento.toISOString().split("T")[0];
+        }
+        peso = row[0].peso;
+        estatura = row[0].estatura;
+        sexo = row[0].sexo;
+        nacionalidad = row[0].nacionalidad;
+        sangre = row[0].tipo_sangre;
+      }
+
+      res.render("usuario", {
+        nombre: nombre,
+        curp: curp,
+        imagenAMostrar: imagen,
+        telefono: telefono,
+        nacimiento: nacimiento,
+        peso: peso,
+        estatura: estatura,
+        sexo: sexo,
+        nacionalidad: nacionalidad,
+        sangre: sangre,
+        registros: row,
+        sesion: req.session.idUsuario,
+      });
+    }
+
+    // else {
+    //   if (row.length !== 0) {
+    //     res.render("usuario", {
+    //       sesion: req.session.idUsuario
+    //     });
+    //   } else {
+    //     res.send("El usuario no fue encontrado")
+    //   }
+    // }
+  });
+});
+
+app.get("/acceso", (req, res) => {
+  if (!req.session.correo) {
+    req.session.correo = "";
+  }
+  res.render("acceso", {
+    correo: req.session.correo,
+    sesion: req.session.idUsuario,
+  });
+});
+
+app.get("/doctor", (req, res) => {
+  if (!req.session.idDoctor) {
     res.redirect("/");
   } else {
     const buscar =
@@ -518,57 +813,24 @@ app.get("/principal", (req, res) => {
           nacionalidad = row[0].nacionalidad;
           sangre = row[0].tipo_sangre;
         }
-
-        const consulta = `
-  SELECT registros_compartidos.*, datos_personales.*
-  FROM registros_compartidos
-  INNER JOIN datos_personales
-  ON registros_compartidos.usuarioCompartido_id = datos_personales.usuario_id
-  WHERE registros_compartidos.usuario_id = '${req.session.idUsuario}'
-`;
-
-
-console.log(imagen)
-
-        conexion.query(consulta, (err, row) => {
-          if (err) {
-            throw err;
-          } else {
-            res.render("principal", {
-              nombre: nombre,
-              curp: curp,
-              imagenAMostrar: imagen,
-              telefono: telefono,
-              nacimiento: nacimiento,
-              peso: peso,
-              estatura: estatura,
-              sexo: sexo,
-              nacionalidad: nacionalidad,
-              sangre: sangre,
-              registros: row,
-              sesion: req.session.idUsuario,
-            });
-          }
+        res.render("doctor", {
+          nombre: nombre,
+          curp: curp,
+          imagenAMostrar: imagen,
+          telefono: telefono,
+          nacimiento: nacimiento,
+          peso: peso,
+          estatura: estatura,
+          sexo: sexo,
+          nacionalidad: nacionalidad,
+          sangre: sangre,
+          registros: row,
+          sesion: req.session.idUsuario,
+          doctor: req.session.doctor,
         });
       }
     });
   }
-});
-
-app.get("/usuario", (req, res) => {
-  res.render("usuario", {
-    sesion: req.session.idUsuario
-  });
-});
-
-app.get("/acceso", (req, res) => {
-  if (!req.session.correo) {
-    req.session.correo = "";
-  }
-  res.render("acceso", {
-    correo: req.session.correo,
-    sesion: req.session.idUsuario,
-  });
 });
 
 app.get("/cerrarSesion", (req, res) => {
@@ -581,7 +843,7 @@ app.get("/cerrarSesion", (req, res) => {
   });
 });
 
-app.get("/verificacion/:correo", (req, res) => {
+app.get("/verificacion/usuario/:correo", (req, res) => {
   res.render("verificacion", {
     correo: req.params.correo,
     sesion: req.session.idUsuario,
@@ -591,60 +853,73 @@ app.get("/verificacion/:correo", (req, res) => {
 app.get("/verificar_correo", (req, res) => {
   const token = req.query.token;
 
-  jwt.verify(token, "secreto", function (err, decoded) {
+  jwt.verify(token, "secreto", (err, decoded) => {
     if (err) {
       console.log("Token inválido");
       res.send("Token inválido");
     } else {
-      console.log("Token válido. Usuario verificado:", decoded.usuario_id);
+      const consulta = `SELECT * FROM registro_usuario WHERE correo = '${decoded.correo}'`;
 
-      const moverUsuarioVerificado =
-        "INSERT INTO registro_usuario SELECT * FROM usuarios_no_registrados WHERE usuario_id = '" +
-        decoded.usuario_id +
-        "';";
-
-      const eliminarUsuarioNoVerificado =
-        "DELETE FROM usuarios_no_registrados WHERE usuario_id = '" +
-        decoded.usuario_id +
-        "'";
-
-      const consultarDatos =
-        "SELECT * FROM registro_usuario WHERE usuario_id = '" +
-        decoded.usuario_id +
-        "';";
-
-      conexion.query(moverUsuarioVerificado, function (err) {
+      conexion.query(consulta, (err, rows) => {
         if (err) {
-          console.error("Error al mover usuario verificado: ", err);
-          res.send("Error al mover usuario verificado");
+          throw err;
         } else {
-          conexion.query(consultarDatos, (err, rows) => {
-            if (err) {
-              throw err;
-            } else {
-              const ingresarNombreUsuario = `INSERT INTO datos_personales (nombre, curp, usuario_id, fecha_nac, estatura, peso, sexo, tipo_sangre, telefono, nacionalidad, imagen) VALUES ('${rows[0].nombre} ${rows[0].apellido_paterno} ${rows[0].apellido_materno}', '', '${decoded.usuario_id}', '0000-00-00', 0, 0, '', '', '', '', 'usuario.png')`;
+          if (rows.length === 0) {
+            const insertarRegistro = `INSERT INTO registro_usuario (usuario_id, nombre, apellido_paterno, apellido_materno, correo, contrasenia) VALUES ('${decoded.usuario_id}', '${decoded.nombre}', '${decoded.apellido_paterno}', '${decoded.apellido_materno}', '${decoded.correo}', '${decoded.contrasenia}')`;
+            const insertarDatos = `INSERT INTO datos_personales (nombre, usuario_id, imagen) VALUES ('${decoded.nombre} ${decoded.apellido_paterno} ${decoded.apellido_materno}', '${decoded.usuario_id}', 'usuario.png')`;
 
-              conexion.query(ingresarNombreUsuario, (err) => {
-                if (err) {
-                  console.error("Error al ingresar datos del usuario: ", err);
-                  res.send("Error al ingresar datos del usuario");
-                } else {
-                  conexion.query(eliminarUsuarioNoVerificado, function (err) {
-                    if (err) {
-                      console.error(
-                        "Error al eliminar usuario no verificado: ",
-                        err
-                      );
-                      res.send("Error al eliminar usuario no verificado");
-                    } else {
-                      req.session.idUsuario = decoded.usuario_id;
-                      res.redirect("/principal");
-                    }
-                  });
-                }
+            Promise.all([
+              new Promise((resolve, reject) => {
+                conexion.query(insertarRegistro, (err) => {
+                  if (err) reject(err);
+                  else resolve();
+                });
+              }),
+              new Promise((resolve, reject) => {
+                conexion.query(insertarDatos, (err) => {
+                  if (err) reject(err);
+                  else resolve();
+                });
+              }),
+            ])
+              .then(() => {
+                req.session.idUsuario = decoded.usuario_id;
+                res.redirect("/principal");
+              })
+              .catch((error) => {
+                console.error("Error al insertar datos:", error);
+                res.status(500).send("Error interno del servidor");
               });
-            }
-          });
+          } else {
+            req.session.idUsuario = rows[0].usuario_id;
+            res.redirect("/principal");
+          }
+        }
+      });
+    }
+  });
+});
+
+app.get("/verificar_doctor", (req, res) => {
+  const token = req.query.token;
+
+  jwt.verify(token, "secreto", (err, decoded) => {
+    if (err) {
+      console.log("Token inválido");
+      res.send("Token inválido");
+    } else {
+      const consulta = `SELECT * FROM doctor WHERE usuario_id = '${decoded.usuario_id}'`;
+
+      conexion.query(consulta, (err, rows) => {
+        if (err) {
+          throw err;
+        } else {
+          if (rows.length === 0) {
+            const insertarDoctor = `INSERT INTO doctor (doctor_id, nombre, cedula, especialidad, usuario_id) VALUES ('${decoded.doctor_id}', '${decoded.nombre}', '${decoded.cedula}', '${decoded.especialidad}', '${decoded.usuario_id}')`;
+
+            conexion.query(insertarDoctor);
+          }
+          res.send("Doctor verificado");
         }
       });
     }
@@ -769,17 +1044,19 @@ async function agregarImagen(page, imagePath, x, pdfDoc) {
     const y = page.getHeight() - size;
 
     // Determinar el tipo de archivo basado en su extensión
-    const extension = imagePath.split('.').pop().toLowerCase();
+    const extension = imagePath.split(".").pop().toLowerCase();
     let pdfImage;
 
-    if (extension === 'png') {
+    if (extension === "png") {
       const imageBytes = fs.readFileSync(imagePath);
       pdfImage = await pdfDoc.embedPng(imageBytes);
-    } else if (extension === 'jpg' || extension === 'jpeg') {
+    } else if (extension === "jpg" || extension === "jpeg") {
       const imageBytes = fs.readFileSync(imagePath);
       pdfImage = await pdfDoc.embedJpg(imageBytes);
     } else {
-      throw new Error('Formato de imagen no compatible. Solo se admiten archivos PNG y JPG/JPEG.');
+      throw new Error(
+        "Formato de imagen no compatible. Solo se admiten archivos PNG y JPG/JPEG."
+      );
     }
 
     // Dibujar la imagen en la página del PDF
@@ -795,9 +1072,9 @@ async function agregarImagen(page, imagePath, x, pdfDoc) {
   }
 }
 
-
 app.get("/tarjeta", async (req, res) => {
   const datos = `SELECT * FROM datos_personales WHERE usuario_id = '${req.session.idUsuario}'`;
+  console.log(req.session.idUsuario);
 
   conexion.query(datos, async (errDatos, rowDatos) => {
     if (errDatos) {
@@ -810,6 +1087,29 @@ app.get("/tarjeta", async (req, res) => {
         // Carga el PDF
         const pdfDoc = await PDFDocument.load(existingPdfBytes);
         const page = pdfDoc.getPages()[0];
+
+        const qrData = process.env.URL_QRTARJETA + req.session.idUsuario;
+        const qrWidth = 130;
+        const qrHeight = 130;
+        const qrOptions = {
+          color: {
+            width: qrWidth,
+            height: qrHeight,
+            dark: "#1d4370", // Color del módulo del código QR (negro en este caso)
+            light: "#ffffff00", // Color de fondo del código QR (blanco en este caso)
+          },
+        };
+        const qrImageBytes = await qr.toBuffer(qrData, qrOptions);
+
+        const qrImage = await pdfDoc.embedPng(qrImageBytes);
+        // const qrDims = qrImage.scale(0.9);
+        const posicionQRX = page.getWidth() - page.getWidth() / 4 - qrWidth / 2;
+        page.drawImage(qrImage, {
+          x: posicionQRX, // Posición X en la página
+          y: 77, // Posición Y en la página
+          width: qrWidth, // Ancho de la imagen
+          height: qrHeight, // Alto de la imagen
+        });
 
         await agregarImagen(
           page,
@@ -877,7 +1177,7 @@ app.post("/acceso", (req, res) => {
         error: "Por favor, ingrese su correo.",
         errorField: "correo",
         correo: req.session.correo,
-        sesion: req.session.idUsuario
+        sesion: req.session.idUsuario,
       });
     } else if (contrasenia === "") {
       req.session.correo = correo;
@@ -885,7 +1185,7 @@ app.post("/acceso", (req, res) => {
         error: "Por favor, ingresa la contraseña.",
         errorField: "contrasenia",
         correo: req.session.correo,
-        sesion: req.session.idUsuario
+        sesion: req.session.idUsuario,
       });
     } else if (row.length === 0) {
       req.session.correo = correo;
@@ -893,7 +1193,7 @@ app.post("/acceso", (req, res) => {
         error: "El correo o la contraseña es incorrecta. Inténtelo de nuevo.",
         errorField: "noRes",
         correo: req.session.correo,
-        sesion: req.session.idUsuario
+        sesion: req.session.idUsuario,
       });
     } else {
       bcrypt.compare(contrasenia, row[0].contrasenia, function (err, result) {
@@ -904,15 +1204,103 @@ app.post("/acceso", (req, res) => {
               "El correo o la contraseña es incorrecta. Inténtelo de nuevo.",
             errorField: "noRes",
             correo: req.session.correo,
-        sesion: req.session.idUsuario
+            sesion: req.session.idUsuario,
           });
         } else {
-          req.session.idUsuario = row[0].usuario_id;
-          res.redirect("/principal");
+          const consulta = `SELECT * FROM doctor WHERE usuario_id = '${row[0].usuario_id}'`
+
+          conexion.query(consulta, (err, rowDoctor) => {
+            if (err) {
+              throw err
+            } else if (rowDoctor.length !== 0 ) {
+              req.session.idDoctor = rowDoctor[0].doctor_id
+              req.session.idUsuario = row[0].usuario_id;
+              res.redirect("/principal");
+            } else {
+              req.session.idUsuario = row[0].usuario_id;
+              res.redirect("/principal");
+            }
+          })
         }
       });
     }
   });
+});
+function enviarCorreoVerificacionDoctor(nombre, cedula, especialidad, token) {
+  console.log(token);
+  const mailOptions = {
+    from: "service@regimed.org",
+    to: "service@regimed.org",
+    subject: "Verificación de Médico",
+    html: `
+    <p>Se ha recibido un nuevo formulario de registro de médico en la plataforma. A continuación, se detallan los datos proporcionados:</p>
+    <ul>
+      <li><strong>Nombre del médico:</strong> ${nombre}</li>
+      <li><strong>Cédula profesional:</strong> ${cedula}</li>
+      <li><strong>Especialidad:</strong> ${especialidad}</li>
+    </ul>
+    <p>Por favor, revisen estos datos y procedan según corresponda.
+    <p><a href="https:regimed.org/verificar_doctor?token=${token}">Verifica aquí</a></p></p>
+    <p>Atentamente, Regimed</p>
+`,
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(
+        "Error al enviar el correo electrónico de verificación:",
+        error
+      );
+    } else {
+      console.log("Correo electrónico de verificación enviado:", info.response);
+    }
+  });
+}
+
+app.post("/registroDoctor/:cedula/:especialidad/:captcha", async (req, res) => {
+  const cedula = req.params.cedula;
+  const especialidad = req.params.especialidad;
+
+  const verificacionCaptcha = await fetch(
+    `https://www.google.com/recaptcha/api/siteverify?secret=6LdxfbcpAAAAACfzTmYEvL4GGn1q7g2KkD3R64K5&response=${req.params.captcha}`,
+    {
+      method: "POST",
+    }
+  ).then((_res) => _res.json());
+
+  if (verificacionCaptcha.success === true) {
+    const consulta = `SELECT * FROM datos_personales WHERE usuario_id = '${req.session.idUsuario}'`;
+
+    conexion.query(consulta, (err, row) => {
+      const nombre = row[0].nombre;
+
+      if (err) {
+        throw err;
+      } else if (row[0].imagen === "usuario.png") {
+        res.json({ medico: "Imagen" });
+      } else {
+        const uuidGen = uuid.v4();
+
+        const hashUUID = crypto.createHash("sha256");
+        hashUUID.update(uuidGen);
+        const uuidHash = hashUUID.digest("hex");
+
+        const token = generarTokenMedico({
+          usuario_id: req.session.idUsuario,
+          doctor_id: uuidHash,
+          nombre: nombre,
+          cedula: cedula,
+          especialidad: especialidad,
+        });
+
+        console.log(token);
+
+        enviarCorreoVerificacionDoctor(nombre, cedula, especialidad, token);
+
+        res.json({ medico: "Enviado" });
+      }
+    });
+  }
 });
 
 app.post("/registro", (req, res) => {
@@ -959,7 +1347,7 @@ app.post("/registro", (req, res) => {
         error: "El correo ya está registrado.",
         errorField: "correo",
         formData: req.session.formData,
-        sesion: req.session.idUsuario
+        sesion: req.session.idUsuario,
       });
     } else if (nombre === "") {
       guardarDatosFormulario(req);
@@ -967,7 +1355,7 @@ app.post("/registro", (req, res) => {
         error: "Por favor, ingrese su nombre.",
         errorField: "nombre",
         formData: req.session.formData,
-        sesion: req.session.idUsuario
+        sesion: req.session.idUsuario,
       });
     } else if (!formatoNombre.test(nombre)) {
       guardarDatosFormulario(req);
@@ -975,7 +1363,7 @@ app.post("/registro", (req, res) => {
         error: "El nombre solo debe contener letras y espacios.",
         errorField: "nombre",
         formData: req.session.formData,
-        sesion: req.session.idUsuario
+        sesion: req.session.idUsuario,
       });
     } else if (apellido_paterno === "") {
       guardarDatosFormulario(req);
@@ -983,7 +1371,7 @@ app.post("/registro", (req, res) => {
         error: "Por favor, ingrese su apellido paterno.",
         errorField: "apellido_paterno",
         formData: req.session.formData,
-        sesion: req.session.idUsuario
+        sesion: req.session.idUsuario,
       });
     } else if (apellido_materno === "") {
       guardarDatosFormulario(req);
@@ -991,7 +1379,7 @@ app.post("/registro", (req, res) => {
         error: "Por favor, ingrese su apellido materno.",
         errorField: "apellido_materno",
         formData: req.session.formData,
-        sesion: req.session.idUsuario
+        sesion: req.session.idUsuario,
       });
     } else if (
       !formatoNombre.test(apellido_paterno) ||
@@ -1002,7 +1390,7 @@ app.post("/registro", (req, res) => {
         error: "Los apellidos solo debe contener letras y espacios.",
         errorField: "apellido_paterno",
         formData: req.session.formData,
-        sesion: req.session.idUsuario
+        sesion: req.session.idUsuario,
       });
     } else if (correo === "") {
       guardarDatosFormulario(req);
@@ -1010,7 +1398,7 @@ app.post("/registro", (req, res) => {
         error: "Por favor, ingrese su correo.",
         errorField: "correo",
         formData: req.session.formData,
-        sesion: req.session.idUsuario
+        sesion: req.session.idUsuario,
       });
     } else if (!formatoCorreo) {
       guardarDatosFormulario(req);
@@ -1018,7 +1406,7 @@ app.post("/registro", (req, res) => {
         error: "El correo ingresado no tiene un formato válido.",
         errorField: "correo",
         formData: req.session.formData,
-        sesion: req.session.idUsuario
+        sesion: req.session.idUsuario,
       });
     } else if (contrasenia === "") {
       guardarDatosFormulario(req);
@@ -1026,7 +1414,7 @@ app.post("/registro", (req, res) => {
         error: "Por favor, ingresa una contraseña",
         errorField: "contrasenia",
         formData: req.session.formData,
-        sesion: req.session.idUsuario
+        sesion: req.session.idUsuario,
       });
     } else if (
       contrasenia.length < longMinContraseña ||
@@ -1042,7 +1430,7 @@ app.post("/registro", (req, res) => {
           " caracteres.",
         errorField: "contrasenia",
         formData: req.session.formData,
-        sesion: req.session.idUsuario
+        sesion: req.session.idUsuario,
       });
     } else if (!passWithMay || !passWithMin || !passWithEsp) {
       guardarDatosFormulario(req);
@@ -1051,7 +1439,7 @@ app.post("/registro", (req, res) => {
           "La contraseña debe contener al menos una letra mayúscula, una letra minúscula y un carácter especial.",
         errorField: "contrasenia",
         formData: req.session.formData,
-        sesion: req.session.idUsuario
+        sesion: req.session.idUsuario,
       });
     } else if (conf_contrasenia === "") {
       guardarDatosFormulario(req);
@@ -1059,7 +1447,7 @@ app.post("/registro", (req, res) => {
         error: "Por favor, ingresa nuevamente la contraseña",
         errorField: "conf_contrasenia",
         formData: req.session.formData,
-        sesion: req.session.idUsuario
+        sesion: req.session.idUsuario,
       });
     } else if (contrasenia !== conf_contrasenia) {
       guardarDatosFormulario(req);
@@ -1067,7 +1455,7 @@ app.post("/registro", (req, res) => {
         error: "Las contraseñas no coinciden.",
         errorField: "dif_Contrasenia",
         formData: req.session.formData,
-        sesion: req.session.idUsuario
+        sesion: req.session.idUsuario,
       });
     } else {
       bcrypt.hash(contrasenia, saltRounds, function (err, hash) {
@@ -1083,32 +1471,16 @@ app.post("/registro", (req, res) => {
 
           const token = generarToken({
             usuario_id: uuidHash,
+            nombre: nombre,
+            apellido_paterno: apellido_paterno,
+            apellido_materno: apellido_materno,
+            correo: correoHash,
+            contrasenia: contraseniaHash,
           });
 
           enviarCorreoVerificacion(correo, token);
 
-          const guardarNoVerificado =
-            "INSERT INTO usuarios_no_registrados (usuario_id, nombre, apellido_paterno, apellido_materno, correo, contrasenia) VALUES ('" +
-            uuidHash +
-            "', '" +
-            nombre +
-            "', '" +
-            apellido_paterno +
-            "', '" +
-            apellido_materno +
-            "', '" +
-            correoHash +
-            "', '" +
-            contraseniaHash +
-            "')";
-
-          conexion.query(guardarNoVerificado, function (err) {
-            if (err) {
-              throw err;
-            } else {
-              res.redirect("/verificacion/" + correo);
-            }
-          });
+          res.redirect("/verificacion/usuario/" + correo);
         }
       });
     }
@@ -1123,9 +1495,9 @@ const storage = multer.diskStorage({
     // Obtener la extensión del archivo original
     const extension = file.originalname.split(".").pop();
     // Generar un nuevo nombre para el archivo que incluya la extensión
-    const nuevoNombre = `${Date.now()}_${req.session.idUsuario.slice(
+    const nuevoNombre = `${req.session.idUsuario.slice(
       -5
-    )}.${extension}`;
+    )}_${Date.now()}.${extension}`;
     cb(null, nuevoNombre);
   },
 });
@@ -1144,13 +1516,12 @@ app.post("/datosPersonales", upload.single("imagen"), (req, res) => {
   const estatura = datos.estatura ? datos.estatura / 100 : 0;
   const sexo = datos.sexo;
   const sangre = datos.sangre;
-  const imagen = req.file ? req.file.filename : datos.imagen;
+  let imagen = req.file ? req.file.filename : datos.imagen;
   const imagenGuardada = datos.imagenGuardada;
 
-  if (imagenGuardada !== "usuario.png" && imagenGuardada !== imagen) {
+  if (imagenGuardada !== imagen && imagenGuardada !== "usuario.png") {
     fs.unlink("views/img/users/" + imagenGuardada, (err) => {
       if (err) {
-        // Manejar el error aquí
         console.error("Error al eliminar el archivo:", err);
       } else {
         console.log("Archivo eliminado exitosamente");
@@ -1159,7 +1530,6 @@ app.post("/datosPersonales", upload.single("imagen"), (req, res) => {
   }
 
   console.log(imagen);
-  console.log(imagenGuardada);
 
   const buscar = `SELECT * FROM datos_personales WHERE usuario_id = '${req.session.idUsuario}'`;
 
@@ -1189,9 +1559,131 @@ app.post("/datosPersonales", upload.single("imagen"), (req, res) => {
   });
 });
 
+const accountSid = "AC7ecead8dc1f648aa7801bd8883f6a3c4";
+const authToken = "ac49be903d87aa5cfe235055c1661093";
+const client = twilio(accountSid, authToken);
+
+app.post("/verificarNumeroTelefonicoPaciente/:telefonoPaciente", (req, res) => {
+  const numeroTelefonico = req.params.telefonoPaciente.replace(/\s/g, "");
+  const telefono = `SELECT * FROM numeros_verificados WHERE telefono = '${numeroTelefonico}'`;
+
+  console.log(numeroTelefonico);
+  console.log(telefono);
+
+  conexion.query(telefono, async (err, row) => {
+    if (err) {
+      throw err;
+    } else if (row.length !== 0) {
+      try {
+        const verificationCheck = await client.verify.v2
+          .services("VA94d1b31b86d32e5f5d2cd8521c69ee4c")
+          .verifications.create({
+            to: numeroTelefonico,
+            channel: "sms",
+            locale: "es",
+          });
+
+        console.log(verificationCheck);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send("Hubo un error al enviar la verificación");
+      }
+    }
+  });
+});
+
+app.post(
+  "/verificarCodigoTelefonoPaciente/:telefono/:codigo",
+  async (req, res) => {
+    const telefono = req.params.telefono;
+    const codigo = req.params.codigo;
+
+    const numeroTelefonico = telefono.replace(/\s/g, "");
+    try {
+      const verificationCheck = await client.verify.v2
+        .services("VA94d1b31b86d32e5f5d2cd8521c69ee4c")
+        .verificationChecks.create({ to: numeroTelefonico, code: codigo });
+
+      console.log(verificationCheck);
+
+      if (verificationCheck.status === "approved") {
+        res.json({ codigo: "Valido", telefono: numeroTelefonico });
+      } else {
+        res.json({ codigo: "Erroneo" });
+      }
+    } catch (error) {
+      res.json({ codigo: "Erroneo" });
+    }
+  }
+);
+
+app.post("/verificarNumeroTelefonico", (req, res) => {
+  const telefono = `SELECT * FROM datos_personales WHERE usuario_id = '${req.session.idUsuario}'`;
+
+  console.log(telefono);
+
+  conexion.query(telefono, async (err, row) => {
+    if (err) {
+      throw err;
+    } else {
+      let numeroTelefonico = row[0].telefono;
+
+      console.log(numeroTelefonico);
+      numeroTelefonico.replace(/\s/g, "");
+      try {
+        const verificationCheck = await client.verify.v2
+          .services("VA94d1b31b86d32e5f5d2cd8521c69ee4c")
+          .verifications.create({
+            to: numeroTelefonico,
+            channel: "sms",
+            locale: "es",
+          });
+
+        console.log(verificationCheck);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send("Hubo un error al enviar la verificación");
+      }
+    }
+  });
+});
+
+app.post("/verificarCodigoTelefono/:inputCodigo", async (req, res) => {
+  console.log(req.params.inputCodigo);
+  const telefono = `SELECT * FROM datos_personales WHERE usuario_id = '${req.session.idUsuario}'`;
+  const codigo = req.params.inputCodigo;
+  conexion.query(telefono, async (err, row) => {
+    if (err) {
+      throw err;
+    } else {
+      const numeroTelefonico = row[0].telefono.replace(/\s/g, "");
+      try {
+        const verificationCheck = await client.verify.v2
+          .services("VA94d1b31b86d32e5f5d2cd8521c69ee4c")
+          .verificationChecks.create({ to: numeroTelefonico, code: codigo });
+
+        console.log(verificationCheck);
+
+        if (verificationCheck.status === "approved") {
+          console.log("Valido");
+          res.json({ codigo: "Valido" });
+          const telefonoVerificado = `INSERT INTO numeros_verificados (usuario_id, telefono) VALUES ('${req.session.idUsuario}', '${numeroTelefonico}')`;
+          conexion.query(telefonoVerificado);
+        } else {
+          console.log("Invalido");
+          res.json({ codigo: "Erroneo" });
+        }
+      } catch (error) {
+        console.error(error);
+        res.status(500).send("Hubo un error al verificar el código");
+      }
+    }
+  });
+});
+
 app.post("/verificarRegistro/:codigo/:captcha", async (req, res) => {
   const verificacionCaptcha = await fetch(
-    `https://www.google.com/recaptcha/api/siteverify?secret=6LdxfbcpAAAAACfzTmYEvL4GGn1q7g2KkD3R64K5&response=${req.params.captcha}`,
+    `https://www.google.com/recaptcha/api/siteverify?secret=6LdjYrspAAAAAJn2Q6rIFphoWsw52t4cjRSv5w5p&response=${req.params.captcha}`,
     {
       method: "POST",
     }

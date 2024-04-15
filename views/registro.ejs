@@ -10,7 +10,6 @@
       src="https://kit.fontawesome.com/f5b8feb020.js"
       crossorigin="anonymous"
     ></script>
-    <script defer src="JS/nav.js"></script>
   </head>
   <body>
     <%- include('includes/nav.ejs') %>
@@ -78,7 +77,7 @@
             <div class="contenido">
               <p>COMENCEMOS</p>
               <h2>Crea una cuenta</h2>
-              <form action="/registro" method="post">
+              <form action="/registro" method="post" id="registro_form">
                 <div
                   class="input <%= typeof errorField !== 'undefined' && errorField === 'nombre' ? 'error' : '' %>"
                 >
@@ -166,11 +165,12 @@
                 </p>
                 <% } %>
                 <input
-                  name="btn_registrar"
-                  class="submit"
-                  type="submit"
-                  value="REGISTRAR"
-                />
+                    name="btn_registrar"
+                    class="submit"
+                    type="submit"
+                    value="REGISTRAR"
+                    id="btn_registrar"
+                  />
               </form>
               <p class="login">
                 ¿Ya tienes una cuenta?&nbsp<a href="./acceso">ENTRA AQUÍ</a>
@@ -181,5 +181,10 @@
       </div>
     </main>
     <script src="JS/contraseñaRegistro.js"></script>
+    <script>
+      document.getElementById('btn_registrar').addEventListener('click', function() {
+        document.getElementById('registro_form').submit();
+      });
+    </script>
   </body>
 </html>

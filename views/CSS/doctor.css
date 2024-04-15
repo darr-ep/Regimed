@@ -1,0 +1,514 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+
+:root {
+    --aside-size: 18px;
+    --h1-size: 40px;
+    --h2-size: 32px;
+    --h3-size: 24px;
+
+    --title-section-size: 32px;
+    --ico-section-size: 26px;
+
+    --register-size: 20px;
+    --main-size: 16px;
+    --input-size: 30px;
+    --span-size: 18px;
+
+    --color-background: #ffffffa6;
+    --color-select: #ffffff3d;
+
+    --color-primary: #2961cb;
+    --color-secundary: #e5e8ff;
+    --color-cancel: #cb2929;
+
+    --color-light: #f2f5ff;
+    --color-extra: #c2c8eb;
+    --color-scrollbar: #f1f1f1;
+
+    --color-border: #3a3a3a48;
+}
+
+* {
+    padding: 0;
+    margin: 0;
+    font-family: "Roboto", sans-serif;
+    box-sizing: border-box;
+}
+
+h2 {
+    font-size: var(--title-section-size);
+    font-weight: 500;
+}
+
+h3 {
+    font-size: var(--h3-size);
+    color: var(--color-primary);
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: end;
+    padding: 30px 0 20px 0;
+    top: 0;
+    z-index: 1;
+}
+
+ul {
+    list-style: none;
+}
+
+.nav__enlaces {
+    display: flex;
+    gap: 50px;
+    font-size: 20px;
+}
+
+.nav__enlace {
+    display: block;
+    text-decoration: none;
+    color: white;
+    padding: 10px;
+}
+
+body {
+    scroll-behavior: smooth;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-image: url(../img/background/David-Alberto-Carmona-Coto.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 100%);
+    pointer-events: none;
+    height: 100%;
+}
+
+.contenido {
+    display: flex;
+    position: relative;
+    scrollbar-color: var(--color-primary) var(--color-scrollbar);
+    scrollbar-width: auto;
+}
+
+/* * --------------------------- Aside --------------------------- */
+
+aside {
+    color: white;
+    height: 100vh;
+    top: 0;
+    position: sticky;
+    top: 0;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.logo {
+    margin-bottom: 20px;
+    justify-content: center;
+    width: 100%;
+}
+
+.logo img {
+    width: 230px;
+}
+
+aside ul {
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+aside ul .opcion {
+    padding: 15px 20px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    text-align: start;
+    color: white;
+    text-decoration: none;
+    border-radius: 25px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+aside ul .opcion i {
+    width: 25px;
+    display: flex;
+    justify-content: center;
+}
+
+.opcion--boton {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+aside ul .seleccionado {
+    padding: 15px 20px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    background-color: var(--color-select);
+    color: white;
+    text-decoration: none;
+    border-radius: 15px;
+}
+
+aside ul li {
+    font-weight: 400;
+    list-style: none;
+    font-size: var(--aside-size);
+}
+
+aside ul i {
+    font-size: var(--aside-size);
+}
+
+/* * --------------------------- Main --------------------------- */
+
+main {
+    background-color: var(--color-background);
+    backdrop-filter: blur(5px);
+    border-radius: 30px;
+}
+
+.seccion {
+    display: flex;
+    flex-direction: column;
+}
+
+.seccion:not(:last-child) {
+    border-bottom: 1px solid #3a3a3a48;
+}
+
+.seccion__titulo {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 30px;
+    padding-bottom: 0;
+}
+
+.seccion__titulo i {
+    width: 35px;
+    display: flex;
+    justify-content: center;
+    font-size: var(--ico-section-size);
+}
+
+.contenedor__titulo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.boton-datos p {
+    display: inline;
+}
+
+.boton-datos {
+    position: relative;
+    display: inline-block;
+    padding: 10px 20px;
+    text-align: center;
+    font-size: var(--main-size);
+    letter-spacing: 1px;
+    text-decoration: none;
+    color: white;
+    background: var(--color-primary);
+    cursor: pointer;
+    transition: ease-out 0.4s;
+    border: 2px solid var(--color-primary);
+    border-radius: 10px;
+    box-shadow: inset 0 0 0 0 white;
+}
+
+.boton-datos:hover {
+    color: var(--color-primary);
+    box-shadow: inset 0 -80px 0 0 white;
+}
+
+.boton-datos:active {
+    transform: scale(0.9);
+}
+
+.seccion__datosPersonales {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.seccion__buscarPaciente {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    height: 100%;
+}
+
+.seccion__fila {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.seccion__columna {
+    display: grid;
+}
+
+.contenidoGeneral {
+    width: 100%;
+    margin: 10px;
+}
+
+.contenidoImagen {
+    width: 250px;
+    height: 250px;
+    position: relative;
+}
+
+.contenidoImagen img {
+    width: 250px;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.seccion__datoPersonal {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    white-space: nowrap;
+}
+
+.seccion__izquierda {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.seccion__derecha {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.seccion__divisorDatos {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    justify-content: space-between;
+    max-width: 125px;
+}
+
+.seccion__multiplesDatosPersonales {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.vacio {
+    color: #757575;
+}
+
+.input-style {
+    padding: 10px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    font-size: 24px;
+    height: 40px;
+    text-align: center;
+    background-color: #ffffffbb;
+    color: #555;
+    outline: none;
+}
+
+.input-style-telefonoPaciente {
+    width: 250px;
+}
+
+.input-style-sms {
+    width: 150px;
+}
+
+.input-style:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+} 
+
+.formularioCurp {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.formularioSMS {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.fondoVentana {
+    background-color: rgba(0, 0, 0, 0.452);
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.ventana {
+    background-color: rgb(240, 240, 240);
+    border-radius: 30px;
+    padding: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    animation-duration: 0.3s;
+    gap: 30px;
+}
+
+.ventana h3 {
+    font-size: 24px;
+    font-weight: 500;
+    color: black;
+}
+
+.ventana p {
+    font-size: 16px;
+}
+
+.nota {
+    background-color: #ff99009c;
+    padding: 20px;
+    border-radius: 20px;
+}
+
+.ventana__paciente{
+    width: 600px;
+}
+
+.ventana__titulo{
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.ventana__botones {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.ventana__contenido {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-auto-columns: auto;
+}
+
+.mostrar-ventana {
+    pointer-events: auto;
+    opacity: 1;
+}
+
+.agrandar-ventana {
+    animation-name: bounceIn;
+}
+
+button.cerrarVentana{
+    background-color: var(--color-cancel);
+    border-color: var(--color-cancel);
+}
+
+button.cerrarVentana:hover{
+    color: var(--color-cancel);
+}
+
+.mensajeAlerta i {
+    color: #facc15;
+}
+
+.mensajeAlerta a {
+    color: rgb(141, 56, 0);
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.mensajeAlerta a:hover {
+    color: rgb(202 138 4);
+}
+
+.mensajeAlerta {
+    display: flex;
+    gap: 10px;
+    padding: 20px;
+    background-color: #fff7e3;
+    color: rgb(202 138 4);
+    border-radius: 10px;
+    z-index: 1;
+}
+
+@keyframes bounceIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+    80% {
+      transform: scale(0.95);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+@media only screen and (max-width: 2200px) {
+    .contenido {
+        width: 80vw;
+    }
+}
+
+@media only screen and (max-width: 2100px) {
+    .contenido {
+        width: 90vw;
+    }
+}
+
+@media only screen and (max-width: 1860px) {
+    .contenido {
+        width: 100%;
+    }
+}

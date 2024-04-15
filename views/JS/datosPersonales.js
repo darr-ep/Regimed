@@ -33,15 +33,24 @@ inputImagenUsuario.addEventListener("change", (e) => {
 });
 
 function formatoTelefono(input) {
+  // Eliminar todos los caracteres que no sean dígitos
   var formatted = input.value.replace(/\D/g, "");
 
+  // Agregar el símbolo de más (+) al principio del número
+  formatted = "+" + formatted;
+
+  // Aplicar el formato deseado: "+xx xxx xxx xxxx"
   if (formatted.length > 3) {
     formatted = formatted.substring(0, 3) + " " + formatted.substring(3);
   }
   if (formatted.length > 7) {
     formatted = formatted.substring(0, 7) + " " + formatted.substring(7);
   }
+  if (formatted.length > 11) {
+    formatted = formatted.substring(0, 11) + " " + formatted.substring(11);
+  }
 
+  // Establecer el valor formateado en el input
   input.value = formatted;
 }
 
@@ -66,7 +75,7 @@ function formatoPeso(input) {
   input.value = formatted;
 }
 
-function formatoNombre(input) {
+function formatoTexto(input) {
   var formatted = input.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
 
   input.value = formatted;
@@ -118,17 +127,13 @@ document
     formData.append("sexo", document.getElementById("sexoUsuario").value);
     formData.append("sangre", document.getElementById("sangreUsuario").value);
 
-    const imagenPrevisualizada = document.getElementById(
-      "imagenPrevisualizada"
-    );
-
     const imagenGuardada = document.getElementById("imagenGuardada");
 
     const inputImagenUsuario = document.getElementById("imagenUsuario");
     if (inputImagenUsuario.files.length > 0) {
       formData.append("imagen", inputImagenUsuario.files[0]);
     } else {
-      const nombreImagen = imagenPrevisualizada.src;
+      const nombreImagen = imagenGuardada.src;
       var nombreDeLaImagen = obtenerNombreDeImagen(nombreImagen);
       formData.append("imagen", nombreDeLaImagen);
     }
@@ -139,10 +144,11 @@ document
 
     function obtenerNombreDeImagen(src) {
       var partesDeLaUrl = src.split("/");
-
       var nombreDelArchivo = partesDeLaUrl[partesDeLaUrl.length - 1];
-
-      return nombreDelArchivo;
+      var partesDelNombre = nombreDelArchivo.split(".");
+      var nombre = partesDelNombre[0];
+      var extension = partesDelNombre[partesDelNombre.length - 1];
+      return nombre + "." + extension;
     }
 
     fetch("/datosPersonales", {
