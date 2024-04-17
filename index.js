@@ -893,7 +893,7 @@ app.get("/verificar_correo", (req, res) => {
         } else {
           if (rows.length === 0) {
             const insertarRegistro = `INSERT INTO registro_usuario (usuario_id, nombre, apellido_paterno, apellido_materno, correo, contrasenia) VALUES ('${decoded.usuario_id}', '${decoded.nombre}', '${decoded.apellido_paterno}', '${decoded.apellido_materno}', '${decoded.correo}', '${decoded.contrasenia}')`;
-            const insertarDatos = `INSERT INTO datos_personales (nombre, usuario_id, imagen, curp, fecha_nac, estatura, peso, sexo, tipo_sangre, telefono, nacionalidad) VALUES ('${decoded.nombre} ${decoded.apellido_paterno} ${decoded.apellido_materno}', '${decoded.usuario_id}', 'usuario.png', '', '', '', '', '', '', '', '')`;
+            const insertarDatos = `INSERT INTO datos_personales (nombre, usuario_id, imagen, curp, fecha_nac, estatura, peso, sexo, tipo_sangre, telefono, nacionalidad) VALUES ('${decoded.nombre} ${decoded.apellido_paterno} ${decoded.apellido_materno}', '${decoded.usuario_id}', 'usuario.png', '', '0000-00-00', '', '', '', '', '', '')`;
 
             Promise.all([
               new Promise((resolve, reject) => {
