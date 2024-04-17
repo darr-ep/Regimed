@@ -53,7 +53,7 @@ nav {
     display: flex;
     align-items: center;
     width: 100%;
-    justify-content: end;
+    justify-content: space-between;
     padding: 30px 0 20px 0;
     top: 0;
     z-index: 1;
@@ -85,7 +85,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-image: url(../img/background/David-Alberto-Carmona-Coto.jpg);
+    background-image: url(../../img/background/Hoja.jpg);
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -149,10 +149,18 @@ aside ul .opcion {
     display: flex;
     gap: 20px;
     align-items: center;
+    text-align: start;
     color: white;
     text-decoration: none;
     border-radius: 25px;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.opcion--boton {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
 }
 
 aside ul .opcion i {
@@ -188,6 +196,7 @@ main {
     width: 100%;
     background-color: var(--color-background);
     backdrop-filter: blur(5px);
+    margin: 10px;
     border-radius: 30px;
 }
 
@@ -294,6 +303,13 @@ main .datos-personales {
     gap: 20px;
 }
 
+.seccion__vacunas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-content: space-between;
+    gap: 20px;
+}
+
 .ventana__seccion {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -309,11 +325,19 @@ main .datos-personales {
 
 .seccion__columna {
     display: grid;
+    grid-template-columns: 1fr 1fr;
 }
 
 .seccion__columna--informacion_general {
-    border-bottom: 1px solid #3a3a3a48;
     grid-template-columns: 1fr 1fr;
+}
+
+.seccion__columna--historial_medico {
+    grid-template-columns: 2fr 1fr;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 30px;
 }
 
 main .datos-personales {
@@ -324,10 +348,6 @@ main .datos-personales {
     width: 250px;
     height: 250px;
     position: relative;
-}
-
-.contenidoGeneral {
-    width: 100%;
 }
 
 .contenidoImagen img {
@@ -404,7 +424,7 @@ main input.readonly {
 }
 
 .ventana__espacio {
-    gap: 10px;
+    gap: 15px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -829,11 +849,18 @@ main .vacunas .vacunas-preestablecidas .sr {
     font-size: 16px;
 }
 
+.nota {
+    background-color: #ff99009c;
+    padding: 20px;
+    border-radius: 20px;
+}
+
 .ventana__titulo{
+    text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 5px;
+    gap: 10px;
 }
 
 .ventana__botones {
@@ -847,8 +874,6 @@ main .vacunas .vacunas-preestablecidas .sr {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     grid-auto-columns: auto;
 }
-
-
 
 .opciones-agregar-registro {
     display: flex;
@@ -959,6 +984,127 @@ button.cerrarVentana:hover{
 
 .agrandar-ventana {
     animation-name: bounceIn;
+}
+
+.tarjeta {
+    background-image: url(../img/background/Martin\ Péchy.jpeg);
+    background-size: cover;
+    background-position: center;
+    border-radius: 10%;
+}
+
+.tarjeta img{
+    aspect-ratio: 1;
+    width: 100%;
+    border-top-left-radius: 3%;
+    border-bottom-right-radius: 10%;
+}
+
+.input-style {
+    padding: 10px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    font-size: 24px;
+    height: 40px;
+    text-align: center;
+    background-color: white;
+    color: #555;
+    outline: none;
+    width: 180px;
+}
+
+.input-style-especialidad {
+    width: auto;
+}
+
+.input-style:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+} 
+
+.tarjeta__datos {
+    height: 10px;
+}
+
+.ventana__registroDoctor {
+    width: 600px;
+}
+
+.ventana__cedulaDoctor {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.verificarNumeroTelefonico {
+    top: 20px;
+    display: flex;
+    justify-content: center;
+    width: 700px;
+}
+
+.mensajeAlerta i {
+    color: #facc15;
+}
+
+.mensajeAlerta a {
+    color: rgb(141, 56, 0);
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.mensajeAlerta a:hover {
+    color: rgb(202 138 4);
+}
+
+.mensajeAlerta {
+    display: flex;
+    gap: 10px;
+    padding: 20px;
+    background-color: #fff7e3;
+    color: rgb(202 138 4);
+    border-radius: 10px;
+    z-index: 1;
+}
+
+.fa-circle-xmark {
+    color: var(--color-cancel);
+}
+
+.fa-circle-check {
+    color: #4ee440;
+}
+
+.historial {
+    font-size: 20px;
+    grid-area: principal;
+}
+
+.historial input {
+    width: 20px;
+}
+
+.historial li {
+    display: flex;
+    align-items: center;
+    list-style-type: decimal;
+}
+
+.historial ul {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.historial_medico {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+}
+
+.historial_medico p{
+    font-size: 20px;
 }
 
 @media only screen and (max-width: 2200px) {

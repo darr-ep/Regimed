@@ -524,6 +524,15 @@ app.get("/principal", async (req, res) => {
     // Consulta para verificar si el teléfono está verificado
     const telefonoVerificado = await verificarSiEstaVerificado(req.session.idUsuario);
 
+    // Consulta para obtener vacunas preestablecidas
+    const vacunasPreestablecidas = await consultarVacunasPreestablecidas(req.session.idUsuario);
+    
+    // Consulta para obtener historial médico
+    const historialMedico = await consultarHistorialMedico(req.session.idUsuario);
+    
+    // Consulta para obtener historial médico
+    const otrasVacunas = await consultarVacunas(req.session.idUsuario);
+
     // Renderizar la vista principal con los datos obtenidos
     res.render("principal", {
       nombre: datosPersonales.nombre,
@@ -540,6 +549,9 @@ app.get("/principal", async (req, res) => {
       sesion: req.session.idUsuario,
       doctor: req.session.idDoctor,
       telefonoVerificado: telefonoVerificado,
+      vacunasPreestablecidas: vacunasPreestablecidas,
+      historialMedico: historialMedico,
+      otrasVacunas: otrasVacunas
     });
 
   } catch (error) {
@@ -547,6 +559,76 @@ app.get("/principal", async (req, res) => {
     res.status(500).send("Error interno del servidor");
   }
 });
+
+async function consultarVacunas(idUsuario) {
+  return new Promise((resolve, reject) => {
+    pool.getConnection((err, connection) => {
+      if (err) {
+        reject(err);
+      }
+
+      const consulta = `
+        SELECT *
+        FROM vacuna
+        WHERE usuario_id = ?
+      `;
+      connection.query(consulta, [idUsuario], (err, vacunas) => {
+        connection.release();
+        if (err) {
+          reject(err);
+        } else {
+          resolve(vacunas);
+        }
+      });
+    });
+  });
+}
+
+async function consultarHistorialMedico(idUsuario) {
+  return new Promise((resolve, reject) => {
+    pool.getConnection((err, connection) => {
+      if (err) {
+        reject(err);
+      }
+
+      const consulta = `
+        SELECT *
+        FROM historial_medico
+        WHERE usuario_id = ?
+      `;
+      connection.query(consulta, [idUsuario], (err, historialMedico) => {
+        connection.release();
+        if (err) {
+          reject(err);
+        } else {
+          resolve(historialMedico);
+        }
+      });
+    });
+  });
+}
+
+// Función para consultar vacunas preestablecidas
+async function consultarVacunasPreestablecidas(idUsuario) {
+  return new Promise((resolve, reject) => {
+    pool.getConnection((err, connection) => {
+      if (err) {
+        reject(err);
+      }
+
+      const consulta = `SELECT * FROM vacunas_preestablecidas WHERE usuario_id = ?`;
+      connection.query(consulta, [idUsuario], (err, vacunas) => {
+        connection.release();
+        if (err) {
+          reject(err);
+        } else {
+          resolve(vacunas);
+        }
+      });
+    });
+  });
+}
+
 
 // Función para consultar datos personales
 async function consultarDatosPersonales(idUsuario) {
@@ -725,71 +807,110 @@ app.get("/paciente/:telefono", (req, res) => {
   });
 });
 
-app.get("/usuario/:usuario_id", (req, res) => {
-  const idUsuario = req.params.usuario_id;
+// app.get("/usuario/:usuario_id", (req, res) => {
+//   const idUsuario = req.params.usuario_id;
 
-  console.log(idUsuario);
+//   console.log(idUsuario);
 
-  const consulta = `SELECT * FROM datos_personales WHERE usuario_id = '${idUsuario}'`;
+//   const consulta = `SELECT * FROM datos_personales WHERE usuario_id = '${idUsuario}'`;
 
-  conexion.query(consulta, (err, row) => {
-    if (err) {
-      throw err;
-    } else if (row.length !== 0) {
-      var nombre = "";
-      var curp = "";
-      var imagen = "";
-      var telefono = "";
-      var nacimiento = "";
-      var peso = "";
-      var estatura = "";
-      var sexo = "";
-      var nacionalidad = "";
-      var sangre = "";
-      if (row && row.length > 0) {
-        nombre = row[0].nombre;
-        curp = row[0].curp;
-        imagen = row[0].imagen ? row[0].imagen : "usuario.png";
-        telefono = row[0].telefono;
-        nacimiento = row[0].fecha_nac;
-        if (nacimiento !== "0000-00-00") {
-          const fechaNacimiento = new Date(nacimiento);
-          nacimiento = fechaNacimiento.toISOString().split("T")[0];
-        }
-        peso = row[0].peso;
-        estatura = row[0].estatura;
-        sexo = row[0].sexo;
-        nacionalidad = row[0].nacionalidad;
-        sangre = row[0].tipo_sangre;
-      }
+//   conexion.query(consulta, (err, row) => {
+//     if (err) {
+//       throw err;
+//     } else if (row.length !== 0) {
+//       var nombre = "";
+//       var curp = "";
+//       var imagen = "";
+//       var telefono = "";
+//       var nacimiento = "";
+//       var peso = "";
+//       var estatura = "";
+//       var sexo = "";
+//       var nacionalidad = "";
+//       var sangre = "";
+//       if (row && row.length > 0) {
+//         nombre = row[0].nombre;
+//         curp = row[0].curp;
+//         imagen = row[0].imagen ? row[0].imagen : "usuario.png";
+//         telefono = row[0].telefono;
+//         nacimiento = row[0].fecha_nac;
+//         if (nacimiento !== "0000-00-00") {
+//           const fechaNacimiento = new Date(nacimiento);
+//           nacimiento = fechaNacimiento.toISOString().split("T")[0];
+//         }
+//         peso = row[0].peso;
+//         estatura = row[0].estatura;
+//         sexo = row[0].sexo;
+//         nacionalidad = row[0].nacionalidad;
+//         sangre = row[0].tipo_sangre;
+//       }
 
-      res.render("usuario", {
-        nombre: nombre,
-        curp: curp,
-        imagenAMostrar: imagen,
-        telefono: telefono,
-        nacimiento: nacimiento,
-        peso: peso,
-        estatura: estatura,
-        sexo: sexo,
-        nacionalidad: nacionalidad,
-        sangre: sangre,
-        registros: row,
-        sesion: req.session.idUsuario,
-      });
+//       res.render("usuario", {
+//         nombre: nombre,
+//         curp: curp,
+//         imagenAMostrar: imagen,
+//         telefono: telefono,
+//         nacimiento: nacimiento,
+//         peso: peso,
+//         estatura: estatura,
+//         sexo: sexo,
+//         nacionalidad: nacionalidad,
+//         sangre: sangre,
+//         registros: row,
+//         sesion: req.session.idUsuario,
+//       });
+//     }
+//   });
+// });
+
+app.get("/usuario/:usuario_id", async (req, res) => {
+  try {
+    if (!req.session.correo) {
+      req.session.correo = "";
     }
 
-    // else {
-    //   if (row.length !== 0) {
-    //     res.render("usuario", {
-    //       sesion: req.session.idUsuario
-    //     });
-    //   } else {
-    //     res.send("El usuario no fue encontrado")
-    //   }
-    // }
-  });
+    const idUsuario = req.params.usuario_id;
+
+    // Consulta para obtener datos personales
+    const datosPersonales = await consultarDatosPersonales(idUsuario);
+
+    // Consulta para verificar si el teléfono está verificado
+    const telefonoVerificado = await verificarSiEstaVerificado(idUsuario);
+
+    // Consulta para obtener vacunas preestablecidas
+    const vacunasPreestablecidas = await consultarVacunasPreestablecidas(idUsuario);
+    
+    // Consulta para obtener historial médico
+    const historialMedico = await consultarHistorialMedico(idUsuario);
+    
+    // Consulta para obtener otras vacunas
+    const otrasVacunas = await consultarVacunas(idUsuario);
+
+    // Renderizar la vista del usuario con los datos obtenidos
+    res.render("usuario", {
+      sesion: req.session.correo,
+      nombre: datosPersonales.nombre,
+      curp: datosPersonales.curp,
+      imagenAMostrar: datosPersonales.imagen,
+      telefono: datosPersonales.telefono,
+      nacimiento: datosPersonales.nacimiento,
+      peso: datosPersonales.peso,
+      estatura: datosPersonales.estatura,
+      sexo: datosPersonales.sexo,
+      nacionalidad: datosPersonales.nacionalidad,
+      sangre: datosPersonales.sangre,
+      telefonoVerificado: telefonoVerificado,
+      vacunasPreestablecidas: vacunasPreestablecidas,
+      historialMedico: historialMedico,
+      otrasVacunas: otrasVacunas
+    });
+
+  } catch (error) {
+    console.error("Error al obtener datos del usuario:", error);
+    res.status(500).send("Error interno del servidor");
+  }
 });
+
 
 app.get("/acceso", (req, res) => {
   if (!req.session.correo) {
@@ -1782,6 +1903,7 @@ app.post("/guardarDatosPaciente", (req, res) => {
     if (err) {
       throw err;
     } else {
+      console.log(vacunasPreestablecidas.BCG)
       const sqlVacunasPreestablecidas = `
     INSERT INTO vacunas_preestablecidas
     (usuario_id, fecha_bcg, fecha_hepatitisb1, fecha_hepatitisb2, fecha_hepatitisb3, fecha_prevalente1, fecha_prevalente2, fecha_prevalente3, fecha_prevalente4, fecha_dpt, fecha_rotavirus1, fecha_rotavirus2, fecha_rotavirus3, fecha_neumococica1, fecha_neumococica2, fecha_neumococica3, fecha_influenza1, fecha_influenza2, fecha_influenza3, fecha_srp1, fecha_srp2, fecha_sabin1, fecha_sabin2, fecha_sabin3, fecha_sabin4, fecha_sabin5, fecha_sabin6, fecha_sabin7, fecha_sabin8, fecha_sr)

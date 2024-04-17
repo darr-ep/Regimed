@@ -333,7 +333,11 @@ main .datos-personales {
 }
 
 .seccion__columna--historial_medico {
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 30px;
 }
 
 main .datos-personales {
@@ -1070,6 +1074,37 @@ button.cerrarVentana:hover{
 
 .fa-circle-check {
     color: #4ee440;
+}
+
+.historial {
+    font-size: 20px;
+    grid-area: principal;
+}
+
+.historial input {
+    width: 20px;
+}
+
+.historial li {
+    display: flex;
+    align-items: center;
+    list-style-type: decimal;
+}
+
+.historial ul {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.historial_medico {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+}
+
+.historial_medico p{
+    font-size: 20px;
 }
 
 @media only screen and (max-width: 2200px) {

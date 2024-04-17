@@ -370,156 +370,418 @@
                                         <th>Edad y frecuencia</th>
                                         <th>Fecha de vacunación</th>
                                     </tr>
-                                        <tr>
-                                            <td class="bcg">BCG</td>
-                                            <td>Tuberculosis</td>
-                                            <td>Única</td>
-                                            <td>Al nacer</td>
+                                    <tr>
+                                        <td class="bcg">BCG</td>
+                                        <td>Tuberculosis</td>
+                                        <td>Única</td>
+                                        <td>Al nacer</td>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_bcg = new Date(vacunasPreestablecidas[0].fecha_bcg); %>
+                                            <% if (!isNaN(fecha_bcg.getTime())) { %>
+                                                <td><%= fecha_bcg.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="hepatitis-b" rowspan="3">Hepatitis B</td>
-                                            <td rowspan="3">Hepatitis B</td>
-                                            <td>Primera</td>
-                                            <td>Al nacer</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td class="hepatitis-b" rowspan="3">Hepatitis B</td>
+                                        <td rowspan="3">Hepatitis B</td>
+                                        <td>Primera</td>
+                                        <td>Al nacer</td>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_hepatitisb1 = new Date(vacunasPreestablecidas[0].fecha_hepatitisb1); %>
+                                            <% if (!isNaN(fecha_hepatitisb1.getTime())) { %>
+                                                <td><%= fecha_hepatitisb1.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Segunda</td>
-                                            <td>2 meses</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td>Segunda</td>
+                                        <td>2 meses</td>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_hepatitisb1 = new Date(vacunasPreestablecidas[0].fecha_hepatitisb2); %>
+                                            <% if (!isNaN(fecha_hepatitisb1.getTime())) { %>
+                                                <td><%= fecha_hepatitisb1.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Tercera</td>
-                                            <td>6 meses</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td>Tercera</td>
+                                        <td>6 meses</td>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_hepatitisb3 = new Date(vacunasPreestablecidas[0].fecha_hepatitisb3); %>
+                                            <% if (!isNaN(fecha_hepatitisb3.getTime())) { %>
+                                                <td><%= fecha_hepatitisb3.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="pentavalente" rowspan="4">Pentavalente Acelular DPat +VPI + Hib</td>
-                                            <td rowspan="4">Difteria, tos ferina, tétanos, poliomielitis e infecciones por
-                                                H. influenzae b</td>
-                                            <td>Primera</td>
-                                            <td>2 meses</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td class="pentavalente" rowspan="4">Pentavalente Acelular DPat +VPI + Hib</td>
+                                        <td rowspan="4">Difteria, tos ferina, tétanos, poliomielitis e infecciones por
+                                            H. influenzae b</td>
+                                        <td>Primera</td>
+                                        <td>2 meses</td>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_prevalente1 = new Date(vacunasPreestablecidas[0].fecha_prevalente1); %>
+                                            <% if (!isNaN(fecha_prevalente1.getTime())) { %>
+                                                <td><%= fecha_prevalente1.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Segunda</td>
-                                            <td>4 meses</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td>Segunda</td>
+                                        <td>4 meses</td>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_prevalente2 = new Date(vacunasPreestablecidas[0].fecha_prevalente2); %>
+                                            <% if (!isNaN(fecha_prevalente2.getTime())) { %>
+                                                <td><%= fecha_prevalente2.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Tercera</td>
-                                            <td>6 meses</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td>Tercera</td>
+                                        <td>6 meses</td>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_prevalente3 = new Date(vacunasPreestablecidas[0].fecha_prevalente3); %>
+                                            <% if (!isNaN(fecha_prevalente3.getTime())) { %>
+                                                <td><%= fecha_prevalente3.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Cuarta</td>
-                                            <td>18 meses</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td>Cuarta</td>
+                                        <td>18 meses</td>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_prevalente4 = new Date(vacunasPreestablecidas[0].fecha_prevalente4); %>
+                                            <% if (!isNaN(fecha_prevalente4.getTime())) { %>
+                                                <td><%= fecha_prevalente4.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="dpt">DPT</td>
-                                            <td>Difteria, tos ferina y tétanos</td>
-                                            <td>Refuerzo</td>
-                                            <td>4 años</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td class="dpt">DPT</td>
+                                        <td>Difteria, tos ferina y tétanos</td>
+                                        <td>Refuerzo</td>
+                                        <td>4 años</td>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_dpt = new Date(vacunasPreestablecidas[0].fecha_dpt); %>
+                                            <% if (!isNaN(fecha_dpt.getTime())) { %>
+                                                <td><%= fecha_dpt.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="rotavirus" rowspan="3">Rotavirus</td>
-                                            <td rowspan="3">Diarrea por rotavirus</td>
-                                            <td>Primera</td>
-                                            <td>2 meses</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td class="rotavirus" rowspan="3">Rotavirus</td>
+                                        <td rowspan="3">Diarrea por rotavirus</td>
+                                        <td>Primera</td>
+                                        <td>2 meses</td>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_rotavirus1 = new Date(vacunasPreestablecidas[0].fecha_rotavirus1); %>
+                                            <% if (!isNaN(fecha_rotavirus1.getTime())) { %>
+                                                <td><%= fecha_rotavirus1.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Segunda</td>
-                                            <td>4 meses</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td>Segunda</td>
+                                        <td>4 meses</td>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_rotavirus2 = new Date(vacunasPreestablecidas[0].fecha_rotavirus2); %>
+                                            <% if (!isNaN(fecha_rotavirus2.getTime())) { %>
+                                                <td><%= fecha_rotavirus2.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Tercera</td>
-                                            <td>6 meses</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td>Tercera</td>
+                                        <td>6 meses</td>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_rotavirus3 = new Date(vacunasPreestablecidas[0].fecha_rotavirus3); %>
+                                            <% if (!isNaN(fecha_rotavirus3.getTime())) { %>
+                                                <td><%= fecha_rotavirus3.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="neumococica" rowspan="3">Neumocócica conjugada</td>
-                                            <td rowspan="3">Infecciones por neumococo</td>
-                                            <td>Primera</td>
-                                            <td>2 meses</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td class="neumococica" rowspan="3">Neumocócica conjugada</td>
+                                        <td rowspan="3">Infecciones por neumococo</td>
+                                        <td>Primera</td>
+                                        <td>2 meses</td>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_neumococica1 = new Date(vacunasPreestablecidas[0].fecha_neumococica1); %>
+                                            <% if (!isNaN(fecha_neumococica1.getTime())) { %>
+                                                <td><%= fecha_neumococica1.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Segunda</td>
-                                            <td>4 meses</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td>Segunda</td>
+                                        <td>4 meses</td>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_neumococica2 = new Date(vacunasPreestablecidas[0].fecha_neumococica2); %>
+                                            <% if (!isNaN(fecha_neumococica2.getTime())) { %>
+                                                <td><%= fecha_neumococica2.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Refuerzo</td>
-                                            <td>12 meses</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td>Refuerzo</td>
+                                        <td>12 meses</td>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_neumococica3 = new Date(vacunasPreestablecidas[0].fecha_neumococica3); %>
+                                            <% if (!isNaN(fecha_neumococica3.getTime())) { %>
+                                                <td><%= fecha_neumococica3.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="influenza" rowspan="3">Influenza</td>
-                                            <td rowspan="3">Influenza</td>
-                                            <td>Primera</td>
-                                            <td>6 meses</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td class="influenza" rowspan="3">Influenza</td>
+                                        <td rowspan="3">Influenza</td>
+                                        <td>Primera</td>
+                                        <td>6 meses</td>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_influenza1 = new Date(vacunasPreestablecidas[0].fecha_influenza1); %>
+                                            <% if (!isNaN(fecha_influenza1.getTime())) { %>
+                                                <td><%= fecha_influenza1.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Segunda</td>
-                                            <td>7 meses</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td>Segunda</td>
+                                        <td>7 meses</td>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_influenza2 = new Date(vacunasPreestablecidas[0].fecha_influenza2); %>
+                                            <% if (!isNaN(fecha_influenza2.getTime())) { %>
+                                                <td><%= fecha_influenza2.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Revacunación</td>
-                                            <td>Anual hasta los 59 meses</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td>Revacunación</td>
+                                        <td>Anual hasta los 59 meses</td>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_influenza3 = new Date(vacunasPreestablecidas[0].fecha_influenza3); %>
+                                            <% if (!isNaN(fecha_influenza3.getTime())) { %>
+                                                <td><%= fecha_influenza3.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="srp" rowspan="2">SRP</td>
-                                            <td rowspan="2">Sarampión, rubéola y parotiditis</td>
-                                            <td>Primera</td>
-                                            <td>1 año</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td class="srp" rowspan="2">SRP</td>
+                                        <td rowspan="2">Sarampión, rubéola y parotiditis</td>
+                                        <td>Primera</td>
+                                        <td>1 año</td>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_srp1 = new Date(vacunasPreestablecidas[0].fecha_srp1); %>
+                                            <% if (!isNaN(fecha_srp1.getTime())) { %>
+                                                <td><%= fecha_srp1.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Reguerzo</td>
-                                            <td>6 años</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td>Reguerzo</td>
+                                        <td>6 años</td>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_srp2 = new Date(vacunasPreestablecidas[0].fecha_srp2); %>
+                                            <% if (!isNaN(fecha_srp2.getTime())) { %>
+                                                <td><%= fecha_srp2.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="sabin" rowspan="8">Sabin</td>
-                                            <td rowspan="8">Poliomielitis</td>
-                                            <td rowspan="8" colspan="2">Adicionales</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td class="sabin" rowspan="8">Sabin</td>
+                                        <td rowspan="8">Poliomielitis</td>
+                                        <td rowspan="8" colspan="2">Adicionales</td>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_sabin1 = new Date(vacunasPreestablecidas[0].fecha_sabin1); %>
+                                            <% if (!isNaN(fecha_sabin1.getTime())) { %>
+                                                <td><%= fecha_sabin1.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
-                                        <tr>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_sabin2 = new Date(vacunasPreestablecidas[0].fecha_sabin2); %>
+                                            <% if (!isNaN(fecha_sabin2.getTime())) { %>
+                                                <td><%= fecha_sabin2.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
-                                        <tr>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_sabin3 = new Date(vacunasPreestablecidas[0].fecha_sabin3); %>
+                                            <% if (!isNaN(fecha_sabin3.getTime())) { %>
+                                                <td><%= fecha_sabin3.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
-                                        <tr>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_sabin4 = new Date(vacunasPreestablecidas[0].fecha_sabin4); %>
+                                            <% if (!isNaN(fecha_sabin4.getTime())) { %>
+                                                <td><%= fecha_sabin4.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
-                                        <tr>
+                                        <% } %>
+                                        
+                                    </tr>
+                                    <tr>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_sabin5 = new Date(vacunasPreestablecidas[0].fecha_sabin5); %>
+                                            <% if (!isNaN(fecha_sabin5.getTime())) { %>
+                                                <td><%= fecha_sabin5.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
-                                        <tr>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_sabin6 = new Date(vacunasPreestablecidas[0].fecha_sabin6); %>
+                                            <% if (!isNaN(fecha_sabin6.getTime())) { %>
+                                                <td><%= fecha_sabin6.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
-                                        <tr>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_sabin7 = new Date(vacunasPreestablecidas[0].fecha_sabin7); %>
+                                            <% if (!isNaN(fecha_sabin7.getTime())) { %>
+                                                <td><%= fecha_sabin7.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
-                                        <tr>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_sabin8 = new Date(vacunasPreestablecidas[0].fecha_sabin8); %>
+                                            <% if (!isNaN(fecha_sabin8.getTime())) { %>
+                                                <td><%= fecha_sabin8.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="sr">SR</td>
-                                            <td>Sarampión y rubéola</td>
-                                            <td colspan="2">Adicionales</td>
+                                        <% } %>
+                                    </tr>
+                                    <tr>
+                                        <td class="sr">SR</td>
+                                        <td>Sarampión y rubéola</td>
+                                        <td colspan="2">Adicionales</td>
+                                        <% if (vacunasPreestablecidas && vacunasPreestablecidas.length > 0) { %>
+                                            <% const fecha_sr = new Date(vacunasPreestablecidas[0].fecha_sr); %>
+                                            <% if (!isNaN(fecha_sr.getTime())) { %>
+                                                <td><%= fecha_sr.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
                                             <td></td>
-                                        </tr>
+                                        <% } %>
+                                    </tr>
                                 </table>
                             </div>
                         </div>
@@ -535,109 +797,36 @@
                                         <th>Fecha de vacunación</th>
                                     </tr>
                                     <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
+                                        <% if (otrasVacunas && otrasVacunas.length > 0) { %>
+                                        <td><%= otrasVacunas[0].nombre %></td>
+                                        <% } else { %>
+                                            <td></td>
+                                        <% } %>
+                                        <% if (otrasVacunas && otrasVacunas.length > 0) { %>
+                                            <td><%= otrasVacunas[0].enfermedad_preventiva %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                        <% } %>
+                                        <% if (otrasVacunas && otrasVacunas.length > 0) { %>
+                                            <td><%= otrasVacunas[0].dosis %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                        <% } %>
+                                        <% if (otrasVacunas && otrasVacunas.length > 0) { %>
+                                            <td><%= otrasVacunas[0].edad_frecuencia %></td>
+                                            <% } else { %>
+                                            <td></td>
+                                        <% } %>
+                                        <% if (otrasVacunas && otrasVacunas.length > 0) { %>
+                                            <% const fecha_vacunacion = new Date(otrasVacunas[0].fecha_vacunacion); %>
+                                            <% if (!isNaN(fecha_vacunacion.getTime())) { %>
+                                                <td><%= fecha_vacunacion.toLocaleDateString('es-ES') %></td>
+                                            <% } else { %>
+                                                <td></td>
+                                            <% } %>
+                                        <% } else { %>
+                                            <td></td>
+                                        <% } %>
                                     </tr>
                                 </table>
                             </div>
@@ -651,70 +840,17 @@
                         <h2>Historial médico</h2>
                     </div>
                     <div class="seccion__columna seccion__columna--historial_medico">
-                        <div class="seccion__fila">
-                            <ol>
-                                <li>Hospitalización por lesiones:</li>
-                                <li>Reacciones alérgicas:</li>
-                                <li>Problemas de corazón:</li>
-                                <li>Marcapasos o desfibrilador:</li>
-                                <li>Antecedentes de endocarditis:</li>
-                                <li>Implante ortopédico:</li>
-                                <li>Fiebre reumática:</li>
-                                <li>Presión arterial alta o baja:</li>
-                                <li>Un accidente cerebrovascular:</li>
-                                <li>Anemia u otros problemas sanguíneos:</li>
-                                <li>Hemorragia prolongada debido a un corte:</li>
-                                <li>Enfisema, falta de aliento, sarcoidosis:</li>
-                                <li>Tuberculosis, sarampión, varicela:</li>
-                                <li>Asma:</li>
-                                <li>Problemas respiratorios o de sueño:</li>
-                            </ol>
+                        El paciente ha presentado alguna vez:
+                        <div id="formularioHistorialMedico" class="historial_medico">
+                            <% historialMedico.forEach(function(dato) { %>
+                                <% Object.keys(dato).forEach(function(key) { %>
+                                    <% if (dato[key] === 1) { %>
+                                        <% const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()); %>
+                                        <p>●&nbsp<%= formattedKey.replace(/\b\w+/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}); %></p>
+                                    <% } %>
+                                <% }); %>
+                            <% }); %>    
                         </div>
-                        <div class="seccion__fila">
-                            <ol>
-                                <li>Problemas renales:</li>
-                                <li>Enfermedad hepática:</li>
-                                <li>Ictericia:</li>
-                                <li>Problemas de tiroides, enfermedad paratiroidea o deficiencia de calcio:</li>
-                                <li>Deficiencia hormonal:</li>
-                                <li>Colesterol alto o toma de estatinas:</li>
-                                <li>Diabetes:</li>
-                                <li>Úlcera estomacal o duodenal:</li>
-                                <li>Trastornos digestivos:</li>
-                                <li>Osteoporosis/osteopenia:</li>
-                                <li>Artritis:</li>
-                                <li>Enfermedad autoinmunitaria:</li>
-                                <li>Glaucoma:</li>
-                                <li>Lentes de contacto:</li>
-                                <li>Lesiones en la cabeza o en el cuello:</li>
-                            </ol>
-                        </div>
-                        <div class="seccion__fila">
-                            <ol>
-                                <li>Epilepsia, convulsiones:</li>
-                                <li>Trastornos neurológicos:</li>
-                                <li>Infecciones virales y herpes labial:</li>
-                                <li>Cualquier bulto o hinchazón en la boca:</li>
-                                <li>Urticaria, erupción cutánea, fiebre del heno:</li>
-                                <li>ITS/ETS/VPH:</li>
-                                <li>Hepatitis (tipo):</li>
-                                <li>VIH/SIDA:</li>
-                                <li>Tumores:</li>
-                                <li>Terapia de radiación:</li>
-                                <li>Quimioterapia, medicamentos inmunosupresores:</li>
-                                <li>Dificultades emocionales:</li>
-                                <li>Tratamiento psiquiátrico:</li>
-                                <li>Medicamentos antidepresivos:</li>
-                                <li>Uso de alcohol/drogas recreativas:</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="seccion enfermedades" id="enfermedades">
-                    <div class="seccion__titulo">
-                        <i class="fa-solid fa-star-of-life"></i>
-                        <h2>Recetas médicas</h2>
                     </div>
                 </div>
 
