@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="CSS/principal.css">
+    <link rel="stylesheet" href="/CSS/paciente.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
         integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -13,18 +13,18 @@
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
         integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script defer src="JS/datosPersonales.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script defer src="JS/agregarRegistro.js"></script>
-    <script defer src="https://www.google.com/recaptcha/api.js" async defer></script>
-    <script defer src="JS/tarjetaDatos.js"></script>
-    <script defer src="JS/registroDoctor.js"></script>
-    <script defer src="JS/interfazUsuario.js"></script>
-    <script defer src="JS/verificacionTelefono.js"></script>
+    <script defer src="/JS/interfazPaciente.js"></script>
 </head>
 
 <body>
+    <div class="botonMolesto">
+        <button type="button" name="botonGuardarDatos" class="boton-datos boton-molesto" id="botonGuardarInformacion">
+            <i class="fa-solid fa-floppy-disk"></i>
+            <p id="texto_boton">Actualizar información</p>
+        </button>
+    </div>
     <div id="informacion-general" class="contenido">
         <!-- Aside -->
         <aside>
@@ -67,21 +67,6 @@
             </div>
             <div class="inferior">
                 <ul>
-                    <% if (!(typeof doctor !== 'undefined' && doctor !== null && doctor !== '')) { %>
-                    <li>
-                        <button type="button" id="abrir__registroDoctor" class="opcion opcion--boton">
-                            <i class="fa-solid fa-user-doctor"></i>
-                            <p>Registrate como doctor</p>
-                        </button>
-                    </li>
-                    <%} else {%>
-                    <li>
-                        <button type="button" id="abrir__interfazDoctor" class="opcion opcion--boton">
-                            <i class="fa-solid fa-user-doctor"></i>
-                            <p>Ingresa como doctor</p>
-                        </button>
-                    </li>
-                    <%}%>
                     <li>
                         <button type="button" id="abrir__tarjetaDatos" class="opcion opcion--boton">
                             <i class="fa-solid fa-id-card"></i>
@@ -93,14 +78,7 @@
         </aside>
         <div class="contenidoGeneral">
             <nav>
-                <div class="verificarNumeroTelefonico">
-                    <%if (telefonoVerificado === "N") {%>
-                    <div class="mensajeAlerta">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                        <p>Para recibir una mejor atención médica, por favor, <a id="enviarSMS">verifica tu número telefónico.</a></p>
-                    </div>
-                    <%}%>
-                </div>
+                <div class="verificarNumeroTelefonico"></div>
                 <ul class="nav__enlaces">
                     <li>
                         <a class="nav__enlace" href="/" id="navInicio">Inicio</a>
@@ -123,10 +101,6 @@
                         <div class="seccion__fila">
                             <div class="contenedor__titulo">
                                 <h3>Datos Personales</h3>
-                                <button type="button" name="botonDatosPersonales" class="boton-datos" id="abrir__datosPersonales">
-                                    <i class='fa-solid fa-pen-to-square'></i>
-                                    <p id="texto_boton">Editar información</p>
-                                </button>
                             </div>
                             <div class="seccion__datosPersonales">
                                 <div class="seccion__izquierda">
@@ -154,7 +128,7 @@
                                     <div class="seccion__datoPersonal telefono">
                                         <strong>Teléfono</strong>
                                         <% if (typeof telefono !== 'undefined' && telefono !== null && telefono !== '') { %>
-                                            <p><%= telefono %> <%if (telefonoVerificado === "V") {%><i class="fa-solid fa-circle-check"></i><%}%><%if (telefonoVerificado === "N") {%><i class="fa-solid fa-circle-xmark"></i></i><%}%></p>
+                                            <p><%= telefono %></p>
                                         <% } else { %>
                                             <p class="vacio">Vacío</p>
                                         <% } %>
@@ -361,7 +335,7 @@
                     <div class="seccion__columna">
                         <div class="contenedor vacunas-preestablecidas">
                             <h3>Vacunas preestablecidas</h3>
-                            <div class="tabla">
+                            <form action="" id="formularioVacunasPreestablecidas" class="tabla">
                                 <table>
                                     <tr class="superior">
                                         <th>Vacuna</th>
@@ -370,162 +344,162 @@
                                         <th>Edad y frecuencia</th>
                                         <th>Fecha de vacunación</th>
                                     </tr>
-                                        <tr>
-                                            <td class="bcg">BCG</td>
-                                            <td>Tuberculosis</td>
-                                            <td>Única</td>
-                                            <td>Al nacer</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="hepatitis-b" rowspan="3">Hepatitis B</td>
-                                            <td rowspan="3">Hepatitis B</td>
-                                            <td>Primera</td>
-                                            <td>Al nacer</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Segunda</td>
-                                            <td>2 meses</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Tercera</td>
-                                            <td>6 meses</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="pentavalente" rowspan="4">Pentavalente Acelular DPat +VPI + Hib</td>
-                                            <td rowspan="4">Difteria, tos ferina, tétanos, poliomielitis e infecciones por
-                                                H. influenzae b</td>
-                                            <td>Primera</td>
-                                            <td>2 meses</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Segunda</td>
-                                            <td>4 meses</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Tercera</td>
-                                            <td>6 meses</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Cuarta</td>
-                                            <td>18 meses</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="dpt">DPT</td>
-                                            <td>Difteria, tos ferina y tétanos</td>
-                                            <td>Refuerzo</td>
-                                            <td>4 años</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="rotavirus" rowspan="3">Rotavirus</td>
-                                            <td rowspan="3">Diarrea por rotavirus</td>
-                                            <td>Primera</td>
-                                            <td>2 meses</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Segunda</td>
-                                            <td>4 meses</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Tercera</td>
-                                            <td>6 meses</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="neumococica" rowspan="3">Neumocócica conjugada</td>
-                                            <td rowspan="3">Infecciones por neumococo</td>
-                                            <td>Primera</td>
-                                            <td>2 meses</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Segunda</td>
-                                            <td>4 meses</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Refuerzo</td>
-                                            <td>12 meses</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="influenza" rowspan="3">Influenza</td>
-                                            <td rowspan="3">Influenza</td>
-                                            <td>Primera</td>
-                                            <td>6 meses</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Segunda</td>
-                                            <td>7 meses</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Revacunación</td>
-                                            <td>Anual hasta los 59 meses</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="srp" rowspan="2">SRP</td>
-                                            <td rowspan="2">Sarampión, rubéola y parotiditis</td>
-                                            <td>Primera</td>
-                                            <td>1 año</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Reguerzo</td>
-                                            <td>6 años</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="sabin" rowspan="8">Sabin</td>
-                                            <td rowspan="8">Poliomielitis</td>
-                                            <td rowspan="8" colspan="2">Adicionales</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="sr">SR</td>
-                                            <td>Sarampión y rubéola</td>
-                                            <td colspan="2">Adicionales</td>
-                                            <td></td>
-                                        </tr>
+                                    <tr>
+                                        <td class="bcg">BCG</td>
+                                        <td>Tuberculosis</td>
+                                        <td>Única</td>
+                                        <td>Al nacer</td>
+                                        <td><input type="date" name="BCG"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="hepatitis-b" rowspan="3">Hepatitis B</td>
+                                        <td rowspan="3">Hepatitis B</td>
+                                        <td>Primera</td>
+                                        <td>Al nacer</td>
+                                        <td><input type="date" name="Hepatitis_B_Primera"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Segunda</td>
+                                        <td>2 meses</td>
+                                        <td><input type="date" name="Hepatitis_B_Segunda"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tercera</td>
+                                        <td>6 meses</td>
+                                        <td><input type="date" name="Hepatitis_B_Tercera"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="pentavalente" rowspan="4">Pentavalente Acelular DPat +VPI + Hib</td>
+                                        <td rowspan="4">Difteria, tos ferina, tétanos, poliomielitis e infecciones por
+                                            H. influenzae b</td>
+                                        <td>Primera</td>
+                                        <td>2 meses</td>
+                                        <td><input type="date" name="Pentavalente_Primera"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Segunda</td>
+                                        <td>4 meses</td>
+                                        <td><input type="date" name="Pentavalente_Segunda"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tercera</td>
+                                        <td>6 meses</td>
+                                        <td><input type="date" name="Pentavalente_Tercera"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Cuarta</td>
+                                        <td>18 meses</td>
+                                        <td><input type="date" name="Pentavalente_Cuarta"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="dpt">DPT</td>
+                                        <td>Difteria, tos ferina y tétanos</td>
+                                        <td>Refuerzo</td>
+                                        <td>4 años</td>
+                                        <td><input type="date" name="DPT"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="rotavirus" rowspan="3">Rotavirus</td>
+                                        <td rowspan="3">Diarrea por rotavirus</td>
+                                        <td>Primera</td>
+                                        <td>2 meses</td>
+                                        <td><input type="date" name="Rotavirus_Primera"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Segunda</td>
+                                        <td>4 meses</td>
+                                        <td><input type="date" name="Rotavirus_Segunda"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tercera</td>
+                                        <td>6 meses</td>
+                                        <td><input type="date" name="Rotavirus_Tercera"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="neumococica" rowspan="3">Neumocócica conjugada</td>
+                                        <td rowspan="3">Infecciones por neumococo</td>
+                                        <td>Primera</td>
+                                        <td>2 meses</td>
+                                        <td><input type="date" name="Neumococica_Primera"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Segunda</td>
+                                        <td>4 meses</td>
+                                        <td><input type="date" name="Neumococica_Segunda"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Refuerzo</td>
+                                        <td>12 meses</td>
+                                        <td><input type="date" name="Neumococica_Refuerzo"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="influenza" rowspan="3">Influenza</td>
+                                        <td rowspan="3">Influenza</td>
+                                        <td>Primera</td>
+                                        <td>6 meses</td>
+                                        <td><input type="date" name="Influenza_Primera"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Segunda</td>
+                                        <td>7 meses</td>
+                                        <td><input type="date" name="Influenza_Segunda"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Revacunación</td>
+                                        <td>Anual hasta los 59 meses</td>
+                                        <td><input type="date" name="Influenza_Revacunación"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="srp" rowspan="2">SRP</td>
+                                        <td rowspan="2">Sarampión, rubéola y parotiditis</td>
+                                        <td>Primera</td>
+                                        <td>1 año</td>
+                                        <td><input type="date" name="SRP_Primera"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Reguerzo</td>
+                                        <td>6 años</td>
+                                        <td><input type="date" name="SRP_Refuerzo"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="sabin" rowspan="8">Sabin</td>
+                                        <td rowspan="8">Poliomielitis</td>
+                                        <td rowspan="8" colspan="2">Adicionales</td>
+                                        <td><input type="date" name="Sabin_1"></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="date" name="Sabin_2"></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="date" name="Sabin_3"></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="date" name="Sabin_4"></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="date" name="Sabin_5"></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="date" name="Sabin_6"></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="date" name="Sabin_7"></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="date" name="Sabin_8"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="sr">SR</td>
+                                        <td>Sarampión y rubéola</td>
+                                        <td colspan="2">Adicionales</td>
+                                        <td><input type="date" name="SR"></td>
+                                    </tr>
                                 </table>
-                            </div>
+                            </form>
                         </div>
                         <div class="contenedor otras-vacunas">
                             <h3>Otras vacunas</h3>
-                            <div class="tabla">
+                            <form id="formularioOtrasVacunas" class="tabla">
                                 <table>
                                     <tr class="superior">
                                         <th>Vacuna</th>
@@ -535,112 +509,14 @@
                                         <th>Fecha de vacunación</th>
                                     </tr>
                                     <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
+                                        <td><input type="text" name="Vacuna" id=""></td>
+                                        <td><input type="text" name="Enfermedad_Preventiva" id=""></td>
+                                        <td><input type="text" name="Dosis" id=""></td>
+                                        <td><input type="text" name="Edad_Frecuencia" id=""></td>
+                                        <td><input type="date" name="FechaVacunacion" id=""></td>
                                     </tr>
                                 </table>
-                            </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -651,298 +527,63 @@
                         <h2>Historial médico</h2>
                     </div>
                     <div class="seccion__columna seccion__columna--historial_medico">
-                        <div class="seccion__fila">
-                            <ol>
-                                <li>Hospitalización por lesiones:</li>
-                                <li>Reacciones alérgicas:</li>
-                                <li>Problemas de corazón:</li>
-                                <li>Marcapasos o desfibrilador:</li>
-                                <li>Antecedentes de endocarditis:</li>
-                                <li>Implante ortopédico:</li>
-                                <li>Fiebre reumática:</li>
-                                <li>Presión arterial alta o baja:</li>
-                                <li>Un accidente cerebrovascular:</li>
-                                <li>Anemia u otros problemas sanguíneos:</li>
-                                <li>Hemorragia prolongada debido a un corte:</li>
-                                <li>Enfisema, falta de aliento, sarcoidosis:</li>
-                                <li>Tuberculosis, sarampión, varicela:</li>
-                                <li>Asma:</li>
-                                <li>Problemas respiratorios o de sueño:</li>
-                            </ol>
-                        </div>
-                        <div class="seccion__fila">
-                            <ol>
-                                <li>Problemas renales:</li>
-                                <li>Enfermedad hepática:</li>
-                                <li>Ictericia:</li>
-                                <li>Problemas de tiroides, enfermedad paratiroidea o deficiencia de calcio:</li>
-                                <li>Deficiencia hormonal:</li>
-                                <li>Colesterol alto o toma de estatinas:</li>
-                                <li>Diabetes:</li>
-                                <li>Úlcera estomacal o duodenal:</li>
-                                <li>Trastornos digestivos:</li>
-                                <li>Osteoporosis/osteopenia:</li>
-                                <li>Artritis:</li>
-                                <li>Enfermedad autoinmunitaria:</li>
-                                <li>Glaucoma:</li>
-                                <li>Lentes de contacto:</li>
-                                <li>Lesiones en la cabeza o en el cuello:</li>
-                            </ol>
-                        </div>
-                        <div class="seccion__fila">
-                            <ol>
-                                <li>Epilepsia, convulsiones:</li>
-                                <li>Trastornos neurológicos:</li>
-                                <li>Infecciones virales y herpes labial:</li>
-                                <li>Cualquier bulto o hinchazón en la boca:</li>
-                                <li>Urticaria, erupción cutánea, fiebre del heno:</li>
-                                <li>ITS/ETS/VPH:</li>
-                                <li>Hepatitis (tipo):</li>
-                                <li>VIH/SIDA:</li>
-                                <li>Tumores:</li>
-                                <li>Terapia de radiación:</li>
-                                <li>Quimioterapia, medicamentos inmunosupresores:</li>
-                                <li>Dificultades emocionales:</li>
-                                <li>Tratamiento psiquiátrico:</li>
-                                <li>Medicamentos antidepresivos:</li>
-                                <li>Uso de alcohol/drogas recreativas:</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="seccion enfermedades" id="enfermedades">
-                    <div class="seccion__titulo">
-                        <i class="fa-solid fa-star-of-life"></i>
-                        <h2>Recetas médicas</h2>
-                    </div>
-                </div>
-
-                <div class="seccion" id="registros">
-                    <div class="seccion__titulo">
-                        <i class="fa-solid fa-user-group"></i>
-                        <h2>Registros</h2>
-                    </div>
-                    <div class="contenedor">
-                        <div class="registros">
-                            <% registros.forEach(registro => { %>
-                            <button class="registro" id="botonUsuario_<%= registro.usuario_id %>">
-                                <img src="/img/users/<%= registro.imagen %>"
-                                    alt="">
-                                <p><%= registro.nombre %></p>
-                            </button>
-                            <% }); %>
-                            <button id="abrir__agregarRegistro" class="agregar-registro">
-                                <i class="fa-solid fa-plus"></i>
-                                <p>Agregar registro</p>
-                            </button>
-                        </div>
+                        El paciente ha presentado alguna vez:
+                        <form id="formularioHistorialMedico" class="historial_medico">
+                            <ul>
+                                <li><input type="checkbox" name="hospitalizacion_lesiones">&nbspHospitalización por lesiones</li>
+                                <li><input type="checkbox" name="reacciones_alergicas">&nbspReacciones alérgicas</li>
+                                <li><input type="checkbox" name="problemas_corazon">&nbspProblemas de corazón</li>
+                                <li><input type="checkbox" name="marcapasos_desfibrilador">&nbspMarcapasos o desfibrilador</li>
+                                <li><input type="checkbox" name="antecedentes_endocarditis">&nbspAntecedentes de endocarditis</li>
+                                <li><input type="checkbox" name="implante_ortopedico">&nbspImplante ortopédico</li>
+                                <li><input type="checkbox" name="fiebre_reumatica">&nbspFiebre reumática</li>
+                                <li><input type="checkbox" name="presion_arterial">&nbspPresión arterial alta o baja</li>
+                                <li><input type="checkbox" name="accidente_cerebrovascular">&nbspUn accidente cerebrovascular</li>
+                                <li><input type="checkbox" name="problemas_sanguineos">&nbspAnemia u otros problemas sanguíneos</li>
+                                <li><input type="checkbox" name="Hemorragia_prolongada_debido_a_un_corte">&nbspHemorragia prolongada debido a un corte</li>
+                                <li><input type="checkbox" name="Enfisema_falta_de_aliento_sarcoidosis">&nbspEnfisema, falta de aliento, sarcoidosis</li>
+                                <li><input type="checkbox" name="Tuberculosis_sarampion_varicela">&nbspTuberculosis, sarampión, varicela</li>
+                                <li><input type="checkbox" name="Asma">&nbspAsma</li>
+                                <li><input type="checkbox" name="Problemas_respiratorios_o_de_sueno">&nbspProblemas respiratorios o de sueño</li>
+                                <li><input type="checkbox" name="Problemas_renales">&nbspProblemas renales</li>
+                                <li><input type="checkbox" name="Enfermedad_hepatica">&nbspEnfermedad hepática</li>
+                                <li><input type="checkbox" name="Ictericia">&nbspIctericia</li>
+                                <li><input type="checkbox" name="Problemas_de_tiroides_enfermedad_paratiroidea_o_deficiencia_de_calcio">&nbspProblemas de tiroides, enfermedad paratiroidea o deficiencia de calcio</li>
+                                <li><input type="checkbox" name="Deficiencia_hormonal">&nbspDeficiencia hormonal</li>
+                                <li><input type="checkbox" name="Colesterol_alto_o_toma_de_estatinas">&nbspColesterol alto o toma de estatinas</li>
+                                <li><input type="checkbox" name="Diabetes">&nbspDiabetes</li>
+                                <li><input type="checkbox" name="Ulceras_estomacales_o_duodenales">&nbspÚlcera estomacal o duodenal</li>
+                            </ul>
+                            <ul>
+                                <li><input type="checkbox" name="Trastornos_digestivos">&nbspTrastornos digestivos</li>
+                                <li><input type="checkbox" name="Osteoporosis_osteopenia">&nbspOsteoporosis/osteopenia</li>
+                                <li><input type="checkbox" name="Artritis">&nbspArtritis</li>
+                                <li><input type="checkbox" name="Enfermedad_autoinmunitaria">&nbspEnfermedad autoinmunitaria</li>
+                                <li><input type="checkbox" name="Glaucoma">&nbspGlaucoma</li>
+                                <li><input type="checkbox" name="Lentes_de_contacto">&nbspLentes de contacto</li>
+                                <li><input type="checkbox" name="Lesiones_en_la_cabeza_o_en_el_cuello">&nbspLesiones en la cabeza o en el cuello</li>
+                                <li><input type="checkbox" name="Epilepsia_convulsiones">&nbspEpilepsia, convulsiones</li>
+                                <li><input type="checkbox" name="Trastornos_neurologicos">&nbspTrastornos neurológicos</li>
+                                <li><input type="checkbox" name="Infecciones_virales_y_herpes_labial">&nbspInfecciones virales y herpes labial</li>
+                                <li><input type="checkbox" name="Cualquier_bulto_o_hinchazon_en_la_boca">&nbspCualquier bulto o hinchazón en la boca</li>
+                                <li><input type="checkbox" name="Urticaria_erupcion_cutanea_fiebre_del_heno">&nbspUrticaria, erupción cutánea, fiebre del heno</li>
+                                <li><input type="checkbox" name="ITS_ETS_VPH">&nbspITS/ETS/VPH</li>
+                                <li><input type="checkbox" name="Hepatitis">&nbspHepatitis</li>
+                                <li><input type="checkbox" name="VIH_SIDA">&nbspVIH/SIDA</li>
+                                <li><input type="checkbox" name="Tumores">&nbspTumores</li>
+                                <li><input type="checkbox" name="Terapia_de_radiacion">&nbspTerapia de radiación</li>
+                                <li><input type="checkbox" name="Quimioterapia_medicamentos_inmunosupresores">&nbspQuimioterapia, medicamentos inmunosupresores</li>
+                                <li><input type="checkbox" name="Dificultades_emocionales">&nbspDificultades emocionales</li>
+                                <li><input type="checkbox" name="Tratamiento_psiquiatrico">&nbspTratamiento psiquiátrico</li>
+                                <li><input type="checkbox" name="Medicamentos_antidepresivos">&nbspMedicamentos antidepresivos</li>
+                                <li><input type="checkbox" name="Uso_de_alcohol_drogas_recreativas">&nbspUso de alcohol/drogas recreativas</li>
+                            </ul>
+                        </form>
                     </div>
                 </div>
             </main>
         </div>
     </div>
-
 <!-- * ------------------------ Contenedores ------------------------ * -->
-
-    <div id="fondo__datosPersonales" class="fondoVentana">
-        <div id="ventana__datosPersonales" class="ventana">
-            <div class="ventana__titulo">
-                <h2>Datos Personales</h2>
-                <span>Ingresa o modifica tus datos</span>
-            </div>
-            <form class="seccion__datosPersonales" enctype="multipart/form-data" id="formularioDatosPersonales">
-                <div class="seccion__izquierda">
-                    <div class="contenidoImagen">
-                        <img src="/img/users/<%= imagenAMostrar %>" id="imagenPrevisualizada">
-                        <div class="editar-imagen">
-                            <i class="fa-solid fa-camera"></i>
-                            <input type="file" name="imagen_usuario" id="imagenUsuario">
-                        </div>
-                    </div>
-                    <div class="seccion__datoPersonal nombre">
-                        <strong>Nombre</strong>
-                        <% if (typeof nombre !== 'undefined' && nombre !== null && nombre !== '') { %>
-                            <input type="text" id="nombreUsuario" placeholder="Vacío" oninput="formatoTexto(this)" value="<%= nombre %>">
-                        <% } else { %>
-                            <input type="text" id="nombreUsuario" placeholder="Vacío" oninput="formatoTexto(this)">
-                        <% } %>
-                    </div>
-                </div>
-                <div class="seccion__derecha">
-                    <div class="seccion__datoPersonal curp">
-                        <strong>CURP</strong>
-                        <% if (typeof curp !== 'undefined' && curp !== null && curp !== '') { %>
-                            <input type="text" id="curpUsuario" placeholder="Vacío" maxlength="18" oninput="formatoCURP(this)" value="<%= curp %>">
-                        <% } else { %>
-                            <input type="text" id="curpUsuario" placeholder="Vacío" maxlength="18" oninput="formatoCURP(this)">
-                        <% } %>
-                    </div>
-                    <div class="seccion__datoPersonal telefono">
-                        <strong>Teléfono</strong>
-                        <% if (typeof telefono !== 'undefined' && telefono !== null && telefono !== '') { %>
-                            <input type="tel" id="telefonoUsuario" placeholder="+52 123 456 7890" maxlength="16" oninput="formatoTelefono(this)" value="<%= telefono %>">
-                        <% } else { %>
-                            <input type="tel" id="telefonoUsuario" placeholder="+52 123 456 7890" maxlength="16" oninput="formatoTelefono(this)">
-                        <% } %>
-                    </div>
-                    <div class="seccion__multiplesDatosPersonales">
-                        <div class="seccion__divisorDatos">
-                            <div class="seccion__datoPersonal">
-                                <strong>Nacimiento</strong>
-                                <% if (typeof nacimiento !== 'undefined' && nacimiento !== null && nacimiento !== '' && nacimiento !== '0000-00-00') { %>
-                                    <input type="date" id="nacimientoUsuario" value="<%= nacimiento %>">
-                                <% } else { %>
-                                    <input type="date" id="nacimientoUsuario">
-                                <% } %>
-                            </div>
-                            <div class="seccion__datoPersonal">
-                                <strong>Peso (Kg)</strong>
-                                <% if (typeof peso !== 'undefined' && peso !== null && peso !== '' && peso !== 0) { %>
-                                    <input type="text" id="pesoUsuario" placeholder="Vacío" maxlength="6" oninput="formatoPeso(this)" value="<%= peso %>">
-                                <% } else { %>
-                                    <input type="text" id="pesoUsuario" placeholder="Vacío" maxlength="6" oninput="formatoPeso(this)">
-                                <% } %>
-                            </div>
-                            <div class="seccion__datoPersonal">
-                                <strong>Nacionalidad</strong>
-                                <% if (typeof peso !== 'undefined' && peso !== null && peso !== '' && peso !== 0) { %>
-                                    <input type="text" id="nacionalidadUsuario" placeholder="Vacío" maxlength="30" oninput="formatoNacionalidad(this)" value="<%= nacionalidad %>">
-                                <% } else { %>
-                                    <input type="text" id="nacionalidadUsuario" placeholder="Vacío" maxlength="30" oninput="formatoNacionalidad(this)" >
-                                <% } %>
-                            </div>
-                        </div>
-
-                        <div class="seccion__divisorDatos">
-                            <div class=" seccion__datoPersonal">
-                                <strong>Estatura (cm)</strong>
-                                <% if (typeof estatura !== 'undefined' && estatura !== null && estatura !== '' && estatura !== 0) { %>
-                                    <input type="text" id="estaturaUsuario" placeholder="Vacío" maxlength="3" oninput="formatoEstatura(this)" value="<%= estatura * 100 %>">
-                                <% } else { %>
-                                    <input type="text" id="estaturaUsuario" placeholder="Vacío" maxlength="3" oninput="formatoEstatura(this)" >
-                                <% } %>
-                            </div>
-                            <div class="seccion__datoPersonal">
-                                <strong>Sexo</strong>
-                                <select id="sexoUsuario" name="sexo">
-                                    <option value="" selected disabled>Selecciona</option>
-                                    <option value="Hombre" <% if (sexo === 'Hombre') { %> selected <% } %> >Hombre</option>
-                                    <option value="Mujer" <% if (sexo === 'Mujer') { %> selected <% } %> >Mujer</option>
-                                </select>                                                                       
-                            </div>
-                            <div class="seccion__datoPersonal">
-                                <strong>Tipo de sangre</strong>
-                                <select id="sangreUsuario" name="sangre">
-                                    <option value="" selected disabled>Selecciona</option>
-                                    <option value="A+" <% if (sangre === 'A+') { %> selected <% } %>>A+</option>
-                                    <option value="A-" <% if (sangre === 'A-') { %> selected <% } %>>A-</option>
-                                    <option value="B+" <% if (sangre === 'B+') { %> selected <% } %>>B+</option>
-                                    <option value="B-" <% if (sangre === 'B-') { %> selected <% } %>>B-</option>
-                                    <option value="AB+" <% if (sangre === 'AB+') { %> selected <% } %>>AB+</option>
-                                    <option value="AB-" <% if (sangre === 'AB-') { %> selected <% } %>>AB-</option>
-                                    <option value="O+" <% if (sangre === 'O+') { %> selected <% } %>>O+</option>
-                                    <option value="O-" <% if (sangre === 'O-') { %> selected <% } %>>O-</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
-            <div class="ventana__botones">
-                <button id="guardar__datosPersonales" class="boton-datos">Guardar</button>
-                <button id="cerrar__datosPersonales" class="boton-datos cerrarVentana">Cancelar</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="fondo__agregarRegistro" class="fondoVentana">
-        <div id="ventana__agregarRegistro" class="ventana">
-            <div class="ventana__titulo">
-                <h2>Agregar registro</h2>
-                <span>Registra a tus personas de confianza para visualizar sus datos</span>
-            </div>
-            <div class="ventana__seccion">
-                <div class="ventana__datos">
-                    <h3>Ingresar registro</h3>
-                    <div class="ventana__espacio">
-                        <p>Ingresa el código de la persona a registrar</p>
-                        <form class="codigo-agregar-registro" id="formularioAgregarRegistro">
-                            <div class="inputAgregarRegistro">
-                                <input type="text" maxlength="6" placeholder="⎯ ⎯ ⎯ ⎯ ⎯ ⎯" oninput="formatoNumerico(this)" name="codigoRegistro">
-                                <button id="enviarCodigo" type="submit" class="botonAgregarRegistro">
-                                    <i class="fa-solid fa-plus"></i>
-                                </button>
-                            </div>
-                            <div class="g-recaptcha" data-sitekey="6LdxfbcpAAAAAHb851tWynlO4vMy3hRTdL66cpwu"></div>
-                        </form>
-                    </div>
-                    o
-                    <div class="ventana__espacio">
-                        <p>Ingresa el siguiente código en otro registro</p>
-                        <span id="contenedorCodigo"></span>
-                        <p id="temporizadorCodigo">El código expirará en
-                            <strong id="tiempoRestante"></strong>
-                        </p>
-                        <p id="regenerarCodigo">El código ha expirado, <a href="#"
-                                onclick="iniciarTemporizador()">regeneralo aquí</a></p>
-                    </div>
-                </div>
-                <div class="ventana__datos">
-                    <h3>Compartir registro</h3>
-                    <div class="ventana__espacio">
-                        <p>Escanea el código QR para registrarte automaticamente</p>
-                        <div id="contenedorQR" class="contenedorQR"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="ventana__botones">
-                <button type="button" id="cerrar__agregarRegistro" class="boton-datos cerrarVentana">Cancelar</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="fondo__registroDoctor" class="fondoVentana">
-        <div id="ventana__registroDoctor" class="ventana ventana__registroDoctor">
-            <div class="ventana__titulo">
-                <h2>Registro de doctor</h2>
-                <span>Otorga un mejor servicio a tus pacientes accediendo a funcionalidades propias de un doctor.</span>
-            </div>
-            <div class="ventana__espacio">
-                <form class="ventana__cedulaDoctor" id="formularioRegistroDoctor">
-                    <input name="cedula" placeholder="Cédula" maxlength="10" class="input-style" type="text" oninput="formatoNumerico(this)" id="cedulaDoctor">
-                    <input name="especialidad" placeholder="Especialidad" class="input-style input-style-especialidad" type="text" oninput="formatoTexto(this)" id="especialidadDoctor">
-                    <div class="g-recaptcha" data-sitekey="6LdxfbcpAAAAAHb851tWynlO4vMy3hRTdL66cpwu"></div>
-                </form>
-                <div class="mensajeAlerta">
-                    <i class="fa-solid fa-triangle-exclamation"></i>
-                    <p><strong>Nota:</strong> Tus datos y la cédula deberán ser verificadas antes de otorgarte el acceso como médico.</p>
-                </div>
-            </div>
-            <div class="ventana__botones">
-                <button id="guardar__registroDoctor" class="boton-datos">Guardar</button>
-                <button id="cerrar__registroDoctor" class="boton-datos cerrarVentana">Cancelar</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="fondo__verificarTelefono" class="fondoVentana">
-        <div id="ventana__verificarTelefono" class="ventana ventana__verificarTelefono">
-            <div class="ventana__titulo">
-                <h2>Verificar número telefónico</h2>
-                <span>En breves recibirás un código de verificación al número <%= telefono %>, ingresa el código en el siguiente espacio.</span>
-            </div>
-            <div class="ventana__espacio">
-                <form class="formularioSMS" id="formularioSMS">
-                    <input name="codigoSMS" type="text" id="codigoSMS" class="input-style input-style-sms" placeholder="- - - - - -" maxlength="6" oninput="formatoNumerico(this)" name="codigoRegistro">
-                </form>
-            </div>
-            <div class="ventana__botones">
-                <button id="verificar__verificarTelefono" class="boton-datos">Guardar</button>
-                <button id="cerrar__verificarTelefono" class="boton-datos cerrarVentana">Cancelar</button>
-            </div>
-        </div>
-    </div>
 </body>
 </html>

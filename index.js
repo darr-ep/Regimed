@@ -16,6 +16,7 @@ const fetch = require("node-fetch");
 const { PDFDocument, rgb } = require("pdf-lib");
 const qr = require("qrcode");
 const twilio = require("twilio");
+const bodyParser = require("body-parser");
 
 const app = express();
 
@@ -66,6 +67,7 @@ const conexion = mysql.createConnection({
 app.set("view engine", "ejs");
 
 app.use(express.json());
+app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, "views")));
@@ -523,7 +525,7 @@ app.get("/principal", async (req, res) => {
       req.session.idUsuario
     );
 
-    // Consulta para verificar si el telefono está verificado
+    // Consulta para verificar si el teléfono está verificado
     const telefonoVerificado = await verificarSiEstaVerificado(
       req.session.idUsuario
     );
@@ -545,6 +547,9 @@ app.get("/principal", async (req, res) => {
       doctor: req.session.idDoctor,
       telefonoVerificado: telefonoVerificado,
     });
+
+    // Cierre de la conexión después de todas las operaciones
+    conexion.end();
   } catch (error) {
     console.error("Error al obtener datos:", error);
     res.status(500).send("Error interno del servidor");
@@ -636,9 +641,8 @@ app.get("/paciente/:telefono", (req, res) => {
   if (!req.session.idDoctor) {
     return res.redirect("/");
   }
-  let telefono = req.params.telefono;
 
-  console.log(telefono);
+  let telefono = req.params.telefono;
 
   const consulta = `SELECT * FROM numeros_verificados WHERE telefono = '${telefono}'`;
 
@@ -650,48 +654,48 @@ app.get("/paciente/:telefono", (req, res) => {
 
       conexion.query(consultaUsuario, (err, row) => {
         if (err) {
-          throw err
+          throw err;
         } else {
           var nombre = "";
-        var curp = "";
-        var imagen = "";
-        var nacimiento = "";
-        var peso = "";
-        var estatura = "";
-        var sexo = "";
-        var nacionalidad = "";
-        var sangre = "";
-        if (row && row.length > 0) {
-          nombre = row[0].nombre;
-          curp = row[0].curp;
-          imagen = row[0].imagen ? row[0].imagen : "usuario.png";
-          telefono = row[0].telefono;
-          nacimiento = row[0].fecha_nac;
-          if (nacimiento !== "0000-00-00") {
-            const fechaNacimiento = new Date(nacimiento);
-            nacimiento = fechaNacimiento.toISOString().split("T")[0];
+          var curp = "";
+          var imagen = "";
+          var nacimiento = "";
+          var peso = "";
+          var estatura = "";
+          var sexo = "";
+          var nacionalidad = "";
+          var sangre = "";
+          if (row && row.length > 0) {
+            nombre = row[0].nombre;
+            curp = row[0].curp;
+            imagen = row[0].imagen ? row[0].imagen : "usuario.png";
+            telefono = row[0].telefono;
+            nacimiento = row[0].fecha_nac;
+            if (nacimiento !== "0000-00-00") {
+              const fechaNacimiento = new Date(nacimiento);
+              nacimiento = fechaNacimiento.toISOString().split("T")[0];
+            }
+            peso = row[0].peso;
+            estatura = row[0].estatura;
+            sexo = row[0].sexo;
+            nacionalidad = row[0].nacionalidad;
+            sangre = row[0].tipo_sangre;
           }
-          peso = row[0].peso;
-          estatura = row[0].estatura;
-          sexo = row[0].sexo;
-          nacionalidad = row[0].nacionalidad;
-          sangre = row[0].tipo_sangre;
-        }
 
-        res.render("usuario", {
-          nombre: nombre,
-          curp: curp,
-          imagenAMostrar: imagen,
-          telefono: telefono,
-          nacimiento: nacimiento,
-          peso: peso,
-          estatura: estatura,
-          sexo: sexo,
-          nacionalidad: nacionalidad,
-          sangre: sangre,
-          registros: row,
-          sesion: req.session.idUsuario,
-        });
+          res.render("paciente", {
+            nombre: nombre,
+            curp: curp,
+            imagenAMostrar: imagen,
+            telefono: telefono,
+            nacimiento: nacimiento,
+            peso: peso,
+            estatura: estatura,
+            sexo: sexo,
+            nacionalidad: nacionalidad,
+            sangre: sangre,
+            registros: row,
+            sesion: req.session.idUsuario,
+          });
         }
       });
     }
@@ -776,7 +780,7 @@ app.get("/acceso", (req, res) => {
 
 app.get("/doctor", (req, res) => {
   if (!req.session.idDoctor) {
-    res.redirect("/");
+    return res.redirect("/");
   } else {
     const buscar =
       "SELECT * FROM datos_personales WHERE usuario_id = '" +
@@ -1207,20 +1211,20 @@ app.post("/acceso", (req, res) => {
             sesion: req.session.idUsuario,
           });
         } else {
-          const consulta = `SELECT * FROM doctor WHERE usuario_id = '${row[0].usuario_id}'`
+          const consulta = `SELECT * FROM doctor WHERE usuario_id = '${row[0].usuario_id}'`;
 
           conexion.query(consulta, (err, rowDoctor) => {
             if (err) {
-              throw err
-            } else if (rowDoctor.length !== 0 ) {
-              req.session.idDoctor = rowDoctor[0].doctor_id
+              throw err;
+            } else if (rowDoctor.length !== 0) {
+              req.session.idDoctor = rowDoctor[0].doctor_id;
               req.session.idUsuario = row[0].usuario_id;
               res.redirect("/principal");
             } else {
               req.session.idUsuario = row[0].usuario_id;
               res.redirect("/principal");
             }
-          })
+          });
         }
       });
     }
@@ -1240,7 +1244,7 @@ function enviarCorreoVerificacionDoctor(nombre, cedula, especialidad, token) {
       <li><strong>Especialidad:</strong> ${especialidad}</li>
     </ul>
     <p>Por favor, revisen estos datos y procedan según corresponda.
-    <p><a href="https:regimed.org/verificar_doctor?token=${token}">Verifica aquí</a></p></p>
+    <p><a href="https://regimed.org/verificar_doctor?token=${token}">Verifica aquí</a></p></p>
     <p>Atentamente, Regimed</p>
 `,
   };
@@ -1262,7 +1266,7 @@ app.post("/registroDoctor/:cedula/:especialidad/:captcha", async (req, res) => {
   const especialidad = req.params.especialidad;
 
   const verificacionCaptcha = await fetch(
-    `https://www.google.com/recaptcha/api/siteverify?secret=6LdxfbcpAAAAACfzTmYEvL4GGn1q7g2KkD3R64K5&response=${req.params.captcha}`,
+    `https://www.google.com/recaptcha/api/siteverify?secret=6LcNdb0pAAAAAD5dgEMLVUN2Ze1CumIRzC5NN_PX&response=${req.params.captcha}`,
     {
       method: "POST",
     }
@@ -1728,4 +1732,278 @@ app.post("/verificarRegistro/:codigo/:captcha", async (req, res) => {
       }
     });
   }
+});
+
+app.post("/guardarDatosPaciente", (req, res) => {
+  const telefono = req.body.telefono;
+  const vacunasPreestablecidas = req.body.vacunasPreestablecidas;
+  const otrasVacunas = req.body.otrasVacunas;
+  const historialMedico = req.body.historialMedico;
+
+  const telefonoFormateado =
+    telefono.substring(0, 3) +
+    " " + // Los primeros dos caracteres
+    telefono.substring(3, 6) +
+    " " + // Del tercero al quinto (incluyendo el tercero)
+    telefono.substring(6, 9) +
+    " " + // Del sexto al séptimo (incluyendo el sexto)
+    telefono.substring(9); // Del octavo al undécimo (incluyendo el undécimo)
+  // telefono.substring(11); // El resto del número
+
+  console.log(historialMedico.hospitalizacion_lesiones);
+  console.log(historialMedico.hospitalizacion_lesiones ? 1 : 0);
+
+  const usuario = `SELECT * FROM datos_personales WHERE telefono = '${telefonoFormateado}'`;
+
+  conexion.query(usuario, (err, rowUsuario) => {
+    if (err) {
+      throw err;
+    } else {
+      const sqlVacunasPreestablecidas = `
+    INSERT INTO vacunas_preestablecidas
+    (usuario_id, fecha_bcg, fecha_hepatitisb1, fecha_hepatitisb2, fecha_hepatitisb3, fecha_prevalente1, fecha_prevalente2, fecha_prevalente3, fecha_prevalente4, fecha_dpt, fecha_rotavirus1, fecha_rotavirus2, fecha_rotavirus3, fecha_neumococica1, fecha_neumococica2, fecha_neumococica3, fecha_influenza1, fecha_influenza2, fecha_influenza3, fecha_srp1, fecha_srp2, fecha_sabin1, fecha_sabin2, fecha_sabin3, fecha_sabin4, fecha_sabin5, fecha_sabin6, fecha_sabin7, fecha_sabin8, fecha_sr)
+    VALUES
+    (
+        '${rowUsuario[0].usuario_id}',
+        '${vacunasPreestablecidas.BCG}',
+        '${vacunasPreestablecidas.Hepatitis_B_Primera}',
+        '${vacunasPreestablecidas.Hepatitis_B_Segunda}',
+        '${vacunasPreestablecidas.Hepatitis_B_Tercera}',
+        '${vacunasPreestablecidas.Pentavalente_Primera}',
+        '${vacunasPreestablecidas.Pentavalente_Segunda}',
+        '${vacunasPreestablecidas.Pentavalente_Tercera}',
+        '${vacunasPreestablecidas.Pentavalente_Cuarta}',
+        '${vacunasPreestablecidas.DPT}',
+        '${vacunasPreestablecidas.Rotavirus_Primera}',
+        '${vacunasPreestablecidas.Rotavirus_Segunda}',
+        '${vacunasPreestablecidas.Rotavirus_Tercera}',
+        '${vacunasPreestablecidas.Neumococica_Primera}',
+        '${vacunasPreestablecidas.Neumococica_Segunda}',
+        '${vacunasPreestablecidas.Neumococica_Refuerzo}',
+        '${vacunasPreestablecidas.Influenza_Primera}',
+        '${vacunasPreestablecidas.Influenza_Segunda}',
+        '${vacunasPreestablecidas.Influenza_Revacunación}',
+        '${vacunasPreestablecidas.SRP_Primera}',
+        '${vacunasPreestablecidas.SRP_Refuerzo}',
+        '${vacunasPreestablecidas.Sabin_1}',
+        '${vacunasPreestablecidas.Sabin_2}',
+        '${vacunasPreestablecidas.Sabin_3}',
+        '${vacunasPreestablecidas.Sabin_4}',
+        '${vacunasPreestablecidas.Sabin_5}',
+        '${vacunasPreestablecidas.Sabin_6}',
+        '${vacunasPreestablecidas.Sabin_7}',
+        '${vacunasPreestablecidas.Sabin_8}',
+        '${vacunasPreestablecidas.SR}'
+    )
+    ON DUPLICATE KEY UPDATE
+    fecha_bcg = '${vacunasPreestablecidas.BCG}',
+    fecha_hepatitisb1 = '${vacunasPreestablecidas.Hepatitis_B_Primera}',
+    fecha_hepatitisb2 = '${vacunasPreestablecidas.Hepatitis_B_Segunda}',
+    fecha_hepatitisb3 = '${vacunasPreestablecidas.Hepatitis_B_Tercera}',
+    fecha_prevalente1 = '${vacunasPreestablecidas.Pentavalente_Primera}',
+    fecha_prevalente2 = '${vacunasPreestablecidas.Pentavalente_Segunda}',
+    fecha_prevalente3 = '${vacunasPreestablecidas.Pentavalente_Tercera}',
+    fecha_prevalente4 = '${vacunasPreestablecidas.Pentavalente_Cuarta}',
+    fecha_dpt = '${vacunasPreestablecidas.DPT}',
+    fecha_rotavirus1 = '${vacunasPreestablecidas.Rotavirus_Primera}',
+    fecha_rotavirus2 = '${vacunasPreestablecidas.Rotavirus_Segunda}',
+    fecha_rotavirus3 = '${vacunasPreestablecidas.Rotavirus_Tercera}',
+    fecha_neumococica1 = '${vacunasPreestablecidas.Neumococica_Primera}',
+    fecha_neumococica2 = '${vacunasPreestablecidas.Neumococica_Segunda}',
+    fecha_neumococica3 = '${vacunasPreestablecidas.Neumococica_Refuerzo}',
+    fecha_influenza1 = '${vacunasPreestablecidas.Influenza_Primera}',
+    fecha_influenza2 = '${vacunasPreestablecidas.Influenza_Segunda}',
+    fecha_influenza3 = '${vacunasPreestablecidas.Influenza_Revacunación}',
+    fecha_srp1 = '${vacunasPreestablecidas.SRP_Primera}',
+    fecha_srp2 = '${vacunasPreestablecidas.SRP_Refuerzo}',
+    fecha_sabin1 = '${vacunasPreestablecidas.Sabin_1}',
+    fecha_sabin2 = '${vacunasPreestablecidas.Sabin_2}',
+    fecha_sabin3 = '${vacunasPreestablecidas.Sabin_3}',
+    fecha_sabin4 = '${vacunasPreestablecidas.Sabin_4}',
+    fecha_sabin5 = '${vacunasPreestablecidas.Sabin_5}',
+    fecha_sabin6 = '${vacunasPreestablecidas.Sabin_6}',
+    fecha_sabin7 = '${vacunasPreestablecidas.Sabin_7}',
+    fecha_sabin8 = '${vacunasPreestablecidas.Sabin_8}',
+    fecha_sr = '${vacunasPreestablecidas.SR}';
+`;
+      conexion.query(sqlVacunasPreestablecidas);
+
+      const sqlOtrasVacunas = `
+    INSERT INTO vacuna (usuario_id, nombre, enfermedad_preventiva, dosis, edad_frecuencia, fecha_vacunacion)
+    VALUES ('${rowUsuario[0].usuario_id}', '${otrasVacunas.Vacuna}', '${otrasVacunas.Enfermedad_Preventiva}', '${otrasVacunas.Dosis}', '${otrasVacunas.Edad_Frecuencia}', '${otrasVacunas.FechaVacunacion}')
+    ON DUPLICATE KEY UPDATE
+    nombre = '${otrasVacunas.Vacuna}',
+    enfermedad_preventiva = '${otrasVacunas.Enfermedad_Preventiva}',
+    dosis = '${otrasVacunas.Dosis}',
+    edad_frecuencia = '${otrasVacunas.Edad_Frecuencia}',
+    fecha_vacunacion = '${otrasVacunas.FechaVacunacion}';
+`;
+      conexion.query(sqlOtrasVacunas, (err, row) => {
+        if (err) {
+          throw err
+        } else {
+          console.log(sqlOtrasVacunas)
+        }
+      });
+
+      const sqlHistorialMedico = `
+    INSERT INTO historial_medico (
+        usuario_id, 
+        hospitalizacion_lesiones, 
+        reacciones_alergicas, 
+        problemas_corazon, 
+        marcapasos_desfibrilador, 
+        antecedentes_endocarditis, 
+        implante_ortopedico, 
+        fiebre_reumatica, 
+        presion_arterial, 
+        accidente_cerebrovascular, 
+        problemas_sanguineos, 
+        Hemorragia_prolongada_debido_a_un_corte, 
+        Enfisema_falta_de_aliento_sarcoidosis, 
+        Tuberculosis_sarampion_varicela, 
+        Asma, 
+        Problemas_respiratorios_o_de_sueno, 
+        Problemas_renales, 
+        Enfermedad_hepatica, 
+        Ictericia, 
+        Problemas_de_tiroides_enfermedad_paratiroidea_o_deficiencia_de_c, 
+        Deficiencia_hormonal, 
+        Colesterol_alto_o_toma_de_estatinas, 
+        Diabetes, 
+        Ulceras_estomacales_o_duodenales, 
+        Trastornos_digestivos, 
+        Osteoporosis_osteopenia, 
+        Artritis, 
+        Enfermedad_autoinmunitaria, 
+        Glaucoma, 
+        Lentes_de_contacto, 
+        Lesiones_en_la_cabeza_o_en_el_cuello, 
+        Epilepsia_convulsiones, 
+        Trastornos_neurologicos, 
+        Infecciones_virales_y_herpes_labial, 
+        Cualquier_bulto_o_hinchazon_en_la_boca, 
+        Urticaria_erupcion_cutanea_fiebre_del_heno, 
+        ITS_ETS_VPH, 
+        Hepatitis, 
+        VIH_SIDA, 
+        Tumores, 
+        Terapia_de_radiacion, 
+        Quimioterapia_medicamentos_inmunosupresores, 
+        Dificultades_emocionales, 
+        Tratamiento_psiquiatrico, 
+        Medicamentos_antidepresivos, 
+        Uso_de_alcohol_drogas_recreativas
+    )
+    VALUES (
+        '${rowUsuario[0].usuario_id}', 
+        ${historialMedico.hospitalizacion_lesiones ? 1 : 0}, 
+        ${historialMedico.reacciones_alergicas ? 1 : 0}, 
+        ${historialMedico.problemas_corazon ? 1 : 0}, 
+        ${historialMedico.marcapasos_desfibrilador ? 1 : 0}, 
+        ${historialMedico.antecedentes_endocarditis ? 1 : 0}, 
+        ${historialMedico.implante_ortopedico ? 1 : 0}, 
+        ${historialMedico.fiebre_reumatica ? 1 : 0}, 
+        ${historialMedico.presion_arterial ? 1 : 0}, 
+        ${historialMedico.accidente_cerebrovascular ? 1 : 0}, 
+        ${historialMedico.problemas_sanguineos ? 1 : 0}, 
+        ${historialMedico.Hemorragia_prolongada_debido_a_un_corte ? 1 : 0}, 
+        ${historialMedico.Enfisema_falta_de_aliento_sarcoidosis ? 1 : 0}, 
+        ${historialMedico.Tuberculosis_sarampion_varicela ? 1 : 0}, 
+        ${historialMedico.Asma ? 1 : 0}, 
+        ${historialMedico.Problemas_respiratorios_o_de_sueno ? 1 : 0}, 
+        ${historialMedico.Problemas_renales ? 1 : 0}, 
+        ${historialMedico.Enfermedad_hepatica ? 1 : 0}, 
+        ${historialMedico.Ictericia ? 1 : 0}, 
+        ${historialMedico.Problemas_de_tiroides_enfermedad_paratiroidea_o_deficiencia_de_c ? 1 : 0}, 
+        ${historialMedico.Deficiencia_hormonal ? 1 : 0}, 
+        ${historialMedico.Colesterol_alto_o_toma_de_estatinas ? 1 : 0}, 
+        ${historialMedico.Diabetes ? 1 : 0}, 
+        ${historialMedico.Ulceras_estomacales_o_duodenales ? 1 : 0}, 
+        ${historialMedico.Trastornos_digestivos ? 1 : 0}, 
+        ${historialMedico.Osteoporosis_osteopenia ? 1 : 0}, 
+        ${historialMedico.Artritis ? 1 : 0}, 
+        ${historialMedico.Enfermedad_autoinmunitaria ? 1 : 0}, 
+        ${historialMedico.Glaucoma ? 1 : 0}, 
+        ${historialMedico.Lentes_de_contacto ? 1 : 0}, 
+        ${historialMedico.Lesiones_en_la_cabeza_o_en_el_cuello ? 1 : 0}, 
+        ${historialMedico.Epilepsia_convulsiones ? 1 : 0}, 
+        ${historialMedico.Trastornos_neurologicos ? 1 : 0}, 
+        ${historialMedico.Infecciones_virales_y_herpes_labial ? 1 : 0}, 
+        ${historialMedico.Cualquier_bulto_o_hinchazon_en_la_boca ? 1 : 0}, 
+        ${historialMedico.Urticaria_erupcion_cutanea_fiebre_del_heno ? 1 : 0}, 
+        ${historialMedico.ITS_ETS_VPH ? 1 : 0}, 
+        ${historialMedico.Hepatitis ? 1 : 0}, 
+        ${historialMedico.VIH_SIDA ? 1 : 0}, 
+        ${historialMedico.Tumores ? 1 : 0}, 
+        ${historialMedico.Terapia_de_radiacion ? 1 : 0}, 
+        ${historialMedico.Quimioterapia_medicamentos_inmunosupresores ? 1 : 0}, 
+        ${historialMedico.Dificultades_emocionales ? 1 : 0}, 
+        ${historialMedico.Tratamiento_psiquiatrico ? 1 : 0}, 
+        ${historialMedico.Medicamentos_antidepresivos ? 1 : 0}, 
+        ${historialMedico.Uso_de_alcohol_drogas_recreativas ? 1 : 0}
+    )
+    ON DUPLICATE KEY UPDATE
+    hospitalizacion_lesiones = ${historialMedico.hospitalizacion_lesiones ? 1 : 0},
+    reacciones_alergicas = ${historialMedico.reacciones_alergicas ? 1 : 0},
+    problemas_corazon = ${historialMedico.problemas_corazon ? 1 : 0},
+    marcapasos_desfibrilador = ${historialMedico.marcapasos_desfibrilador ? 1 : 0},
+    antecedentes_endocarditis = ${historialMedico.antecedentes_endocarditis ? 1 : 0},
+    implante_ortopedico = ${historialMedico.implante_ortopedico ? 1 : 0},
+    fiebre_reumatica = ${historialMedico.fiebre_reumatica ? 1 : 0},
+    presion_arterial = ${historialMedico.presion_arterial ? 1 : 0},
+    accidente_cerebrovascular = ${historialMedico.accidente_cerebrovascular ? 1 : 0},
+    problemas_sanguineos = ${historialMedico.problemas_sanguineos ? 1 : 0},
+    Hemorragia_prolongada_debido_a_un_corte = ${historialMedico.Hemorragia_prolongada_debido_a_un_corte ? 1 : 0},
+    Enfisema_falta_de_aliento_sarcoidosis = ${historialMedico.Enfisema_falta_de_aliento_sarcoidosis ? 1 : 0},
+    Tuberculosis_sarampion_varicela = ${historialMedico.Tuberculosis_sarampion_varicela ? 1 : 0},
+    Asma = ${historialMedico.Asma ? 1 : 0},
+    Problemas_respiratorios_o_de_sueno = ${historialMedico.Problemas_respiratorios_o_de_sueno ? 1 : 0},
+    Problemas_renales = ${historialMedico.Problemas_renales ? 1 : 0},
+    Enfermedad_hepatica = ${historialMedico.Enfermedad_hepatica ? 1 : 0},
+    Ictericia = ${historialMedico.Ictericia ? 1 : 0},
+    Problemas_de_tiroides_enfermedad_paratiroidea_o_deficiencia_de_c = ${historialMedico.Problemas_de_tiroides_enfermedad_paratiroidea_o_deficiencia_de_c ? 1 : 0},
+    Deficiencia_hormonal = ${historialMedico.Deficiencia_hormonal ? 1 : 0},
+    Colesterol_alto_o_toma_de_estatinas = ${historialMedico.Colesterol_alto_o_toma_de_estatinas ? 1 : 0},
+    Diabetes = ${historialMedico.Diabetes ? 1 : 0},
+    Ulceras_estomacales_o_duodenales = ${historialMedico.Ulceras_estomacales_o_duodenales ? 1 : 0},
+    Trastornos_digestivos = ${historialMedico.Trastornos_digestivos ? 1 : 0},
+    Osteoporosis_osteopenia = ${historialMedico.Osteoporosis_osteopenia ? 1 : 0},
+    Artritis = ${historialMedico.Artritis ? 1 : 0},
+    Enfermedad_autoinmunitaria = ${historialMedico.Enfermedad_autoinmunitaria ? 1 : 0},
+    Glaucoma = ${historialMedico.Glaucoma ? 1 : 0},
+    Lentes_de_contacto = ${historialMedico.Lentes_de_contacto ? 1 : 0},
+    Lesiones_en_la_cabeza_o_en_el_cuello = ${historialMedico.Lesiones_en_la_cabeza_o_en_el_cuello ? 1 : 0},
+    Epilepsia_convulsiones = ${historialMedico.Epilepsia_convulsiones ? 1 : 0},
+    Trastornos_neurologicos = ${historialMedico.Trastornos_neurologicos ? 1 : 0},
+    Infecciones_virales_y_herpes_labial = ${historialMedico.Infecciones_virales_y_herpes_labial ? 1 : 0},
+    Cualquier_bulto_o_hinchazon_en_la_boca = ${historialMedico.Cualquier_bulto_o_hinchazon_en_la_boca ? 1 : 0},
+    Urticaria_erupcion_cutanea_fiebre_del_heno = ${historialMedico.Urticaria_erupcion_cutanea_fiebre_del_heno ? 1 : 0},
+    ITS_ETS_VPH = ${historialMedico.ITS_ETS_VPH ? 1 : 0},
+    Hepatitis = ${historialMedico.Hepatitis ? 1 : 0},
+    VIH_SIDA = ${historialMedico.VIH_SIDA ? 1 : 0},
+    Tumores = ${historialMedico.Tumores ? 1 : 0},
+    Terapia_de_radiacion = ${historialMedico.Terapia_de_radiacion ? 1 : 0},
+    Quimioterapia_medicamentos_inmunosupresores = ${historialMedico.Quimioterapia_medicamentos_inmunosupresores ? 1 : 0},
+    Dificultades_emocionales = ${historialMedico.Dificultades_emocionales ? 1 : 0},
+    Tratamiento_psiquiatrico = ${historialMedico.Tratamiento_psiquiatrico ? 1 : 0},
+    Medicamentos_antidepresivos = ${historialMedico.Medicamentos_antidepresivos ? 1 : 0},
+    Uso_de_alcohol_drogas_recreativas = ${historialMedico.Uso_de_alcohol_drogas_recreativas ? 1 : 0};
+`;
+
+    conexion.query(sqlHistorialMedico, (err, row )=> {
+      if (err) {
+        throw err
+      } else {
+        console.log("Imprimideishon")
+      }
+    })
+
+    }
+  });
+
+  console.log(telefono);
+  // console.log(vacunasPreestablecidas);
+  // console.log(historialMedico);
+  // console.log(otrasVacunas);
 });
