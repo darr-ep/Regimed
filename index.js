@@ -37,13 +37,13 @@ app.use(
   })
 );
 
-// const pool = mysql.createPool({
-//   connectionLimit: 50,
-//   host: process.env.DB_HOST,
-//   database: process.env.DB_NAME,
-//   user: process.env.DB_USER,
-//   password: process.env.DB_PASSWORD,
-// });
+const pool = mysql.createPool({
+  connectionLimit: 50,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+});
 
 // function consultar(query, params = []) {
 //   return new Promise((resolve, reject) => {
@@ -516,19 +516,13 @@ app.get("/principal", async (req, res) => {
     }
 
     // Consulta para obtener datos personales
-    const datosPersonales = await consultarDatosPersonales(
-      req.session.idUsuario
-    );
+    const datosPersonales = await consultarDatosPersonales(req.session.idUsuario);
 
     // Consulta para obtener registros compartidos
-    const registrosCompartidos = await consultarRegistrosCompartidos(
-      req.session.idUsuario
-    );
+    const registrosCompartidos = await consultarRegistrosCompartidos(req.session.idUsuario);
 
     // Consulta para verificar si el teléfono está verificado
-    const telefonoVerificado = await verificarSiEstaVerificado(
-      req.session.idUsuario
-    );
+    const telefonoVerificado = await verificarSiEstaVerificado(req.session.idUsuario);
 
     // Renderizar la vista principal con los datos obtenidos
     res.render("principal", {
@@ -548,8 +542,6 @@ app.get("/principal", async (req, res) => {
       telefonoVerificado: telefonoVerificado,
     });
 
-    // Cierre de la conexión después de todas las operaciones
-    conexion.end();
   } catch (error) {
     console.error("Error al obtener datos:", error);
     res.status(500).send("Error interno del servidor");
@@ -559,24 +551,31 @@ app.get("/principal", async (req, res) => {
 // Función para consultar datos personales
 async function consultarDatosPersonales(idUsuario) {
   return new Promise((resolve, reject) => {
-    const consulta = `SELECT * FROM datos_personales WHERE usuario_id = '${idUsuario}'`;
-    conexion.query(consulta, (err, row) => {
+    pool.getConnection((err, connection) => {
       if (err) {
         reject(err);
-      } else {
-        resolve({
-          nombre: row[0].nombre,
-          curp: row[0].curp,
-          imagen: row[0].imagen ? row[0].imagen : "usuario.png",
-          telefono: row[0].telefono,
-          nacimiento: obtenerFechaFormateada(row[0].fecha_nac),
-          peso: row[0].peso,
-          estatura: row[0].estatura,
-          sexo: row[0].sexo,
-          nacionalidad: row[0].nacionalidad,
-          sangre: row[0].tipo_sangre,
-        });
       }
+
+      const consulta = `SELECT * FROM datos_personales WHERE usuario_id = ?`;
+      connection.query(consulta, [idUsuario], (err, row) => {
+        connection.release();
+        if (err) {
+          reject(err);
+        } else {
+          resolve({
+            nombre: row[0].nombre,
+            curp: row[0].curp,
+            imagen: row[0].imagen ? row[0].imagen : "usuario.png",
+            telefono: row[0].telefono,
+            nacimiento: obtenerFechaFormateada(row[0].fecha_nac),
+            peso: row[0].peso,
+            estatura: row[0].estatura,
+            sexo: row[0].sexo,
+            nacionalidad: row[0].nacionalidad,
+            sangre: row[0].tipo_sangre,
+          });
+        }
+      });
     });
   });
 }
@@ -584,19 +583,26 @@ async function consultarDatosPersonales(idUsuario) {
 // Función para consultar registros compartidos
 async function consultarRegistrosCompartidos(idUsuario) {
   return new Promise((resolve, reject) => {
-    const consulta = `
-      SELECT registros_compartidos.*, datos_personales.*
-      FROM registros_compartidos
-      INNER JOIN datos_personales
-      ON registros_compartidos.usuarioCompartido_id = datos_personales.usuario_id
-      WHERE registros_compartidos.usuario_id = '${idUsuario}'
-    `;
-    conexion.query(consulta, (err, registrosCompartidos) => {
+    pool.getConnection((err, connection) => {
       if (err) {
         reject(err);
-      } else {
-        resolve(registrosCompartidos);
       }
+
+      const consulta = `
+        SELECT registros_compartidos.*, datos_personales.*
+        FROM registros_compartidos
+        INNER JOIN datos_personales
+        ON registros_compartidos.usuarioCompartido_id = datos_personales.usuario_id
+        WHERE registros_compartidos.usuario_id = ?
+      `;
+      connection.query(consulta, [idUsuario], (err, registrosCompartidos) => {
+        connection.release();
+        if (err) {
+          reject(err);
+        } else {
+          resolve(registrosCompartidos);
+        }
+      });
     });
   });
 }
@@ -604,26 +610,34 @@ async function consultarRegistrosCompartidos(idUsuario) {
 // Función para verificar si el telefono está verificado
 async function verificarSiEstaVerificado(idUsuario) {
   return new Promise((resolve, reject) => {
-    const consultaTelefono = `SELECT telefono FROM datos_personales WHERE usuario_id = '${idUsuario}'`;
-    conexion.query(consultaTelefono, (err, rows) => {
+    pool.getConnection((err, connection) => {
       if (err) {
         reject(err);
-      } else {
-        const telefono =
-          rows.length > 0 ? rows[0].telefono.replace(/\s/g, "") : "";
-        if (telefono !== "") {
-          const consultaVerificacion = `SELECT * FROM numeros_verificados WHERE telefono = '${telefono}'`;
-          conexion.query(consultaVerificacion, (err, verificaciones) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(verificaciones.length > 0 ? "V" : "N");
-            }
-          });
-        } else {
-          resolve("");
-        }
       }
+
+      const consultaTelefono = `SELECT telefono FROM datos_personales WHERE usuario_id = ?`;
+      connection.query(consultaTelefono, [idUsuario], (err, rows) => {
+        if (err) {
+          connection.release();
+          reject(err);
+        } else {
+          const telefono = rows.length > 0 ? rows[0].telefono.replace(/\s/g, "") : "";
+          if (telefono !== "") {
+            const consultaVerificacion = `SELECT * FROM numeros_verificados WHERE telefono = ?`;
+            connection.query(consultaVerificacion, [telefono], (err, verificaciones) => {
+              connection.release();
+              if (err) {
+                reject(err);
+              } else {
+                resolve(verificaciones.length > 0 ? "V" : "N");
+              }
+            });
+          } else {
+            connection.release();
+            resolve("");
+          }
+        }
+      });
     });
   });
 }
@@ -636,6 +650,15 @@ function obtenerFechaFormateada(fecha) {
   }
   return null;
 }
+
+app.use(
+  session({
+    secret: claveSecreta,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false },
+  })
+);
 
 app.get("/paciente/:telefono", (req, res) => {
   if (!req.session.idDoctor) {
