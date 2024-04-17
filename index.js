@@ -1410,7 +1410,7 @@ app.post("/registroDoctor/:cedula/:especialidad/:captcha", async (req, res) => {
   const especialidad = req.params.especialidad;
 
   const verificacionCaptcha = await fetch(
-    `https://www.google.com/recaptcha/api/siteverify?secret=6LcNdb0pAAAAAD5dgEMLVUN2Ze1CumIRzC5NN_PX&response=${req.params.captcha}`,
+    `https://www.google.com/recaptcha/api/siteverify?secret=6LdjYrspAAAAAJn2Q6rIFphoWsw52t4cjRSv5w5p&response=${req.params.captcha}`,
     {
       method: "POST",
     }
