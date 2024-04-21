@@ -51,24 +51,12 @@
                             <p>Historial médico</p>
                         </a>
                     </li>
-                    <li>
-                        <a href="#enfermedades" class="opcion">
-                            <i class="fa-solid fa-star-of-life"></i>
-                            <p>Recetas médicas</p>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#registros" class="opcion">
-                            <i class="fa-solid fa-user-group"></i>
-                            <p>Registros</p>
-                        </a>
-                    </li>
                 </ul>
             </div>
         </aside>
         <div class="contenidoGeneral">
             <nav>
-                <a href="/"><img class="nav__logo" src="/img/Logo/LogoCompPositive.png" alt=""></a>
+                <div class="verificarNumeroTelefonico"></div>
                 <ul class="nav__enlaces">
                   <li><a class="nav__enlace" href="/" id="navInicio">Inicio</a></li>
                   <% if (sesion) {%>
@@ -126,7 +114,7 @@
                                     <div class="seccion__datoPersonal telefono">
                                         <strong>Teléfono</strong>
                                         <% if (typeof telefono !== 'undefined' && telefono !== null && telefono !== '') { %>
-                                            <p><%= telefono %> <%if (telefonoVerificado === "V") {%><i class="fa-solid fa-circle-check"></i><%}%><%if (telefonoVerificado === "N") {%><i class="fa-solid fa-circle-xmark"></i></i><%}%></p>
+                                            <p><%= telefono %></p>
                                         <% } else { %>
                                             <p class="vacio">Vacío</p>
                                         <% } %>
