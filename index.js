@@ -1287,7 +1287,7 @@ app.post("/registro", async (req, res) => {
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "src/public/images/users");
+    cb(null, "/src/public/images/users");
   },
   filename: function (req, file, cb) {
     // Obtener la extensión del archivo original
@@ -1318,7 +1318,7 @@ app.post("/datosUsuario", upload.single("imagen"), async (req, res) => {
   const imagenGuardada = datos.imagenGuardada;
 
   if (imagenGuardada !== imagen && imagenGuardada !== "usuario.png") {
-    fs.unlink("/public/images/users/" + imagenGuardada, (err) => {
+    fs.unlink("/src/public/images/users/" + imagenGuardada, (err) => {
       if (err) {
         console.error("Error al eliminar el archivo:", err);
       } else {
