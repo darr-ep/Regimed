@@ -577,6 +577,7 @@ button.boton-cancelar:hover {
 }
 
 .modal__codigo {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 10px;

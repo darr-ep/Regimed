@@ -27,14 +27,15 @@ document.getElementById("regenerarCodigo").addEventListener("click", () => {
 let intervalo;
 
 function iniciarTemporizador(tiempoRestante) {
-  document.getElementById("loader__container").style.display = "initial";
-  document.getElementById("temporizadorCodigo").style.display = "initial";
+  document.getElementById("loader__container").style.opacity = 1;
   document.getElementById("regenerarCodigo").style.display = "none";
+  document.getElementById("temporizadorCodigo").style.display = "none";
 
   fetch("/generarTokenRegistro")
     .then((response) => response.json())
     .then((data) => {
-      document.getElementById("loader__container").style.display = "none";
+      document.getElementById("loader__container").style.opacity = 0;
+      document.getElementById("temporizadorCodigo").style.display = "initial";
       // tokenRegistroPendiente = data.token;
       tiempoRestante =
         data.tiempoRestante !== undefined ? data.tiempoRestante : 180;
