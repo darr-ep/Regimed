@@ -28,6 +28,8 @@ let intervalo;
 
 function iniciarTemporizador(tiempoRestante) {
   document.getElementById("loader__container").style.opacity = 1;
+  document.getElementById("texto__codigo").style.opacity = 0;
+  document.getElementById("contenedorCodigo").style.opacity = 0;
   document.getElementById("regenerarCodigo").style.display = "none";
   document.getElementById("temporizadorCodigo").style.display = "none";
 
@@ -35,6 +37,8 @@ function iniciarTemporizador(tiempoRestante) {
     .then((response) => response.json())
     .then((data) => {
       document.getElementById("loader__container").style.opacity = 0;
+      document.getElementById("texto__codigo").style.opacity = 1;
+      document.getElementById("contenedorCodigo").style.opacity = 1;
       document.getElementById("temporizadorCodigo").style.display = "initial";
       // tokenRegistroPendiente = data.token;
       tiempoRestante =
@@ -105,6 +109,7 @@ function formatoNumerico(input) {
 
 document.getElementById("modal__registro").onsubmit = (e) => {
   e.preventDefault();
+  document.getElementById("fondo__loader").classList.add("mostrar-ventana");
 
   const formData = new FormData(document.getElementById("modal__registro"));
   const codigo = formData.get("codigoRegistro");
@@ -125,6 +130,7 @@ document.getElementById("modal__registro").onsubmit = (e) => {
   })
     .then((response) => response.json())
     .then((data) => {
+      document.getElementById("fondo__loader").classList.remove("mostrar-ventana");
       if (data.usuario === "Mismo") {
         Swal.fire({
           icon: "error",
