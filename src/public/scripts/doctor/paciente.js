@@ -75,7 +75,7 @@ consultarPaciente.addEventListener("click", () => {
   const telefonoPaciente = formData.get("telefono");
   const codigo = formData.get("codigoSMS");
 
-  document.getElementById("loader__container").style.opacity = 1;
+  document.getElementById("fondo__loader").classList.add("mostrar-ventana");
 
   fetch(
     "/verificarCodigoPaciente/" +
@@ -92,7 +92,7 @@ consultarPaciente.addEventListener("click", () => {
     .then((response) => response.json())
     .then((data) => {
       if (data.codigo === "Erroneo") {
-        document.getElementById("loader__container").style.opacity = 0;
+        document.getElementById("fondo__loader").classList.remove("mostrar-ventana");
         Swal.fire({
           icon: "error",
           title: "Error",
