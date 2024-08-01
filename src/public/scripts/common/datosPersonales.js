@@ -90,8 +90,7 @@ function formatoNacionalidad(input) {
 document
   .getElementById("guardar__informacion")
   .addEventListener("click", () => {
-    contenedorDatosPersonales.classList.remove("mostrar-ventana");
-    ventanaDatosPersonales.classList.remove("agrandar-ventana");
+    document.getElementById("fondo__loader").classList.add("mostrar-ventana");
     const formData = new FormData();
     formData.append("nombre", document.getElementById("nombreUsuario").value);
     formData.append("curp", document.getElementById("curpUsuario").value);
@@ -144,6 +143,9 @@ document
     })
       .then((response) => {
         if (response.ok) {
+          contenedorDatosPersonales.classList.remove("mostrar-ventana");
+          ventanaDatosPersonales.classList.remove("agrandar-ventana");
+          document.getElementById("fondo__loader").classList.remove("mostrar-ventana");
           Swal.fire({
             title: "Los datos han sido guardados",
             icon: "success",
@@ -162,6 +164,8 @@ document
       })
       .catch((error) => {
         console.error("Error al enviar el formulario:", error);
+        contenedorDatosPersonales.classList.remove("mostrar-ventana");
+        ventanaDatosPersonales.classList.remove("agrandar-ventana");
         Swal.fire({
           icon: "error",
           title: "Error",
