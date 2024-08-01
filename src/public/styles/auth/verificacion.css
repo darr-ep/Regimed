@@ -51,7 +51,7 @@ ul {
 }
 
 main {
-    background: linear-gradient(#ffa60070, #34003f70), url(../img/background/David\ Bartus.jpg);
+    background: linear-gradient(#ffa60070, #34003f70), url(/images/background/David\ Bartus.jpg);
     background-position: center;
     background-size: cover;
     width: 100%;

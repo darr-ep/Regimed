@@ -662,7 +662,7 @@ app.get("/cerrarSesion", (req, res) => {
 });
 
 app.get("/verificacion/usuario/:correo", (req, res) => {
-  res.render("verificacion", {
+  res.render("auth/verificacion", {
     correo: req.params.correo,
     sesion: req.session.idUsuario,
   });
