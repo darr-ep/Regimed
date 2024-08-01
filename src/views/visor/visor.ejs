@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regimed | Usuario</title>
+    <link rel="icon" href="/images/logo/LogoPositive.png" type="image/png">
+    <link rel="stylesheet" href="/styles/visor/visor.css">
+    <script src="https://kit.fontawesome.com/f5b8feb020.js" crossorigin="anonymous"></script>
+    <script defer src="/scripts/common/verConsulta.js"></script>
+    <script defer src="/scripts/common/aside.js"></script>
+    <script defer src="/scripts/common/buscadorVacunas.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
+        integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script defer src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+
+<body>
+    <div class="contenido">
+        <aside>
+            <ul>
+                <a href="/">
+                    <img class="logo" src="/images/Logo/LogoCompPositive.png" href="">
+                </a>
+                <li>
+                    <a href="#informacion" class="seleccionado">
+                        <i class="fa-solid fa-user"></i>
+                        Información
+                    </a>
+                </li>
+                <li>
+                    <a href="#vacunas">
+                        <i class="fa-solid fa-syringe"></i>
+                        Vacunas
+                    </a>
+                </li>
+                <li>
+                    <a href="#consultas">
+                        <i class="fa-solid fa-notes-medical"></i>
+                        Consultas
+                    </a>
+                </li>
+                <!-- <li>
+                    <a href="#historial">
+                        <i class="fa-solid fa-file-medical"></i>
+                        Historial médico
+                    </a>
+                </li> -->
+            </ul>
+        </aside>
+        <main id="informacion">
+            <div class="seccion">
+                <div class="seccion__titulo">
+                    <h1 class="seccion__titulo--titulo">
+                        <i class="fa-solid fa-user"></i> Información General
+                    </h1>
+                </div>
+                <div class="seccion__contenido informacion__general">
+                    <div class="informacion__general--informacion informacion__primero">
+                        <img src="/images/users/<%= imagenAMostrar %>" alt="" id="imagenGuardada">
+                        <% if (typeof nombre_comp !=='undefined' && nombre_comp !==null && nombre_comp !=='' ) { %>
+                            <p>
+                                <%= nombre_comp %>
+                            </p>
+                            <% } else { %>
+                                <p class="vacio">Vacío</p>
+                                <% } %>
+                                    <ul>
+                                        <li>
+                                            <span>CURP</span>
+                                            <% if (typeof curp !=='undefined' && curp !==null && curp !=='' ) { %>
+                                                <p>
+                                                    <%= curp %>
+                                                </p>
+                                                <% } else { %>
+                                                    <p class="vacio">Vacío</p>
+                                                    <% } %>
+                                        </li>
+                                        <li>
+                                            <span>Teléfono</span>
+                                            <% if (typeof telefono !=='undefined' && telefono !==null && telefono !==''
+                                                ) { %>
+                                                <p>
+                                                    <%= telefono %>
+                                                </p>
+                                                <% } else { %>
+                                                    <p class="vacio">Vacío</p>
+                                                    <% } %>
+                                        </li>
+                                    </ul>
+                    </div>
+                    <ul class="informacion__general--informacion informacion__lateral">
+                        <li>
+                            <span>Peso</span>
+                            <% if (typeof peso !=='undefined' && peso !==null && peso !=='' && peso !==0) { %>
+                                <p>
+                                    <%= peso %> Kg
+                                </p>
+                                <% } else { %>
+                                    <p class="vacio">Vacío</p>
+                                    <% } %>
+                        </li>
+                        <li>
+                            <span>IMC</span>
+                            <% if (typeof peso !=='undefined' && typeof estatura !=='undefined' && peso !==null &&
+                                estatura !==null && peso !=='' && estatura !=='' && peso !==0 && estatura !==0) { %>
+                                <% var imc=peso / (estatura * estatura); %>
+                                    <p>
+                                        <%= imc.toFixed(2) %>
+                                    </p>
+                                    <% } else { %>
+                                        <p class="vacio">Vacío</p>
+                                        <% } %>
+                        </li>
+                        <li>
+                            <span>Sexo</span>
+                            <% if (typeof sexo !=='undefined' && sexo !==null && sexo !=='' ) { %>
+                                <p>
+                                    <%= sexo %>
+                                </p>
+                                <% } else { %>
+                                    <p class="vacio">Vacío</p>
+                                    <% } %>
+                        </li>
+                        <li>
+                            <span>Nacimiento</span>
+                            <% if (typeof nacimiento !=='undefined' && nacimiento !==null && nacimiento !=='' &&
+                                nacimiento !=='0000-00-00' ) { %>
+                                <p>
+                                    <%= nacimiento %>
+                                </p>
+                                <% } else { %>
+                                    <p class="vacio">Vacío</p>
+                                    <% } %>
+                        </li>
+                    </ul>
+                    <ul class="informacion__general--informacion informacion__lateral">
+                        <li>
+                            <span>Estatura</span>
+                            <% if (typeof estatura !=='undefined' && estatura !==null && estatura !=='' && estatura
+                                !==0) { %>
+                                <p>
+                                    <%= estatura %> m
+                                </p>
+                                <% } else { %>
+                                    <p class="vacio">Vacío</p>
+                                    <% } %>
+                        </li>
+                        <li>
+                            <span>Tipo de sangre</span>
+                            <% if (typeof sangre !=='undefined' && sangre !==null && sangre !=='' ) { %>
+                                <p>
+                                    <%= sangre %>
+                                </p>
+                                <% } else { %>
+                                    <p class="vacio">Vacío</p>
+                                    <% } %>
+                        </li>
+                        <li>
+                            <span>Nacionalidad</span>
+                            <% if (typeof nacionalidad !=='undefined' && nacionalidad !==null && nacionalidad !=='' ) {
+                                %>
+                                <p>
+                                    <%= nacionalidad %>
+                                </p>
+                                <% } else { %>
+                                    <p class="vacio">Vacío</p>
+                                    <% } %>
+                        </li>
+                        <li>
+                            <span>Edad</span>
+                            <% if (typeof nacimiento !=='undefined' && nacimiento !==null && nacimiento !=='' &&
+                                nacimiento !=='0000-00-00' ) { %>
+                                <% var fechaNacimiento=new Date(nacimiento); var fechaActual=new Date(); var
+                                    edad=fechaActual.getFullYear() - fechaNacimiento.getFullYear(); if
+                                    (fechaActual.getMonth() < fechaNacimiento.getMonth() ||
+                                    (fechaActual.getMonth()===fechaNacimiento.getMonth() && fechaActual.getDate() <
+                                    fechaNacimiento.getDate())) { edad--; } %>
+                                    <p>
+                                        <%= edad %> años
+                                    </p>
+                                    <% } else { %>
+                                        <p class="vacio">Vacío</p>
+                                        <% } %>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div id="vacunas" class="seccion">
+                <div class="seccion__titulo">
+                    <h1 class="seccion__titulo--titulo">
+                        <i class="fa-solid fa-syringe"></i> Vacunas
+                    </h1>
+                </div>
+                <div class="seccion__vacunas">
+                    <div class="seccion__contenido">
+                        <div class="buscador">
+                            <input class="input" type="text" id="buscar" placeholder="Buscar vacuna...">
+                            
+                            <select class="input" id="ordenarPor">
+                                <option value="nombre" selected>Nombre</option>
+                                <option value="fecha">Fecha</option>
+                                <option value="profesional">Profesional</option>
+                            </select>
+                        </div>
+                        <div class="seccion__contenido--vacunas vacunas">
+                            <div class="vacuna">
+                                <div class="vacuna--informacion">
+                                    <p class="vacuna__nombre">BCG</p>
+                                    <p>Fecha: 25-Junio-2024</p>
+                                    <p>Lote: BCG-2024-01</p>
+                                    <p>Fecha de caducidad: 25-Junio-2025</p>
+                                    <p>Reacciones adversas: Ninguna</p>
+                                    <p>Profesional: Dr. Pérez</p>
+                                </div>
+                                <div class="receta__boton">
+                                    <button id="abrir__receta" class="boton-datos">
+                                        Ver Receta
+                                    </button>
+                                </div>
+                            </div>
+                        
+                            <div class="vacuna">
+                                <div class="vacuna--informacion">
+                                    <p class="vacuna__nombre">DTP (Difteria, Tétanos, Pertussis)</p>
+                                    <p>Fecha: 30-Junio-2024</p>
+                                    <p>Lote: DTP-2024-03</p>
+                                    <p>Fecha de caducidad: 30-Junio-2025</p>
+                                    <p>Reacciones adversas: Dolor en el sitio de inyección</p>
+                                    <p>Profesional: Dra. López</p>
+                                </div>
+                                <div class="receta__boton">
+                                    <button id="abrir__receta" class="boton-datos">
+                                        Ver Receta
+                                    </button>
+                                </div>
+                            </div>
+                        
+                            <div class="vacuna">
+                                <div class="vacuna--informacion">
+                                    <p class="vacuna__nombre">Hepatitis A</p>
+                                    <p>Fecha: 02-Julio-2024</p>
+                                    <p>Lote: HEPA-2024-06</p>
+                                    <p>Fecha de caducidad: 02-Julio-2025</p>
+                                    <p>Reacciones adversas: Ninguna</p>
+                                    <p>Profesional: Dra. Ramírez</p>
+                                </div>
+                                <div class="receta__boton">
+                                    <button id="abrir__receta" class="boton-datos">
+                                        Ver Receta
+                                    </button>
+                                </div>
+                            </div>
+                        
+                            <div class="vacuna">
+                                <div class="vacuna--informacion">
+                                    <p class="vacuna__nombre">Hepatitis B</p>
+                                    <p>Fecha: 26-Junio-2024</p>
+                                    <p>Lote: HEPB-2024-05</p>
+                                    <p>Fecha de caducidad: 26-Junio-2025</p>
+                                    <p>Reacciones adversas: Ninguna</p>
+                                    <p>Profesional: Dra. Gómez</p>
+                                </div>
+                                <div class="receta__boton">
+                                    <button id="abrir__receta" class="boton-datos">
+                                        Ver Receta
+                                    </button>
+                                </div>
+                            </div>
+                        
+                            <div class="vacuna">
+                                <div class="vacuna--informacion">
+                                    <p class="vacuna__nombre">Influenza</p>
+                                    <p>Fecha: 01-Julio-2024</p>
+                                    <p>Lote: INF-2024-08</p>
+                                    <p>Fecha de caducidad: 01-Julio-2025</p>
+                                    <p>Reacciones adversas: Fiebre leve</p>
+                                    <p>Profesional: Dr. Martínez</p>
+                                </div>
+                                <div class="receta__boton">
+                                    <button id="abrir__receta" class="boton-datos">
+                                        Ver Receta
+                                    </button>
+                                </div>
+                            </div>
+                        
+                            <div class="vacuna">
+                                <div class="vacuna--informacion">
+                                    <p class="vacuna__nombre">Meningococo</p>
+                                    <p>Fecha: 06-Julio-2024</p>
+                                    <p>Lote: MEN-2024-02</p>
+                                    <p>Fecha de caducidad: 06-Julio-2025</p>
+                                    <p>Reacciones adversas: Fiebre leve</p>
+                                    <p>Profesional: Dra. Castillo</p>
+                                </div>
+                                <div class="receta__boton">
+                                    <button id="abrir__receta" class="boton-datos">
+                                        Ver Receta
+                                    </button>
+                                </div>
+                            </div>
+                        
+                            <div class="vacuna">
+                                <div class="vacuna--informacion">
+                                    <p class="vacuna__nombre">Neumococo</p>
+                                    <p>Fecha: 04-Julio-2024</p>
+                                    <p>Lote: PNEU-2024-10</p>
+                                    <p>Fecha de caducidad: 04-Julio-2025</p>
+                                    <p>Reacciones adversas: Ninguna</p>
+                                    <p>Profesional: Dra. Hernández</p>
+                                </div>
+                                <div class="receta__boton">
+                                    <button id="abrir__receta" class="boton-datos">
+                                        Ver Receta
+                                    </button>
+                                </div>
+                            </div>
+                        
+                            <div class="vacuna">
+                                <div class="vacuna--informacion">
+                                    <p class="vacuna__nombre">Polio</p>
+                                    <p>Fecha: 29-Junio-2024</p>
+                                    <p>Lote: POL-2024-07</p>
+                                    <p>Fecha de caducidad: 29-Junio-2025</p>
+                                    <p>Reacciones adversas: Fiebre leve</p>
+                                    <p>Profesional: Dr. Sánchez</p>
+                                </div>
+                                <div class="receta__boton">
+                                    <button id="abrir__receta" class="boton-datos">
+                                        Ver Receta
+                                    </button>
+                                </div>
+                            </div>
+                        
+                            <div class="vacuna">
+                                <div class="vacuna--informacion">
+                                    <p class="vacuna__nombre">Rotavirus</p>
+                                    <p>Fecha: 05-Julio-2024</p>
+                                    <p>Lote: ROTA-2024-04</p>
+                                    <p>Fecha de caducidad: 05-Julio-2025</p>
+                                    <p>Reacciones adversas: Diarrea leve</p>
+                                    <p>Profesional: Dr. Díaz</p>
+                                </div>
+                                <div class="receta__boton">
+                                    <button id="abrir__receta" class="boton-datos">
+                                        Ver Receta
+                                    </button>
+                                </div>
+                            </div>
+                        
+                            <div class="vacuna">
+                                <div class="vacuna--informacion">
+                                    <p class="vacuna__nombre">Tifoidea</p>
+                                    <p>Fecha: 07-Julio-2024</p>
+                                    <p>Lote: TIF-2024-13</p>
+                                    <p>Fecha de caducidad: 07-Julio-2025</p>
+                                    <p>Reacciones adversas: Dolor abdominal leve</p>
+                                    <p>Profesional: Dr. Morales</p>
+                                </div>
+                                <div class="receta__boton">
+                                    <button id="abrir__receta" class="boton-datos">
+                                        Ver Receta
+                                    </button>
+                                </div>
+                            </div>
+                        
+                            <div class="vacuna">
+                                <div class="vacuna--informacion">
+                                    <p class="vacuna__nombre">VPH (Virus del Papiloma Humano)</p>
+                                    <p>Fecha: 03-Julio-2024</p>
+                                    <p>Lote: VPH-2024-11</p>
+                                    <p>Fecha de caducidad: 03-Julio-2025</p>
+                                    <p>Reacciones adversas: Dolor en el sitio de inyección</p>
+                                    <p>Profesional: Dr. Torres</p>
+                                </div>
+                                <div class="receta__boton">
+                                    <button id="abrir__receta" class="boton-datos">
+                                        Ver Receta
+                                    </button>
+                                </div>
+                            </div>
+                        
+                            <div class="vacuna">
+                                <div class="vacuna--informacion">
+                                    <p class="vacuna__nombre">Varicela</p>
+                                    <p>Fecha: 28-Junio-2024</p>
+                                    <p>Lote: VAR-2024-12</p>
+                                    <p>Fecha de caducidad: 28-Junio-2025</p>
+                                    <p>Reacciones adversas: Ninguna</p>
+                                    <p>Profesional: Dra. Martínez</p>
+                                </div>
+                                <div class="receta__boton">
+                                    <button id="abrir__receta" class="boton-datos">
+                                        Ver Receta
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="consultas" class="seccion">
+                <div id="consultas" class="seccion__titulo">
+                    <h1 class="seccion__titulo--titulo">
+                        <i class="fa-solid fa-notes-medical"></i> Consultas
+                    </h1>
+                </div>
+                <div class="seccion__consultas">
+                    <div class="seccion__contenido seccion__consultas--contenedor">
+                        <h2>Recetas</h2>
+                        <div class="seccion__contenido--consultas">
+                            <div class="consulta">
+                                <div class="consulta--informacion">
+                                    <p class="receta__nombre">Dr. Susano López Arriaga</p>
+                                    <p class="receta__cedula">Cédula: 1561615615</p>
+                                    <p class="receta__fecha">Fecha: 25-Junio-2024</p>
+                                    <p class="receta__institucion">Institución: Clinica Tulancingo</p>
+                                </div>
+                                <div class="receta__boton">
+                                    <button id="abrir__receta" class="boton-datos">
+                                        Ver Receta
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="consulta">
+                                <div class="consulta--informacion">
+                                    <p class="receta__nombre">Dr. Susano López Arriaga</p>
+                                    <p class="receta__cedula">Cédula: 1561615615</p>
+                                    <p class="receta__fecha">Fecha: 25-Junio-2024</p>
+                                    <p class="receta__institucion">Institución: Clinica Tulancingo</p>
+                                </div>
+                                <div class="receta__boton">
+                                    <button id="abrir__receta" class="boton-datos">
+                                        Ver Receta
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="consulta">
+                                <div class="consulta--informacion">
+                                    <p class="receta__nombre">Dr. Susano López Arriaga</p>
+                                    <p class="receta__cedula">Cédula: 1561615615</p>
+                                    <p class="receta__fecha">Fecha: 25-Junio-2024</p>
+                                    <p class="receta__institucion">Institución: Clinica Tulancingo</p>
+                                </div>
+                                <div class="receta__boton">
+                                    <button id="abrir__receta" class="boton-datos">
+                                        Ver Receta
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="consulta">
+                                <div class="consulta--informacion">
+                                    <p class="receta__nombre">Dr. Susano López Arriaga</p>
+                                    <p class="receta__cedula">Cédula: 1561615615</p>
+                                    <p class="receta__fecha">Fecha: 25-Junio-2024</p>
+                                    <p class="receta__institucion">Institución: Clinica Tulancingo</p>
+                                </div>
+                                <div class="receta__boton">
+                                    <button id="abrir__receta" class="boton-datos">
+                                        Ver Receta
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="consulta">
+                                <div class="consulta--informacion">
+                                    <p class="receta__nombre">Dr. Susano López Arriaga</p>
+                                    <p class="receta__cedula">Cédula: 1561615615</p>
+                                    <p class="receta__fecha">Fecha: 25-Junio-2024</p>
+                                    <p class="receta__institucion">Institución: Clinica Tulancingo</p>
+                                </div>
+                                <div class="receta__boton">
+                                    <button id="abrir__receta" class="boton-datos">
+                                        Ver Receta
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="consulta">
+                                <div class="consulta--informacion">
+                                    <p class="receta__nombre">Dr. Susano López Arriaga</p>
+                                    <p class="receta__cedula">Cédula: 1561615615</p>
+                                    <p class="receta__fecha">Fecha: 25-Junio-2024</p>
+                                    <p class="receta__institucion">Institución: Clinica Tulancingo</p>
+                                </div>
+                                <div class="receta__boton">
+                                    <button id="abrir__receta" class="boton-datos">
+                                        Ver Receta
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="seccion__contenido seccion__consultas--contenedor">
+                        <h2>Estudios</h2>
+                        <div class="seccion__contenido--consultas">
+                            <div class="consulta">
+                                <div class="consulta--informacion">
+                                    <p class="estudio__diagnostico">Osteosarcoma</p>
+                                    <p class="estudio__doctor">Aguilar Saenz Lopez Alejandro</p>
+                                    <p class="estudio__fecha">22/10/2023</p>
+                                </div>
+                                <div class="receta__boton">
+                                    <button id="abrir__estudio" class="boton-datos">
+                                        Ver estudio
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="consulta">
+                                <div class="consulta--informacion">
+                                    <p class="estudio__diagnostico">Osteosarcoma</p>
+                                    <p class="estudio__doctor">Aguilar Saenz Lopez Alejandro</p>
+                                    <p class="estudio__fecha">22/10/2023</p>
+                                </div>
+                                <div class="receta__boton">
+                                    <button id="abrir__estudio" class="boton-datos">
+                                        Ver estudio
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="consulta">
+                                <div class="consulta--informacion">
+                                    <p class="estudio__diagnostico">Osteosarcoma</p>
+                                    <p class="estudio__doctor">Aguilar Saenz Lopez Alejandro</p>
+                                    <p class="estudio__fecha">22/10/2023</p>
+                                </div>
+                                <div class="receta__boton">
+                                    <button id="abrir__estudio" class="boton-datos">
+                                        Ver estudio
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="consulta">
+                                <div class="consulta--informacion">
+                                    <p class="estudio__diagnostico">Osteosarcoma</p>
+                                    <p class="estudio__doctor">Aguilar Saenz Lopez Alejandro</p>
+                                    <p class="estudio__fecha">22/10/2023</p>
+                                </div>
+                                <div class="receta__boton">
+                                    <button id="abrir__estudio" class="boton-datos">
+                                        Ver estudio
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="fondo__receta" class="fondo__modal">
+        <div id="ventana__receta" class="modal">
+            <h1 class="modal__titulo">
+                <i class="fa-solid fa-square-virus"></i>Faringitis aguda
+            </h1>
+            <div class="modal__contenido consulta__contenido">
+                <h2>Receta</h2>
+                <div class="receta__medicamentos">
+                    <div class="receta__medicamento">
+                        <span>Ambroxol Dextrometorfano Adulto</span>
+                        <span>10ml / 8hrs / 7 días</span>
+                    </div>
+                    <div class="receta__medicamento">
+                        <span>Metamizol Sodico - 1tab 500mg</span>
+                        <span>1tab / 8hrs / 3 días</span>
+                    </div>
+                    <div class="receta__medicamento">
+                        <span>Amoxicilina con acido clavulanico - 1tab 500mg</span>
+                        <span>1tab / 8hrs / 7 días</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal__botones">
+                <button id="cerrar__receta" class="boton-datos">Cerrar</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="fondo__estudio" class="fondo__modal">
+        <div id="ventana__estudio" class="modal">
+            <h1 class="modal__titulo">
+                <i class="fa-solid fa-square-virus"></i>Osteosarcoma
+            </h1>
+            <div class="modal__contenido consulta__contenido">
+                <div class="estudio__resumen">
+                    <h2>Resúmen Clínico</h2>
+                    <p>PACIENTE CON OSTEOSARCOMA DE HUMERO DERECHO MAS MTC DE PULMÓN, SE SOLICITA TAC DE TORAX</p>
+                </div>
+                <div class="receta__medicamentos">
+                    <div class="receta__medicamento">
+                        <span>Ambroxol Dextrometorfano Adulto</span>
+                        <span>10ml / 8hrs / 7 días</span>
+                    </div>
+                    <div class="receta__medicamento">
+                        <span>Metamizol Sodico - 1tab 500mg</span>
+                        <span>1tab / 8hrs / 3 días</span>
+                    </div>
+                    <div class="receta__medicamento">
+                        <span>Amoxicilina con acido clavulanico - 1tab 500mg</span>
+                        <span>1tab / 8hrs / 7 días</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal__botones">
+                <button id="cerrar__receta" class="boton-datos">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

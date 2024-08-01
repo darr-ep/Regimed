@@ -3,7 +3,6 @@ const crypto = require("crypto");
 const express = require("express");
 const session = require("express-session");
 const path = require("path");
-const mysql = require("mysql");
 const uuid = require("uuid");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
@@ -17,6 +16,12 @@ const { PDFDocument, rgb } = require("pdf-lib");
 const qr = require("qrcode");
 const twilio = require("twilio");
 const bodyParser = require("body-parser");
+const sharp = require("sharp");
+
+const userService = require("./services/user-service");
+const doctorService = require("./services/doctor-service");
+const patientService = require("./services/patient-service");
+const sharedService = require("./services/shared-service");
 
 const app = express();
 
@@ -37,83 +42,57 @@ app.use(
   })
 );
 
-const pool = mysql.createPool({
-  connectionLimit: 50,
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-});
-
-// function consultar(query, params = []) {
-//   return new Promise((resolve, reject) => {
-//     pool.query(query, params, (error, results) => {
-//       if (error) {
-//         reject(error);
-//       } else {
-//         resolve(results);
-//       }
-//     });
-//   });
-// }
-
-const conexion = mysql.createConnection({
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-});
-
+app.set("views", path.join(__dirname, "src", "views"));
 app.set("view engine", "ejs");
 
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(express.static(path.join(__dirname, "views")));
+app.use(express.static(path.join(__dirname, "src", "public")));
 
-app.listen(process.env.PORT, function () {
-  console.log("Servidor activo: ", process.env.PORT);
+app.listen(process.env.DB_PORT, function () {
+  console.log("Servidor activo: " + process.env.DB_PORT);
 });
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.privateemail.com",
+  host: "smtp.gmail.com",
   port: 465,
   secure: true,
   auth: {
-    user: "service@regimed.org",
-    pass: "Ori-regimed.3312!",
+    user: "service.regimed@gmail.com",
+    pass: "hgjf ssaq kbvo wxwc",
   },
 });
 
 function generarToken(payload) {
   return jwt.sign(payload, "secreto", {
     expiresIn: "15m",
-    issuer: "regimed.org",
+    issuer: "regimed.life",
   });
 }
 
 function generarToken3m(payload) {
   return jwt.sign(payload, "secreto", {
     expiresIn: "3m",
-    issuer: "regimed.org",
+    issuer: "regimed.life",
   });
 }
 
 function generarTokenMedico(payload) {
   return jwt.sign(payload, "secreto", {
-    issuer: "regimed.org",
+    issuer: "regimed.life",
   });
 }
 
 function enviarCorreoVerificacion(correo, token) {
   const mailOptions = {
-    from: "service@regimed.org",
+    from: "service@regimed.life",
     to: correo,
     subject: "Verifica tu dirección de correo electrónico",
     html: `
     <!doctype html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<html lang="en" xmlns="http://www.w3.life/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 
 <head>
 <meta charset="utf-8" />
@@ -494,7 +473,7 @@ img {
 // * -------------------------- GETS -------------------------- * //
 
 app.get("/", (req, res) => {
-  res.render("index", {
+  res.render("home/index", {
     sesion: req.session.idUsuario,
   });
 });
@@ -503,235 +482,52 @@ app.get("/registro", (req, res) => {
   if (!req.session.formData) {
     req.session.formData = {};
   }
-  res.render("registro", {
+  res.render("auth/registro", {
     formData: req.session.formData,
     sesion: req.session.idUsuario,
   });
 });
 
-app.get("/principal", async (req, res) => {
+app.get("/perfil", async (req, res) => {
   try {
-    if (!req.session.idUsuario) {
+    if (req.session.idDoctor) {
+      return res.redirect("/doctor");
+    } else if (!req.session.idUsuario) {
       return res.redirect("/");
     }
 
-    // Consulta para obtener datos personales
-    const datosPersonales = await consultarDatosPersonales(req.session.idUsuario);
+    const [datosUsuario, registrosCompartidos, vacunas] = await Promise.all([
+      userService.consultarUsuario(req.session.idUsuario),
+      sharedService.consultarCompartidos(req.session.idUsuario),
+      patientService.consultarVacunas(req.session.idUsuario),
+    ]);
 
-    // Consulta para obtener registros compartidos
-    const registrosCompartidos = await consultarRegistrosCompartidos(req.session.idUsuario);
+    const telefonoVerificado = await sharedService.consultarVerificado(
+      datosUsuario.telefono
+    );
 
-    // Consulta para verificar si el teléfono está verificado
-    const telefonoVerificado = await verificarSiEstaVerificado(req.session.idUsuario);
-
-    // Consulta para obtener vacunas preestablecidas
-    const vacunasPreestablecidas = await consultarVacunasPreestablecidas(req.session.idUsuario);
-    
-    // Consulta para obtener historial médico
-    const historialMedico = await consultarHistorialMedico(req.session.idUsuario);
-    
-    // Consulta para obtener historial médico
-    const otrasVacunas = await consultarVacunas(req.session.idUsuario);
-
-    // Renderizar la vista principal con los datos obtenidos
-    res.render("principal", {
-      nombre: datosPersonales.nombre,
-      curp: datosPersonales.curp,
-      imagenAMostrar: datosPersonales.imagen,
-      telefono: datosPersonales.telefono,
-      nacimiento: datosPersonales.nacimiento,
-      peso: datosPersonales.peso,
-      estatura: datosPersonales.estatura,
-      sexo: datosPersonales.sexo,
-      nacionalidad: datosPersonales.nacionalidad,
-      sangre: datosPersonales.sangre,
+    res.render("perfil/perfil", {
+      nombre_comp: datosUsuario.nombre_comp,
+      curp: datosUsuario.curp,
+      imagenAMostrar: datosUsuario.imagen,
+      telefono: datosUsuario.telefono,
+      nacimiento: datosUsuario.nacimiento,
+      peso: datosUsuario.peso,
+      estatura: datosUsuario.estatura,
+      sexo: datosUsuario.sexo,
+      nacionalidad: datosUsuario.nacionalidad,
+      sangre: datosUsuario.sangre,
       registros: registrosCompartidos,
       sesion: req.session.idUsuario,
-      doctor: req.session.idDoctor,
       telefonoVerificado: telefonoVerificado,
-      vacunasPreestablecidas: vacunasPreestablecidas,
-      historialMedico: historialMedico,
-      otrasVacunas: otrasVacunas
+      vacunas: vacunas,
+      captcha_web: process.env.CAPTCHA_WEB,
     });
-
   } catch (error) {
     console.error("Error al obtener datos:", error);
     res.status(500).send("Error interno del servidor");
   }
 });
-
-async function consultarVacunas(idUsuario) {
-  return new Promise((resolve, reject) => {
-    pool.getConnection((err, connection) => {
-      if (err) {
-        reject(err);
-      }
-
-      const consulta = `
-        SELECT *
-        FROM vacuna
-        WHERE usuario_id = ?
-      `;
-      connection.query(consulta, [idUsuario], (err, vacunas) => {
-        connection.release();
-        if (err) {
-          reject(err);
-        } else {
-          resolve(vacunas);
-        }
-      });
-    });
-  });
-}
-
-async function consultarHistorialMedico(idUsuario) {
-  return new Promise((resolve, reject) => {
-    pool.getConnection((err, connection) => {
-      if (err) {
-        reject(err);
-      }
-
-      const consulta = `
-        SELECT *
-        FROM historial_medico
-        WHERE usuario_id = ?
-      `;
-      connection.query(consulta, [idUsuario], (err, historialMedico) => {
-        connection.release();
-        if (err) {
-          reject(err);
-        } else {
-          resolve(historialMedico);
-        }
-      });
-    });
-  });
-}
-
-// Función para consultar vacunas preestablecidas
-async function consultarVacunasPreestablecidas(idUsuario) {
-  return new Promise((resolve, reject) => {
-    pool.getConnection((err, connection) => {
-      if (err) {
-        reject(err);
-      }
-
-      const consulta = `SELECT * FROM vacunas_preestablecidas WHERE usuario_id = ?`;
-      connection.query(consulta, [idUsuario], (err, vacunas) => {
-        connection.release();
-        if (err) {
-          reject(err);
-        } else {
-          resolve(vacunas);
-        }
-      });
-    });
-  });
-}
-
-
-// Función para consultar datos personales
-async function consultarDatosPersonales(idUsuario) {
-  return new Promise((resolve, reject) => {
-    pool.getConnection((err, connection) => {
-      if (err) {
-        reject(err);
-      }
-
-      const consulta = `SELECT * FROM datos_personales WHERE usuario_id = ?`;
-      connection.query(consulta, [idUsuario], (err, row) => {
-        connection.release();
-        if (err) {
-          reject(err);
-        } else {
-          resolve({
-            nombre: row[0].nombre,
-            curp: row[0].curp,
-            imagen: row[0].imagen ? row[0].imagen : "usuario.png",
-            telefono: row[0].telefono,
-            nacimiento: obtenerFechaFormateada(row[0].fecha_nac),
-            peso: row[0].peso,
-            estatura: row[0].estatura,
-            sexo: row[0].sexo,
-            nacionalidad: row[0].nacionalidad,
-            sangre: row[0].tipo_sangre,
-          });
-        }
-      });
-    });
-  });
-}
-
-// Función para consultar registros compartidos
-async function consultarRegistrosCompartidos(idUsuario) {
-  return new Promise((resolve, reject) => {
-    pool.getConnection((err, connection) => {
-      if (err) {
-        reject(err);
-      }
-
-      const consulta = `
-        SELECT registros_compartidos.*, datos_personales.*
-        FROM registros_compartidos
-        INNER JOIN datos_personales
-        ON registros_compartidos.usuarioCompartido_id = datos_personales.usuario_id
-        WHERE registros_compartidos.usuario_id = ?
-      `;
-      connection.query(consulta, [idUsuario], (err, registrosCompartidos) => {
-        connection.release();
-        if (err) {
-          reject(err);
-        } else {
-          resolve(registrosCompartidos);
-        }
-      });
-    });
-  });
-}
-
-// Función para verificar si el telefono está verificado
-async function verificarSiEstaVerificado(idUsuario) {
-  return new Promise((resolve, reject) => {
-    pool.getConnection((err, connection) => {
-      if (err) {
-        reject(err);
-      }
-
-      const consultaTelefono = `SELECT telefono FROM datos_personales WHERE usuario_id = ?`;
-      connection.query(consultaTelefono, [idUsuario], (err, rows) => {
-        if (err) {
-          connection.release();
-          reject(err);
-        } else {
-          const telefono = rows.length > 0 ? rows[0].telefono.replace(/\s/g, "") : "";
-          if (telefono !== "") {
-            const consultaVerificacion = `SELECT * FROM numeros_verificados WHERE telefono = ?`;
-            connection.query(consultaVerificacion, [telefono], (err, verificaciones) => {
-              connection.release();
-              if (err) {
-                reject(err);
-              } else {
-                resolve(verificaciones.length > 0 ? "V" : "N");
-              }
-            });
-          } else {
-            connection.release();
-            resolve("");
-          }
-        }
-      });
-    });
-  });
-}
-
-// Función para formatear la fecha
-function obtenerFechaFormateada(fecha) {
-  if (fecha !== "0000-00-00") {
-    const fechaNacimiento = new Date(fecha);
-    return fechaNacimiento.toISOString().split("T")[0];
-  }
-  return null;
-}
 
 app.use(
   session({
@@ -742,126 +538,34 @@ app.use(
   })
 );
 
-app.get("/paciente/:telefono", (req, res) => {
-  if (!req.session.idDoctor) {
+app.get("/paciente/:curp", async (req, res) => {
+  if (!req.session.idDoctor || req.session.curpPaciente !== req.params.curp) {
     return res.redirect("/");
   }
+  try {
 
-  let telefono = req.params.telefono;
+    const datosUsuario = await userService.consultarUsuarioPorCurp(req.params.curp);
+    const vacunas = await patientService.consultarVacunas(datosUsuario.usuario_id);
 
-  const consulta = `SELECT * FROM numeros_verificados WHERE telefono = '${telefono}'`;
-
-  conexion.query(consulta, (err, row) => {
-    if (err) {
-      throw err;
-    } else {
-      const consultaUsuario = `SELECT * FROM datos_personales WHERE usuario_id = '${row[0].usuario_id}'`;
-
-      conexion.query(consultaUsuario, (err, row) => {
-        if (err) {
-          throw err;
-        } else {
-          var nombre = "";
-          var curp = "";
-          var imagen = "";
-          var nacimiento = "";
-          var peso = "";
-          var estatura = "";
-          var sexo = "";
-          var nacionalidad = "";
-          var sangre = "";
-          if (row && row.length > 0) {
-            nombre = row[0].nombre;
-            curp = row[0].curp;
-            imagen = row[0].imagen ? row[0].imagen : "usuario.png";
-            telefono = row[0].telefono;
-            nacimiento = row[0].fecha_nac;
-            if (nacimiento !== "0000-00-00") {
-              const fechaNacimiento = new Date(nacimiento);
-              nacimiento = fechaNacimiento.toISOString().split("T")[0];
-            }
-            peso = row[0].peso;
-            estatura = row[0].estatura;
-            sexo = row[0].sexo;
-            nacionalidad = row[0].nacionalidad;
-            sangre = row[0].tipo_sangre;
-          }
-
-          res.render("paciente", {
-            nombre: nombre,
-            curp: curp,
-            imagenAMostrar: imagen,
-            telefono: telefono,
-            nacimiento: nacimiento,
-            peso: peso,
-            estatura: estatura,
-            sexo: sexo,
-            nacionalidad: nacionalidad,
-            sangre: sangre,
-            registros: row,
-            sesion: req.session.idUsuario,
-          });
-        }
-      });
-    }
-  });
+    res.render("Paciente/paciente.ejs", {
+      nombre_comp: datosUsuario.nombre_comp,
+      curp: req.params.curp,
+      imagenAMostrar: datosUsuario.imagen,
+      telefono: datosUsuario.telefono,
+      nacimiento: datosUsuario.nacimiento,
+      peso: datosUsuario.peso,
+      estatura: datosUsuario.estatura,
+      sexo: datosUsuario.sexo,
+      nacionalidad: datosUsuario.nacionalidad,
+      sangre: datosUsuario.sangre,
+      doctor: req.session.idDoctor,
+      vacunas: vacunas,
+    });
+  } catch (error) {
+    console.error("Error al obtener datos:", error);
+    res.status(500).send("Error interno del servidor");
+  }
 });
-
-// app.get("/usuario/:usuario_id", (req, res) => {
-//   const idUsuario = req.params.usuario_id;
-
-//   console.log(idUsuario);
-
-//   const consulta = `SELECT * FROM datos_personales WHERE usuario_id = '${idUsuario}'`;
-
-//   conexion.query(consulta, (err, row) => {
-//     if (err) {
-//       throw err;
-//     } else if (row.length !== 0) {
-//       var nombre = "";
-//       var curp = "";
-//       var imagen = "";
-//       var telefono = "";
-//       var nacimiento = "";
-//       var peso = "";
-//       var estatura = "";
-//       var sexo = "";
-//       var nacionalidad = "";
-//       var sangre = "";
-//       if (row && row.length > 0) {
-//         nombre = row[0].nombre;
-//         curp = row[0].curp;
-//         imagen = row[0].imagen ? row[0].imagen : "usuario.png";
-//         telefono = row[0].telefono;
-//         nacimiento = row[0].fecha_nac;
-//         if (nacimiento !== "0000-00-00") {
-//           const fechaNacimiento = new Date(nacimiento);
-//           nacimiento = fechaNacimiento.toISOString().split("T")[0];
-//         }
-//         peso = row[0].peso;
-//         estatura = row[0].estatura;
-//         sexo = row[0].sexo;
-//         nacionalidad = row[0].nacionalidad;
-//         sangre = row[0].tipo_sangre;
-//       }
-
-//       res.render("usuario", {
-//         nombre: nombre,
-//         curp: curp,
-//         imagenAMostrar: imagen,
-//         telefono: telefono,
-//         nacimiento: nacimiento,
-//         peso: peso,
-//         estatura: estatura,
-//         sexo: sexo,
-//         nacionalidad: nacionalidad,
-//         sangre: sangre,
-//         registros: row,
-//         sesion: req.session.idUsuario,
-//       });
-//     }
-//   });
-// });
 
 app.get("/usuario/:usuario_id", async (req, res) => {
   try {
@@ -869,115 +573,81 @@ app.get("/usuario/:usuario_id", async (req, res) => {
       req.session.correo = "";
     }
 
-    const idUsuario = req.params.usuario_id;
+    const [datosUsuario, vacunas] = await Promise.all([
+      userService.consultarUsuario(req.params.usuario_id),
+      patientService.consultarVacunas(req.params.usuario_id),
+    ]);
 
-    // Consulta para obtener datos personales
-    const datosPersonales = await consultarDatosPersonales(idUsuario);
-
-    // Consulta para verificar si el teléfono está verificado
-    const telefonoVerificado = await verificarSiEstaVerificado(idUsuario);
-
-    // Consulta para obtener vacunas preestablecidas
-    const vacunasPreestablecidas = await consultarVacunasPreestablecidas(idUsuario);
-    
-    // Consulta para obtener historial médico
-    const historialMedico = await consultarHistorialMedico(idUsuario);
-    
-    // Consulta para obtener otras vacunas
-    const otrasVacunas = await consultarVacunas(idUsuario);
-
-    // Renderizar la vista del usuario con los datos obtenidos
-    res.render("usuario", {
+    res.render("visor/visor", {
       sesion: req.session.correo,
-      nombre: datosPersonales.nombre,
-      curp: datosPersonales.curp,
-      imagenAMostrar: datosPersonales.imagen,
-      telefono: datosPersonales.telefono,
-      nacimiento: datosPersonales.nacimiento,
-      peso: datosPersonales.peso,
-      estatura: datosPersonales.estatura,
-      sexo: datosPersonales.sexo,
-      nacionalidad: datosPersonales.nacionalidad,
-      sangre: datosPersonales.sangre,
-      telefonoVerificado: telefonoVerificado,
-      vacunasPreestablecidas: vacunasPreestablecidas,
-      historialMedico: historialMedico,
-      otrasVacunas: otrasVacunas
+      nombre_comp: datosUsuario.nombre_comp,
+      curp: datosUsuario.curp,
+      imagenAMostrar: datosUsuario.imagen,
+      telefono: datosUsuario.telefono,
+      nacimiento: datosUsuario.nacimiento,
+      peso: datosUsuario.peso,
+      estatura: datosUsuario.estatura,
+      sexo: datosUsuario.sexo,
+      nacionalidad: datosUsuario.nacionalidad,
+      sangre: datosUsuario.sangre,
+      vacunas: vacunas,
     });
-
   } catch (error) {
     console.error("Error al obtener datos del usuario:", error);
     res.status(500).send("Error interno del servidor");
   }
 });
 
-
 app.get("/acceso", (req, res) => {
   if (!req.session.correo) {
     req.session.correo = "";
   }
-  res.render("acceso", {
+  res.render("auth/acceso", {
     correo: req.session.correo,
     sesion: req.session.idUsuario,
   });
 });
 
-app.get("/doctor", (req, res) => {
-  if (!req.session.idDoctor) {
-    return res.redirect("/");
-  } else {
-    const buscar =
-      "SELECT * FROM datos_personales WHERE usuario_id = '" +
-      req.session.idUsuario +
-      "'";
+app.get("/doctor", async (req, res) => {
+  try {
+    if (req.session.idUsuario && !req.session.idDoctor) {
+      return res.redirect("/perfil");
+    }
+    if (!req.session.idUsuario) {
+      return res.redirect("/");
+    }
 
-    conexion.query(buscar, (err, row) => {
-      if (err) {
-        throw err;
-      } else {
-        var nombre = "";
-        var curp = "";
-        var imagen = "";
-        var telefono = "";
-        var nacimiento = "";
-        var peso = "";
-        var estatura = "";
-        var sexo = "";
-        var nacionalidad = "";
-        var sangre = "";
-        if (row && row.length > 0) {
-          nombre = row[0].nombre;
-          curp = row[0].curp;
-          imagen = row[0].imagen ? row[0].imagen : "usuario.png";
-          telefono = row[0].telefono;
-          nacimiento = row[0].fecha_nac;
-          if (nacimiento !== "0000-00-00") {
-            const fechaNacimiento = new Date(nacimiento);
-            nacimiento = fechaNacimiento.toISOString().split("T")[0];
-          }
-          peso = row[0].peso;
-          estatura = row[0].estatura;
-          sexo = row[0].sexo;
-          nacionalidad = row[0].nacionalidad;
-          sangre = row[0].tipo_sangre;
-        }
-        res.render("doctor", {
-          nombre: nombre,
-          curp: curp,
-          imagenAMostrar: imagen,
-          telefono: telefono,
-          nacimiento: nacimiento,
-          peso: peso,
-          estatura: estatura,
-          sexo: sexo,
-          nacionalidad: nacionalidad,
-          sangre: sangre,
-          registros: row,
-          sesion: req.session.idUsuario,
-          doctor: req.session.doctor,
-        });
-      }
+    const [datosUsuario, registrosCompartidos, vacunas] = await Promise.all([
+      userService.consultarUsuario(req.session.idUsuario),
+      sharedService.consultarCompartidos(req.session.idUsuario),
+      patientService.consultarVacunas(req.session.idUsuario),
+    ]);
+
+    const telefonoVerificado = await sharedService.consultarVerificado(
+      datosUsuario.telefono
+    );
+
+    res.render("doctor/doctor", {
+      nombre_comp: datosUsuario.nombre_comp,
+      curp: datosUsuario.curp,
+      imagenAMostrar: datosUsuario.imagen,
+      telefono: datosUsuario.telefono,
+      nacimiento: datosUsuario.nacimiento,
+      peso: datosUsuario.peso,
+      estatura: datosUsuario.estatura,
+      sexo: datosUsuario.sexo,
+      nacionalidad: datosUsuario.nacionalidad,
+      sangre: datosUsuario.sangre,
+      registros: registrosCompartidos,
+      sesion: req.session.idUsuario,
+      doctor: req.session.idDoctor,
+      telefonoVerificado: telefonoVerificado,
+      vacunas: vacunas,
+      captcha_web: process.env.CAPTCHA_WEB,
     });
+  } catch (error) {
+    console.error("Error al obtener datos:", error);
+    res.status(500).send("Error interno del servidor");
   }
 });
 
@@ -1001,49 +671,37 @@ app.get("/verificacion/usuario/:correo", (req, res) => {
 app.get("/verificar_correo", (req, res) => {
   const token = req.query.token;
 
-  jwt.verify(token, "secreto", (err, decoded) => {
+  jwt.verify(token, "secreto", async (err, decoded) => {
     if (err) {
       console.log("Token inválido");
       res.send("Token inválido");
     } else {
-      const consulta = `SELECT * FROM registro_usuario WHERE correo = '${decoded.correo}'`;
+      // const usuario = await consultarUsuario(decoded.correo);
 
-      conexion.query(consulta, (err, rows) => {
-        if (err) {
-          throw err;
-        } else {
-          if (rows.length === 0) {
-            const insertarRegistro = `INSERT INTO registro_usuario (usuario_id, nombre, apellido_paterno, apellido_materno, correo, contrasenia) VALUES ('${decoded.usuario_id}', '${decoded.nombre}', '${decoded.apellido_paterno}', '${decoded.apellido_materno}', '${decoded.correo}', '${decoded.contrasenia}')`;
-            const insertarDatos = `INSERT INTO datos_personales (nombre, usuario_id, imagen, curp, fecha_nac, estatura, peso, sexo, tipo_sangre, telefono, nacionalidad) VALUES ('${decoded.nombre} ${decoded.apellido_paterno} ${decoded.apellido_materno}', '${decoded.usuario_id}', 'usuario.png', '', '0000-00-00', '0', '0', '', '', '', '')`;
+      // if (usuario.length === 0) {
+      const nombre_comp =
+        decoded.nombre +
+        " " +
+        decoded.apellido_paterno +
+        " " +
+        decoded.apellido_materno;
 
-            Promise.all([
-              new Promise((resolve, reject) => {
-                conexion.query(insertarRegistro, (err) => {
-                  if (err) reject(err);
-                  else resolve();
-                });
-              }),
-              new Promise((resolve, reject) => {
-                conexion.query(insertarDatos, (err) => {
-                  if (err) reject(err);
-                  else resolve();
-                });
-              }),
-            ])
-              .then(() => {
-                req.session.idUsuario = decoded.usuario_id;
-                res.redirect("/principal");
-              })
-              .catch((error) => {
-                console.error("Error al insertar datos:", error);
-                res.status(500).send("Error interno del servidor");
-              });
-          } else {
-            req.session.idUsuario = rows[0].usuario_id;
-            res.redirect("/principal");
-          }
-        }
-      });
+      await userService.registrarUsuario(
+        decoded.usuario_id,
+        nombre_comp,
+        decoded.nombre,
+        decoded.apellido_paterno,
+        decoded.apellido_materno,
+        decoded.correo,
+        decoded.contrasenia
+      );
+
+      req.session.idUsuario = decoded.usuario_id;
+      res.redirect("/perfil");
+      // } else {
+      //   req.session.idUsuario = usuario[0].usuario_id;
+      //   res.redirect("/perfil");
+      // }
     }
   });
 });
@@ -1068,7 +726,7 @@ app.get("/verificar_doctor", (req, res) => {
             conexion.query(insertarDoctor);
             res.send("Doctor verificado");
           } else {
-            res.send("Doctor ya verificado")
+            res.send("Doctor ya verificado");
           }
         }
       });
@@ -1080,106 +738,187 @@ app.get("/generarTokenRegistro", (req, res) => {
   generarNumeroAleatorioUnico(req, res);
 });
 
-function generarNumeroAleatorioUnico(req, res) {
+async function generarNumeroAleatorioUnico(req, res) {
   const numeroAleatorio = random(100000, 999999);
   const tiempoActual = new Date();
 
-  const consultaUsuario = `SELECT * FROM codigos_temporales WHERE usuario_id = '${req.session.idUsuario}'`;
+  const consultaCodigo = await sharedService.consultarCodigo(
+    req.session.idUsuario
+  );
 
-  conexion.query(consultaUsuario, (err, rowsUsuario) => {
-    if (err) {
-      throw err;
-    } else if (rowsUsuario.length === 0) {
-      const consultaNumero = `SELECT * FROM codigos_temporales WHERE codigo = '${numeroAleatorio}'`;
+  if (consultaCodigo.length !== 0) {
+    const tiempoAnterior = new Date(consultaCodigo[0].hora_registro);
+    const tiempoRestante = Math.round(
+      (Math.round(tiempoAnterior) - (Math.round(tiempoActual) - 180000)) / 1000
+    );
 
-      conexion.query(consultaNumero, (err, rowsNumero) => {
-        if (err) {
-          throw err;
-        } else if (rowsNumero.length === 0) {
-          const ingreso = `INSERT INTO codigos_temporales (usuario_id, codigo, hora_registro) VALUES ('${req.session.idUsuario}', '${numeroAleatorio}', NOW())`;
+    const numeroAleatorio = consultaCodigo[0].codigo;
 
-          conexion.query(ingreso, (err, result) => {
-            if (err) {
-              throw err;
-            } else {
-              const token =
-                process.env.URL_AGREGAR_REGISTRO +
-                generarToken3m({
-                  usuarioId: req.session.idUsuario,
-                  numero: numeroAleatorio,
-                });
-              res.json({ token, numeroAleatorio });
-              const tiempoEspera = 3 * 60 * 1000;
-              setTimeout(() => {
-                console.log("Borrado: " + numeroAleatorio);
-                const borrado = `DELETE FROM codigos_temporales WHERE usuario_id = '${req.session.idUsuario}' AND codigo = '${numeroAleatorio}'`;
-                conexion.query(borrado);
-              }, tiempoEspera);
-            }
-          });
-        } else {
-          generarNumeroAleatorioUnico(req, res);
-        }
+    console.log("numeroAleatorio: " + numeroAleatorio);
+    console.log("tiempoRestante: " + tiempoRestante);
+
+    const token =
+      process.env.URL_AGREGAR_REGISTRO +
+      generarToken3m({
+        usuarioId: consultaCodigo[0].usuario_id,
+        numero: consultaCodigo[0].codigo,
       });
-    } else {
-      const tiempoAnterior = new Date(rowsUsuario[0].hora_registro);
-      const tiempoRestante = Math.round(
-        (Math.round(tiempoAnterior) - (Math.round(tiempoActual) - 180000)) /
-          1000
+
+    res.json({ token, numeroAleatorio, tiempoRestante });
+  } else {
+    const codigoExistente = await sharedService.consultarCodigoExistente(
+      numeroAleatorio
+    );
+
+    console.log("Existe 2: " + codigoExistente.length);
+
+    if (codigoExistente.length === 0) {
+      await sharedService.registrarCodigo(
+        req.session.idUsuario,
+        numeroAleatorio
       );
 
-      const numeroAleatorio = rowsUsuario[0].codigo;
+      const token =
+        process.env.URL_AGREGAR_REGISTRO +
+        generarToken3m({
+          usuarioId: req.session.idUsuario,
+          numero: numeroAleatorio,
+        });
 
-      const token = generarToken({
-        usuarioId: rowsUsuario[0].usuario_id,
-        numero: rowsUsuario[0].codigo,
-      });
-
-      console.log(tiempoRestante);
-
-      res.json({ token, numeroAleatorio, tiempoRestante });
+      res.json({ token, numeroAleatorio });
+      const tiempoEspera = 3 * 60 * 1000;
+      setTimeout(async () => {
+        await sharedService.eliminarCodigo(req.session.idUsuario);
+        console.log("Borrado: " + numeroAleatorio);
+      }, tiempoEspera);
+    } else {
+      generarNumeroAleatorioUnico(req, res);
     }
-  });
+  }
 }
 
-app.get("/agregarRegistro", (req, res) => {
-  const token = req.query.token;
+// app.get("/agregarRegistro", (req, res) => {
+//   const token = req.query.token;
 
-  jwt.verify(token, "secreto", function (err, decoded) {
-    if (err) {
-      console.log("Token inválido");
-      res.send("Token inválido");
-    } else {
-      const consulta = `SELECT * FROM codigos_temporales WHERE usuario_id = '${decoded.usuarioId}' AND codigo = '${decoded.numero}'`;
+//   jwt.verify(token, "secreto", function (err, decoded) {
+//     if (err) {
+//       console.log("Token inválido");
+//       res.send("Token inválido");
+//     } else {
+//       const consulta = `SELECT * FROM codigos_temporales WHERE usuario_id = '${decoded.usuarioId}' AND codigo = '${decoded.numero}'`;
 
-      conexion.query(consulta, (err, row) => {
-        if (err) {
-          throw err;
-        } else if (row.length === 0) {
-          res.send("Token inválido");
-        } else {
-          console.log(
-            "Aqui tienes que guardar los registros para que tengan relacion"
-          );
-        }
+//       conexion.query(consulta, (err, row) => {
+//         if (err) {
+//           throw err;
+//         } else if (row.length === 0) {
+//           res.send("Token inválido");
+//         } else {
+//           console.log(
+//             "Aqui tienes que guardar los registros para que tengan relacion"
+//           );
+//         }
+//       });
+//     }
+//   });
+// });
+
+app.get("/tarjeta", async (req, res) => {
+  if (!req.session.idUsuario) {
+    return res.redirect("/");
+  }
+
+  try {
+    const datosUsuario = await userService.consultarUsuario(
+      req.session.idUsuario
+    );
+
+    const existingPdfBytes = fs.readFileSync(
+      path.join(__dirname, "src", "public", "pdf", "tarjeta.pdf")
+    );
+    const pdfDoc = await PDFDocument.load(existingPdfBytes);
+    const page = pdfDoc.getPages()[0];
+
+    const qrData = process.env.URL_QRTARJETA + req.session.idUsuario;
+    const qrWidth = 130;
+    const qrHeight = 130;
+    const qrOptions = {
+      color: {
+        width: qrWidth,
+        height: qrHeight,
+        dark: "#1d4370",
+        light: "#ffffff00",
+      },
+    };
+
+    const qrImageBytes = await new Promise((resolve, reject) => {
+      qr.toBuffer(qrData, qrOptions, (err, buffer) => {
+        if (err) reject(err);
+        else resolve(buffer);
       });
-    }
-  });
+    });
+
+    const qrImage = await pdfDoc.embedPng(qrImageBytes);
+    const posicionQRX = page.getWidth() - page.getWidth() / 4 - qrWidth / 2;
+    page.drawImage(qrImage, {
+      x: posicionQRX,
+      y: 77,
+      width: qrWidth,
+      height: qrHeight,
+    });
+
+    await agregarImagen(
+      page,
+      path.join(__dirname, "src", "public", "images", "users", datosUsuario.imagen),
+      0,
+      pdfDoc
+    );
+
+    const hel = await cargarFuente("Helvetica", pdfDoc);
+    const helBold = await cargarFuente("Helvetica-Bold", pdfDoc);
+
+    const apellidos = `${datosUsuario.apellido_paterno} ${datosUsuario.apellido_materno}`;
+    const nombres = datosUsuario.nombre;
+
+    agregarTexto(page, nombres, 16, helBold, 90);
+    agregarTexto(page, apellidos, 12, hel, 75);
+    agregarTexto(page, "CURP: ", 7, helBold, 50, 7);
+    agregarTexto(page, datosUsuario.curp, 7, hel, 50, 32);
+    agregarTexto(page, "T/S: ", 7, helBold, 40, 7);
+    agregarTexto(page, datosUsuario.sangre, 7, hel, 40, 22);
+
+    const modifiedPdfBytes = await pdfDoc.save();
+    const outputFilePath = path.join(__dirname, "src", "public", "temp", "tarjeta.pdf");
+    fs.writeFileSync(outputFilePath, modifiedPdfBytes);
+
+    res.contentType("application/pdf");
+    res.sendFile(outputFilePath);
+  } catch (error) {
+    console.error("Error al generar el PDF:", error);
+    res.status(500).send("Error al generar el PDF: " + error.message);
+  }
 });
 
 async function cargarFuente(font, pdfDoc) {
-  return await pdfDoc.embedFont(font);
+  try {
+    return await pdfDoc.embedFont(font);
+  } catch (error) {
+    console.error("Error al cargar la fuente:", error);
+    throw error;
+  }
 }
 
 function calcularPosicionTexto(page, text, fontSize, font) {
   const textWidth = font.widthOfTextAtSize(text, fontSize);
-  return (textX = page.getWidth() / 4 - textWidth / 2);
+  return page.getWidth() / 4 - textWidth / 2;
 }
 
 function agregarTexto(page, text, fontSize, font, y, xValue) {
-  const x = calcularPosicionTexto(page, text, fontSize, font);
+  const x =
+    xValue !== undefined
+      ? xValue
+      : calcularPosicionTexto(page, text, fontSize, font);
   page.drawText(text, {
-    x: xValue !== undefined ? xValue : x,
+    x,
     y,
     size: fontSize,
     font,
@@ -1188,28 +927,27 @@ function agregarTexto(page, text, fontSize, font, y, xValue) {
   });
 }
 
+async function recortarImagen(imagePath, outputImagePath, size) {
+  try {
+    await sharp(imagePath).resize(size, size).toFile(outputImagePath);
+  } catch (error) {
+    console.error("Error al recortar la imagen:", error);
+    throw error;
+  }
+}
+
 async function agregarImagen(page, imagePath, x, pdfDoc) {
   try {
     const size = page.getWidth() / 2;
     const y = page.getHeight() - size;
 
-    // Determinar el tipo de archivo basado en su extensión
-    const extension = imagePath.split(".").pop().toLowerCase();
-    let pdfImage;
+    const recortadaImagePath = path.join(__dirname, "src", "public", "temp", "recortada.png");
 
-    if (extension === "png") {
-      const imageBytes = fs.readFileSync(imagePath);
-      pdfImage = await pdfDoc.embedPng(imageBytes);
-    } else if (extension === "jpg" || extension === "jpeg") {
-      const imageBytes = fs.readFileSync(imagePath);
-      pdfImage = await pdfDoc.embedJpg(imageBytes);
-    } else {
-      throw new Error(
-        "Formato de imagen no compatible. Solo se admiten archivos PNG y JPG/JPEG."
-      );
-    }
+    await recortarImagen(imagePath, recortadaImagePath, size);
 
-    // Dibujar la imagen en la página del PDF
+    const imageBytes = fs.readFileSync(recortadaImagePath);
+    const pdfImage = await pdfDoc.embedPng(imageBytes);
+
     page.drawImage(pdfImage, {
       x,
       y,
@@ -1218,126 +956,44 @@ async function agregarImagen(page, imagePath, x, pdfDoc) {
     });
   } catch (error) {
     console.error("Error al leer o cargar la imagen:", error);
-    throw error; // Propagar el error hacia arriba
+    throw error;
   }
 }
 
-app.get("/tarjeta", async (req, res) => {
-  const datos = `SELECT * FROM datos_personales WHERE usuario_id = '${req.session.idUsuario}'`;
-  console.log(req.session.idUsuario);
-
-  conexion.query(datos, async (errDatos, rowDatos) => {
-    if (errDatos) {
-      throw errDatos;
-    } else {
-      try {
-        // Lee el archivo PDF
-        const existingPdfBytes = fs.readFileSync("pdf/tarjeta.pdf");
-
-        // Carga el PDF
-        const pdfDoc = await PDFDocument.load(existingPdfBytes);
-        const page = pdfDoc.getPages()[0];
-
-        const qrData = process.env.URL_QRTARJETA + req.session.idUsuario;
-        const qrWidth = 130;
-        const qrHeight = 130;
-        const qrOptions = {
-          color: {
-            width: qrWidth,
-            height: qrHeight,
-            dark: "#1d4370", // Color del módulo del código QR (negro en este caso)
-            light: "#ffffff00", // Color de fondo del código QR (blanco en este caso)
-          },
-        };
-        const qrImageBytes = await qr.toBuffer(qrData, qrOptions);
-
-        const qrImage = await pdfDoc.embedPng(qrImageBytes);
-        // const qrDims = qrImage.scale(0.9);
-        const posicionQRX = page.getWidth() - page.getWidth() / 4 - qrWidth / 2;
-        page.drawImage(qrImage, {
-          x: posicionQRX, // Posición X en la página
-          y: 77, // Posición Y en la página
-          width: qrWidth, // Ancho de la imagen
-          height: qrHeight, // Alto de la imagen
-        });
-
-        await agregarImagen(
-          page,
-          "views/img/users/" + rowDatos[0].imagen,
-          0,
-          pdfDoc
-        );
-
-        // Carga la fuente de texto
-        const hel = await cargarFuente("Helvetica", pdfDoc);
-        const helBold = await cargarFuente("Helvetica-Bold", pdfDoc);
-
-        // Extraer valores del nombre
-        const nombreCompleto = rowDatos[0].nombre;
-        const partesNombre = nombreCompleto.split(" ");
-        const apellidos = partesNombre.slice(-2).join(" ");
-        const nombres = partesNombre.slice(0, -2).join(" ");
-
-        // Agrega texto al PDF
-        agregarTexto(page, nombres, 16, helBold, 90);
-        agregarTexto(page, apellidos, 12, hel, 75);
-        agregarTexto(page, "CURP: ", 7, helBold, 50, 7);
-        agregarTexto(page, rowDatos[0].curp, 7, hel, 50, 32);
-        agregarTexto(page, "T/S: ", 7, helBold, 40, 7);
-        agregarTexto(page, rowDatos[0].tipo_sangre, 7, hel, 40, 22);
-
-        // Guarda el PDF modificado
-        const modifiedPdfBytes = await pdfDoc.save();
-        const outputFilePath = path.join(__dirname, "pdf", "tarjeta2.pdf");
-        fs.writeFileSync(outputFilePath, modifiedPdfBytes);
-        // Envía el PDF modificado como respuesta con el encabezado para descargarlo
-        res.contentType("application/pdf");
-        res.sendFile(outputFilePath);
-      } catch (error) {
-        console.error("Error al modificar el título del PDF:", error);
-        res
-          .status(500)
-          .send("Error al modificar el título del PDF: " + error.message);
-      }
-    }
-  });
-});
-
 // * -------------------------- POSTS -------------------------- * //
 
-app.post("/acceso", (req, res) => {
+app.post("/acceso", async (req, res) => {
   const datos = req.body;
 
   const correo = datos.correo.trim();
   const contrasenia = datos.contrasenia.trim();
 
+  if (correo === "") {
+    req.session.correo = correo;
+    return res.render("acceso", {
+      error: "Por favor, ingrese su correo.",
+      errorField: "correo",
+      correo: req.session.correo,
+      sesion: req.session.idUsuario,
+    });
+  } else if (contrasenia === "") {
+    req.session.correo = correo;
+    return res.render("acceso", {
+      error: "Por favor, ingresa la contraseña.",
+      errorField: "contrasenia",
+      correo: req.session.correo,
+      sesion: req.session.idUsuario,
+    });
+  }
+
   const hashCorreo = crypto.createHash("sha256");
   hashCorreo.update(correo);
   const correoHash = hashCorreo.digest("hex");
 
-  const buscar =
-    "SELECT * FROM registro_usuario WHERE correo = '" + correoHash + "'";
+  try {
+    const usuario = await userService.consultarUsuarioPorCorreo(correoHash);
 
-  conexion.query(buscar, function (err, row) {
-    if (err) {
-      throw err;
-    } else if (correo === "") {
-      req.session.correo = correo;
-      return res.render("acceso", {
-        error: "Por favor, ingrese su correo.",
-        errorField: "correo",
-        correo: req.session.correo,
-        sesion: req.session.idUsuario,
-      });
-    } else if (contrasenia === "") {
-      req.session.correo = correo;
-      return res.render("acceso", {
-        error: "Por favor, ingresa la contraseña.",
-        errorField: "contrasenia",
-        correo: req.session.correo,
-        sesion: req.session.idUsuario,
-      });
-    } else if (row.length === 0) {
+    if (!usuario || usuario.length === 0) {
       req.session.correo = correo;
       return res.render("acceso", {
         error: "El correo o la contraseña es incorrecta. Inténtelo de nuevo.",
@@ -1345,42 +1001,39 @@ app.post("/acceso", (req, res) => {
         correo: req.session.correo,
         sesion: req.session.idUsuario,
       });
-    } else {
-      bcrypt.compare(contrasenia, row[0].contrasenia, function (err, result) {
-        if (!result) {
-          req.session.correo = correo;
-          return res.render("acceso", {
-            error:
-              "El correo o la contraseña es incorrecta. Inténtelo de nuevo.",
-            errorField: "noRes",
-            correo: req.session.correo,
-            sesion: req.session.idUsuario,
-          });
-        } else {
-          const consulta = `SELECT * FROM doctor WHERE usuario_id = '${row[0].usuario_id}'`;
+    }
 
-          conexion.query(consulta, (err, rowDoctor) => {
-            if (err) {
-              throw err;
-            } else if (rowDoctor.length !== 0) {
-              req.session.idDoctor = rowDoctor[0].doctor_id;
-              req.session.idUsuario = row[0].usuario_id;
-              res.redirect("/principal");
-            } else {
-              req.session.idUsuario = row[0].usuario_id;
-              res.redirect("/principal");
-            }
-          });
-        }
+    const match = await bcrypt.compare(contrasenia, usuario[0].contrasenia);
+
+    if (!match) {
+      req.session.correo = correo;
+      return res.render("acceso", {
+        error: "El correo o la contraseña es incorrecta. Inténtelo de nuevo.",
+        errorField: "noRes",
+        correo: req.session.correo,
+        sesion: req.session.idUsuario,
       });
     }
-  });
+
+    const doctor = await doctorService.consultarDoctor(usuario[0].usuario_id);
+
+    if (doctor && doctor.length > 0) {
+      req.session.idDoctor = doctor[0].doctor_id;
+    }
+    req.session.idUsuario = usuario[0].usuario_id;
+    req.session.telefono = usuario[0].telefono;
+    res.redirect(doctor && doctor.length > 0 ? "/doctor" : "/perfil");
+  } catch (error) {
+    console.error("Error al autenticar usuario:", error);
+    res.status(500).send("Error interno del servidor");
+  }
 });
+
 function enviarCorreoVerificacionDoctor(nombre, cedula, especialidad, token) {
   console.log(token);
   const mailOptions = {
-    from: "service@regimed.org",
-    to: "service@regimed.org",
+    from: "service@regimed.life",
+    to: "service@regimed.life",
     subject: "Verificación de Médico",
     html: `
     <p>Se ha recibido un nuevo formulario de registro de médico en la plataforma. A continuación, se detallan los datos proporcionados:</p>
@@ -1390,7 +1043,7 @@ function enviarCorreoVerificacionDoctor(nombre, cedula, especialidad, token) {
       <li><strong>Especialidad:</strong> ${especialidad}</li>
     </ul>
     <p>Por favor, revisen estos datos y procedan según corresponda.
-    <p><a href="http://localhost:3000/verificar_doctor?token=${token}">Verifica aquí</a></p></p>
+    <p><a href="http://regimed.life/verificar_doctor?token=${token}">Verifica aquí</a></p></p>
     <p>Atentamente, Regimed</p>
 `,
   };
@@ -1412,7 +1065,7 @@ app.post("/registroDoctor/:cedula/:especialidad/:captcha", async (req, res) => {
   const especialidad = req.params.especialidad;
 
   const verificacionCaptcha = await fetch(
-    `https://www.google.com/recaptcha/api/siteverify?secret=6LdxfbcpAAAAACfzTmYEvL4GGn1q7g2KkD3R64K5&response=${req.params.captcha}`,
+    `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.CAPTCHA_SECRET}&response=${req.params.captcha}`,
     {
       method: "POST",
     }
@@ -1453,7 +1106,7 @@ app.post("/registroDoctor/:cedula/:especialidad/:captcha", async (req, res) => {
   }
 });
 
-app.post("/registro", (req, res) => {
+app.post("/registro", async (req, res) => {
   const datos = req.body;
 
   const nombre = datos.nombre.trim();
@@ -1485,161 +1138,156 @@ app.post("/registro", (req, res) => {
   hashCorreo.update(correo);
   const correoHash = hashCorreo.digest("hex");
 
-  const buscar =
-    "SELECT * FROM registro_usuario WHERE correo = '" + correoHash + "'";
+  const usuario = await userService.consultarUsuarioPorCorreo(correoHash);
 
-  conexion.query(buscar, function (err, row) {
-    if (err) {
-      throw err;
-    } else if (row.length > 0) {
-      guardarDatosFormulario(req);
-      return res.render("registro", {
-        error: "El correo ya está registrado.",
-        errorField: "correo",
-        formData: req.session.formData,
-        sesion: req.session.idUsuario,
-      });
-    } else if (nombre === "") {
-      guardarDatosFormulario(req);
-      return res.render("registro", {
-        error: "Por favor, ingrese su nombre.",
-        errorField: "nombre",
-        formData: req.session.formData,
-        sesion: req.session.idUsuario,
-      });
-    } else if (!formatoNombre.test(nombre)) {
-      guardarDatosFormulario(req);
-      return res.render("registro", {
-        error: "El nombre solo debe contener letras y espacios.",
-        errorField: "nombre",
-        formData: req.session.formData,
-        sesion: req.session.idUsuario,
-      });
-    } else if (apellido_paterno === "") {
-      guardarDatosFormulario(req);
-      return res.render("registro", {
-        error: "Por favor, ingrese su apellido paterno.",
-        errorField: "apellido_paterno",
-        formData: req.session.formData,
-        sesion: req.session.idUsuario,
-      });
-    } else if (apellido_materno === "") {
-      guardarDatosFormulario(req);
-      return res.render("registro", {
-        error: "Por favor, ingrese su apellido materno.",
-        errorField: "apellido_materno",
-        formData: req.session.formData,
-        sesion: req.session.idUsuario,
-      });
-    } else if (
-      !formatoNombre.test(apellido_paterno) ||
-      !formatoNombre.test(apellido_materno)
-    ) {
-      guardarDatosFormulario(req);
-      return res.render("registro", {
-        error: "Los apellidos solo debe contener letras y espacios.",
-        errorField: "apellido_paterno",
-        formData: req.session.formData,
-        sesion: req.session.idUsuario,
-      });
-    } else if (correo === "") {
-      guardarDatosFormulario(req);
-      return res.render("registro", {
-        error: "Por favor, ingrese su correo.",
-        errorField: "correo",
-        formData: req.session.formData,
-        sesion: req.session.idUsuario,
-      });
-    } else if (!formatoCorreo) {
-      guardarDatosFormulario(req);
-      return res.render("registro", {
-        error: "El correo ingresado no tiene un formato válido.",
-        errorField: "correo",
-        formData: req.session.formData,
-        sesion: req.session.idUsuario,
-      });
-    } else if (contrasenia === "") {
-      guardarDatosFormulario(req);
-      return res.render("registro", {
-        error: "Por favor, ingresa una contraseña",
-        errorField: "contrasenia",
-        formData: req.session.formData,
-        sesion: req.session.idUsuario,
-      });
-    } else if (
-      contrasenia.length < longMinContraseña ||
-      contrasenia.length > longMaxContraseña
-    ) {
-      guardarDatosFormulario(req);
-      return res.render("registro", {
-        error:
-          "La contraseña debe tener entre " +
-          longMinContraseña +
-          " y " +
-          longMaxContraseña +
-          " caracteres.",
-        errorField: "contrasenia",
-        formData: req.session.formData,
-        sesion: req.session.idUsuario,
-      });
-    } else if (!passWithMay || !passWithMin || !passWithEsp) {
-      guardarDatosFormulario(req);
-      return res.render("registro", {
-        error:
-          "La contraseña debe contener al menos una letra mayúscula, una letra minúscula y un carácter especial.",
-        errorField: "contrasenia",
-        formData: req.session.formData,
-        sesion: req.session.idUsuario,
-      });
-    } else if (conf_contrasenia === "") {
-      guardarDatosFormulario(req);
-      return res.render("registro", {
-        error: "Por favor, ingresa nuevamente la contraseña",
-        errorField: "conf_contrasenia",
-        formData: req.session.formData,
-        sesion: req.session.idUsuario,
-      });
-    } else if (contrasenia !== conf_contrasenia) {
-      guardarDatosFormulario(req);
-      return res.render("registro", {
-        error: "Las contraseñas no coinciden.",
-        errorField: "dif_Contrasenia",
-        formData: req.session.formData,
-        sesion: req.session.idUsuario,
-      });
-    } else {
-      bcrypt.hash(contrasenia, saltRounds, function (err, hash) {
-        if (err) {
-          console.error("Error al hashear la contraseña: ", err);
-        } else {
-          const contraseniaHash = hash;
-          const uuidGen = uuid.v4();
+  if (usuario.length > 0) {
+    guardarDatosFormulario(req);
+    return res.render("registro", {
+      error: "El correo ya está registrado.",
+      errorField: "correo",
+      formData: req.session.formData,
+      sesion: req.session.idUsuario,
+    });
+  } else if (nombre === "") {
+    guardarDatosFormulario(req);
+    return res.render("registro", {
+      error: "Por favor, ingrese su nombre.",
+      errorField: "nombre",
+      formData: req.session.formData,
+      sesion: req.session.idUsuario,
+    });
+  } else if (!formatoNombre.test(nombre)) {
+    guardarDatosFormulario(req);
+    return res.render("registro", {
+      error: "El nombre solo debe contener letras y espacios.",
+      errorField: "nombre",
+      formData: req.session.formData,
+      sesion: req.session.idUsuario,
+    });
+  } else if (apellido_paterno === "") {
+    guardarDatosFormulario(req);
+    return res.render("registro", {
+      error: "Por favor, ingrese su apellido paterno.",
+      errorField: "apellido_paterno",
+      formData: req.session.formData,
+      sesion: req.session.idUsuario,
+    });
+  } else if (apellido_materno === "") {
+    guardarDatosFormulario(req);
+    return res.render("registro", {
+      error: "Por favor, ingrese su apellido materno.",
+      errorField: "apellido_materno",
+      formData: req.session.formData,
+      sesion: req.session.idUsuario,
+    });
+  } else if (
+    !formatoNombre.test(apellido_paterno) ||
+    !formatoNombre.test(apellido_materno)
+  ) {
+    guardarDatosFormulario(req);
+    return res.render("registro", {
+      error: "Los apellidos solo debe contener letras y espacios.",
+      errorField: "apellido_paterno",
+      formData: req.session.formData,
+      sesion: req.session.idUsuario,
+    });
+  } else if (correo === "") {
+    guardarDatosFormulario(req);
+    return res.render("registro", {
+      error: "Por favor, ingrese su correo.",
+      errorField: "correo",
+      formData: req.session.formData,
+      sesion: req.session.idUsuario,
+    });
+  } else if (!formatoCorreo) {
+    guardarDatosFormulario(req);
+    return res.render("registro", {
+      error: "El correo ingresado no tiene un formato válido.",
+      errorField: "correo",
+      formData: req.session.formData,
+      sesion: req.session.idUsuario,
+    });
+  } else if (contrasenia === "") {
+    guardarDatosFormulario(req);
+    return res.render("registro", {
+      error: "Por favor, ingresa una contraseña",
+      errorField: "contrasenia",
+      formData: req.session.formData,
+      sesion: req.session.idUsuario,
+    });
+  } else if (
+    contrasenia.length < longMinContraseña ||
+    contrasenia.length > longMaxContraseña
+  ) {
+    guardarDatosFormulario(req);
+    return res.render("registro", {
+      error:
+        "La contraseña debe tener entre " +
+        longMinContraseña +
+        " y " +
+        longMaxContraseña +
+        " caracteres.",
+      errorField: "contrasenia",
+      formData: req.session.formData,
+      sesion: req.session.idUsuario,
+    });
+  } else if (!passWithMay || !passWithMin || !passWithEsp) {
+    guardarDatosFormulario(req);
+    return res.render("registro", {
+      error:
+        "La contraseña debe contener al menos una letra mayúscula, una letra minúscula y un carácter especial.",
+      errorField: "contrasenia",
+      formData: req.session.formData,
+      sesion: req.session.idUsuario,
+    });
+  } else if (conf_contrasenia === "") {
+    guardarDatosFormulario(req);
+    return res.render("registro", {
+      error: "Por favor, ingresa nuevamente la contraseña",
+      errorField: "conf_contrasenia",
+      formData: req.session.formData,
+      sesion: req.session.idUsuario,
+    });
+  } else if (contrasenia !== conf_contrasenia) {
+    guardarDatosFormulario(req);
+    return res.render("registro", {
+      error: "Las contraseñas no coinciden.",
+      errorField: "dif_Contrasenia",
+      formData: req.session.formData,
+      sesion: req.session.idUsuario,
+    });
+  } else {
+    bcrypt.hash(contrasenia, saltRounds, function (err, hash) {
+      if (err) {
+        console.error("Error al hashear la contraseña: ", err);
+      } else {
+        const contraseniaHash = hash;
+        const uuidGen = uuid.v4();
 
-          const hashUUID = crypto.createHash("sha256");
-          hashUUID.update(uuidGen);
-          const uuidHash = hashUUID.digest("hex");
+        const hashUUID = crypto.createHash("sha256");
+        hashUUID.update(uuidGen);
+        const uuidHash = hashUUID.digest("hex");
 
-          const token = generarToken({
-            usuario_id: uuidHash,
-            nombre: nombre,
-            apellido_paterno: apellido_paterno,
-            apellido_materno: apellido_materno,
-            correo: correoHash,
-            contrasenia: contraseniaHash,
-          });
+        const token = generarToken({
+          usuario_id: uuidHash,
+          nombre: nombre,
+          apellido_paterno: apellido_paterno,
+          apellido_materno: apellido_materno,
+          correo: correoHash,
+          contrasenia: contraseniaHash,
+        });
 
-          enviarCorreoVerificacion(correo, token);
+        enviarCorreoVerificacion(correo, token);
 
-          res.redirect("/verificacion/usuario/" + correo);
-        }
-      });
-    }
-  });
+        res.redirect("/verificacion/usuario/" + correo);
+      }
+    });
+  }
 });
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "views/img/users");
+    cb(null, "src/public/images/users");
   },
   filename: function (req, file, cb) {
     // Obtener la extensión del archivo original
@@ -1654,7 +1302,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-app.post("/datosPersonales", upload.single("imagen"), (req, res) => {
+app.post("/datosUsuario", upload.single("imagen"), async (req, res) => {
   const datos = req.body;
 
   const nombre = datos.nombre;
@@ -1662,15 +1310,15 @@ app.post("/datosPersonales", upload.single("imagen"), (req, res) => {
   const telefono = datos.telefono;
   const nacimiento = datos.nacimiento ? datos.nacimiento : "0000-00-00";
   const peso = datos.peso ? datos.peso : 0;
-  const nacionalidad = datos.nacionalidad;
   const estatura = datos.estatura ? datos.estatura / 100 : 0;
   const sexo = datos.sexo;
+  const nacionalidad = datos.nacionalidad;
   const sangre = datos.sangre;
   let imagen = req.file ? req.file.filename : datos.imagen;
   const imagenGuardada = datos.imagenGuardada;
 
   if (imagenGuardada !== imagen && imagenGuardada !== "usuario.png") {
-    fs.unlink("views/img/users/" + imagenGuardada, (err) => {
+    fs.unlink("/public/images/users/" + imagenGuardada, (err) => {
       if (err) {
         console.error("Error al eliminar el archivo:", err);
       } else {
@@ -1679,85 +1327,78 @@ app.post("/datosPersonales", upload.single("imagen"), (req, res) => {
     });
   }
 
-  console.log(imagen);
+  if (telefono !== req.session.telefono) {
+    await sharedService.eliminarVerificacion(req.session.idUsuario);
+  }
 
-  const buscar = `SELECT * FROM datos_personales WHERE usuario_id = '${req.session.idUsuario}'`;
-
-  conexion.query(buscar, (err, rows) => {
-    if (err) {
-      throw err;
-    } else {
-      const actualizar = `UPDATE datos_personales
-      SET nombre = '${nombre}', 
-          curp = '${curp}', 
-          telefono = '${telefono}', 
-          fecha_nac = '${nacimiento}', 
-          peso = '${peso}', 
-          estatura = '${estatura}', 
-          sexo = '${sexo}', 
-          nacionalidad = '${nacionalidad}', 
-          tipo_sangre = '${sangre}', 
-          imagen = '${imagen}'
-      WHERE usuario_id = '${req.session.idUsuario}'`;
-
-      conexion.query(actualizar, (err, rows) => {
-        if (err) {
-          throw err;
-        }
-      });
-    }
-  });
+  try {
+    await userService.actualizarUsuario(
+      req.session.idUsuario,
+      nombre,
+      curp,
+      telefono,
+      nacimiento,
+      peso,
+      estatura,
+      sexo,
+      nacionalidad,
+      sangre,
+      imagen
+    );
+    res.status(200).json({ mensaje: "Datos actualizados correctamente" });
+  } catch (error) {
+    console.error("Error al actualizar los datos:", error);
+    res.status(500).json({ mensaje: "Error al actualizar los datos" });
+  }
 });
 
-const accountSid = "AC7ecead8dc1f648aa7801bd8883f6a3c4";
-const authToken = "ac49be903d87aa5cfe235055c1661093";
-const client = twilio(accountSid, authToken);
+const client = twilio(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+);
 
-app.post("/verificarNumeroTelefonicoPaciente/:telefonoPaciente", (req, res) => {
-  const numeroTelefonico = req.params.telefonoPaciente.replace(/\s/g, "");
-  const telefono = `SELECT * FROM numeros_verificados WHERE telefono = '${numeroTelefonico}'`;
+app.post("/verificarCurpPaciente/:curpPaciente", async (req, res) => {
+  const verificado = await patientService.pacienteVerificado(
+    req.params.curpPaciente
+  );
 
-  console.log(numeroTelefonico);
-  console.log(telefono);
+  try {
+    if (verificado.length !== 0) {
+      const telefono = verificado[0].telefono;
+      const verificationCheck = await client.verify.v2
+        .services(process.env.TWILIO_SERVICE)
+        .verifications.create({
+          to: telefono,
+          channel: "sms",
+          locale: "es",
+        });
 
-  conexion.query(telefono, async (err, row) => {
-    if (err) {
-      throw err;
-    } else if (row.length !== 0) {
-      try {
-        const verificationCheck = await client.verify.v2
-          .services("VA94d1b31b86d32e5f5d2cd8521c69ee4c")
-          .verifications.create({
-            to: numeroTelefonico,
-            channel: "sms",
-            locale: "es",
-          });
-
-        console.log(verificationCheck);
-      } catch (error) {
-        console.error(error);
-        res.status(500).send("Hubo un error al enviar la verificación");
-      }
+      console.log(verificationCheck);
+      res.json({ codigo: "Enviado", telefono: telefono });
     }
-  });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Hubo un error al enviar la verificación");
+  }
 });
 
 app.post(
-  "/verificarCodigoTelefonoPaciente/:telefono/:codigo",
+  "/verificarCodigoPaciente/:telefonoPaciente/:codigo/:curpPaciente",
   async (req, res) => {
-    const telefono = req.params.telefono;
+    const telefono = req.params.telefonoPaciente;
     const codigo = req.params.codigo;
+    const curp = req.params.curpPaciente;
 
-    const numeroTelefonico = telefono.replace(/\s/g, "");
     try {
       const verificationCheck = await client.verify.v2
-        .services("VA94d1b31b86d32e5f5d2cd8521c69ee4c")
-        .verificationChecks.create({ to: numeroTelefonico, code: codigo });
+        .services(process.env.TWILIO_SERVICE)
+        .verificationChecks.create({ to: telefono, code: codigo });
 
       console.log(verificationCheck);
 
       if (verificationCheck.status === "approved") {
-        res.json({ codigo: "Valido", telefono: numeroTelefonico });
+        req.session.curpPaciente = curp;
+        res.json({ codigo: "Valido", curp: curp });
       } else {
         res.json({ codigo: "Erroneo" });
       }
@@ -1767,116 +1408,108 @@ app.post(
   }
 );
 
-app.post("/verificarNumeroTelefonico", (req, res) => {
-  const telefono = `SELECT * FROM datos_personales WHERE usuario_id = '${req.session.idUsuario}'`;
+app.post("/verificarNumeroTelefonico", async (req, res) => {
+  const datosUsuario = await userService.consultarUsuario(
+    req.session.idUsuario
+  );
+
+  let telefono = datosUsuario.telefono.replace(/\s/g, "");
 
   console.log(telefono);
+  try {
+    const verificationCheck = await client.verify.v2
+      .services(process.env.TWILIO_SERVICE)
+      .verifications.create({
+        to: telefono,
+        channel: "sms",
+        locale: "es",
+      });
 
-  conexion.query(telefono, async (err, row) => {
-    if (err) {
-      throw err;
-    } else {
-      let numeroTelefonico = row[0].telefono;
-
-      console.log(numeroTelefonico);
-      numeroTelefonico.replace(/\s/g, "");
-      try {
-        const verificationCheck = await client.verify.v2
-          .services("VA94d1b31b86d32e5f5d2cd8521c69ee4c")
-          .verifications.create({
-            to: numeroTelefonico,
-            channel: "sms",
-            locale: "es",
-          });
-
-        console.log(verificationCheck);
-      } catch (error) {
-        console.error(error);
-        res.status(500).send("Hubo un error al enviar la verificación");
-      }
-    }
-  });
+    console.log(verificationCheck);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Hubo un error al enviar la verificación");
+  }
 });
 
 app.post("/verificarCodigoTelefono/:inputCodigo", async (req, res) => {
-  console.log(req.params.inputCodigo);
-  const telefono = `SELECT * FROM datos_personales WHERE usuario_id = '${req.session.idUsuario}'`;
+  const datosUsuario = await userService.consultarUsuario(
+    req.session.idUsuario
+  );
   const codigo = req.params.inputCodigo;
-  conexion.query(telefono, async (err, row) => {
-    if (err) {
-      throw err;
+
+  const telefono = datosUsuario.telefono.replace(/\s/g, "");
+
+  try {
+    const verificationCheck = await client.verify.v2
+      .services(process.env.TWILIO_SERVICE)
+      .verificationChecks.create({ to: telefono, code: codigo });
+
+    console.log(verificationCheck);
+
+    if (verificationCheck.status === "approved") {
+      console.log("Valido");
+      res.json({ codigo: "Valido" });
+      await sharedService.insertarVerificacion(req.session.idUsuario, telefono);
     } else {
-      const numeroTelefonico = row[0].telefono.replace(/\s/g, "");
-      try {
-        const verificationCheck = await client.verify.v2
-          .services("VA94d1b31b86d32e5f5d2cd8521c69ee4c")
-          .verificationChecks.create({ to: numeroTelefonico, code: codigo });
-
-        console.log(verificationCheck);
-
-        if (verificationCheck.status === "approved") {
-          console.log("Valido");
-          res.json({ codigo: "Valido" });
-          const telefonoVerificado = `INSERT INTO numeros_verificados (usuario_id, telefono) VALUES ('${req.session.idUsuario}', '${numeroTelefonico}')`;
-          conexion.query(telefonoVerificado);
-        } else {
-          console.log("Invalido");
-          res.json({ codigo: "Erroneo" });
-        }
-      } catch (error) {
-        console.error(error);
-        res.status(500).send("Hubo un error al verificar el código");
-      }
+      console.log("Invalido");
+      res.json({ codigo: "Erroneo" });
     }
-  });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Hubo un error al verificar el código");
+  }
 });
 
 app.post("/verificarRegistro/:codigo/:captcha", async (req, res) => {
   const verificacionCaptcha = await fetch(
-    `https://www.google.com/recaptcha/api/siteverify?secret=6LdxfbcpAAAAACfzTmYEvL4GGn1q7g2KkD3R64K5&response=${req.params.captcha}`,
+    `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.CAPTCHA_SECRET}&response=${req.params.captcha}`,
     {
       method: "POST",
     }
   ).then((_res) => _res.json());
 
   if (verificacionCaptcha.success === true) {
-    const consulta = `SELECT * FROM codigos_temporales WHERE codigo = ${req.params.codigo}`;
+    const consultaCodigo = await sharedService.consultarCodigoExistente(
+      req.params.codigo
+    );
 
-    conexion.query(consulta, (err, rows) => {
-      if (err) {
-        throw err;
-      } else if (rows.length === 0) {
-        res.json({ usuario: "Inexistente" });
-      } else if (rows[0].usuario_id === req.session.idUsuario) {
-        res.json({ usuario: "Mismo" });
+    console.log(consultaCodigo[0]);
+    console.log(consultaCodigo[0].usuario_id);
+    console.log(consultaCodigo[0].codigo);
+
+    if (consultaCodigo.length === 0) {
+      res.json({ usuario: "Inexistente" });
+    } else if (consultaCodigo[0].usuario_id === req.session.idUsuario) {
+      res.json({ usuario: "Mismo" });
+    } else {
+      console.log("Usuario: " + req.session.idUsuario);
+      console.log("Doctor : " + consultaCodigo[0].usuario_id);
+
+      const consultarRegistros =
+        await sharedService.consultarCompartidoExistente(
+          req.session.idUsuario,
+          consultaCodigo[0].usuario_id
+        );
+
+      if (consultarRegistros.length === 0) {
+        await sharedService.registrarCompartido(
+          req.session.idUsuario,
+          consultaCodigo[0].usuario_id
+        );
+        await sharedService.registrarCompartido(
+          consultaCodigo[0].usuario_id,
+          req.session.idUsuario
+        );
+
+        await sharedService.eliminarCodigo(req.session.idUsuario);
+        await sharedService.eliminarCodigo(consultaCodigo[0].usuario_id);
+
+        res.json({ usuario: "Ingresado" });
       } else {
-        const consulta = `SELECT * FROM registros_compartidos WHERE usuario_id = '${req.session.idUsuario}' AND usuarioCompartido_id = '${rows[0].usuario_id}' OR usuario_id = '${rows[0].usuario_id}' AND usuarioCompartido_id = '${req.session.idUsuario}'`;
-
-        conexion.query(consulta, (err, row) => {
-          if (err) {
-            throw err;
-          } else if (row.length === 0) {
-            const ingreso1ro = `INSERT INTO registros_compartidos (usuario_id, usuarioCompartido_id) values ('${req.session.idUsuario}', '${rows[0].usuario_id}')`;
-            const ingreso2do = `INSERT INTO registros_compartidos (usuario_id, usuarioCompartido_id) values ('${rows[0].usuario_id}', '${req.session.idUsuario}')`;
-            conexion.query(ingreso1ro, (err, row) => {
-              if (err) {
-                throw err;
-              } else {
-                conexion.query(ingreso2do, (err, row) => {
-                  if (err) {
-                    throw err;
-                  } else {
-                    res.json({ usuario: "Ingresado" });
-                  }
-                });
-              }
-            });
-          } else {
-            res.json({ usuario: "Existente" });
-          }
-        });
+        res.json({ usuario: "Existente" });
       }
-    });
+    }
   }
 });
 
@@ -1905,7 +1538,7 @@ app.post("/guardarDatosPaciente", (req, res) => {
     if (err) {
       throw err;
     } else {
-      console.log(vacunasPreestablecidas.BCG)
+      console.log(vacunasPreestablecidas.BCG);
       const sqlVacunasPreestablecidas = `
     INSERT INTO vacunas_preestablecidas
     (usuario_id, fecha_bcg, fecha_hepatitisb1, fecha_hepatitisb2, fecha_hepatitisb3, fecha_prevalente1, fecha_prevalente2, fecha_prevalente3, fecha_prevalente4, fecha_dpt, fecha_rotavirus1, fecha_rotavirus2, fecha_rotavirus3, fecha_neumococica1, fecha_neumococica2, fecha_neumococica3, fecha_influenza1, fecha_influenza2, fecha_influenza3, fecha_srp1, fecha_srp2, fecha_sabin1, fecha_sabin2, fecha_sabin3, fecha_sabin4, fecha_sabin5, fecha_sabin6, fecha_sabin7, fecha_sabin8, fecha_sr)
@@ -1944,23 +1577,55 @@ app.post("/guardarDatosPaciente", (req, res) => {
     )
     ON DUPLICATE KEY UPDATE
     fecha_bcg = '${vacunasPreestablecidas.BCG || "0000-00-00"}',
-fecha_hepatitisb1 = '${vacunasPreestablecidas.Hepatitis_B_Primera || "0000-00-00"}',
-fecha_hepatitisb2 = '${vacunasPreestablecidas.Hepatitis_B_Segunda || "0000-00-00"}',
-fecha_hepatitisb3 = '${vacunasPreestablecidas.Hepatitis_B_Tercera || "0000-00-00"}',
-fecha_prevalente1 = '${vacunasPreestablecidas.Pentavalente_Primera || "0000-00-00"}',
-fecha_prevalente2 = '${vacunasPreestablecidas.Pentavalente_Segunda || "0000-00-00"}',
-fecha_prevalente3 = '${vacunasPreestablecidas.Pentavalente_Tercera || "0000-00-00"}',
-fecha_prevalente4 = '${vacunasPreestablecidas.Pentavalente_Cuarta || "0000-00-00"}',
+fecha_hepatitisb1 = '${
+        vacunasPreestablecidas.Hepatitis_B_Primera || "0000-00-00"
+      }',
+fecha_hepatitisb2 = '${
+        vacunasPreestablecidas.Hepatitis_B_Segunda || "0000-00-00"
+      }',
+fecha_hepatitisb3 = '${
+        vacunasPreestablecidas.Hepatitis_B_Tercera || "0000-00-00"
+      }',
+fecha_prevalente1 = '${
+        vacunasPreestablecidas.Pentavalente_Primera || "0000-00-00"
+      }',
+fecha_prevalente2 = '${
+        vacunasPreestablecidas.Pentavalente_Segunda || "0000-00-00"
+      }',
+fecha_prevalente3 = '${
+        vacunasPreestablecidas.Pentavalente_Tercera || "0000-00-00"
+      }',
+fecha_prevalente4 = '${
+        vacunasPreestablecidas.Pentavalente_Cuarta || "0000-00-00"
+      }',
 fecha_dpt = '${vacunasPreestablecidas.DPT || "0000-00-00"}',
-fecha_rotavirus1 = '${vacunasPreestablecidas.Rotavirus_Primera || "0000-00-00"}',
-fecha_rotavirus2 = '${vacunasPreestablecidas.Rotavirus_Segunda || "0000-00-00"}',
-fecha_rotavirus3 = '${vacunasPreestablecidas.Rotavirus_Tercera || "0000-00-00"}',
-fecha_neumococica1 = '${vacunasPreestablecidas.Neumococica_Primera || "0000-00-00"}',
-fecha_neumococica2 = '${vacunasPreestablecidas.Neumococica_Segunda || "0000-00-00"}',
-fecha_neumococica3 = '${vacunasPreestablecidas.Neumococica_Refuerzo || "0000-00-00"}',
-fecha_influenza1 = '${vacunasPreestablecidas.Influenza_Primera || "0000-00-00"}',
-fecha_influenza2 = '${vacunasPreestablecidas.Influenza_Segunda || "0000-00-00"}',
-fecha_influenza3 = '${vacunasPreestablecidas.Influenza_Revacunación || "0000-00-00"}',
+fecha_rotavirus1 = '${
+        vacunasPreestablecidas.Rotavirus_Primera || "0000-00-00"
+      }',
+fecha_rotavirus2 = '${
+        vacunasPreestablecidas.Rotavirus_Segunda || "0000-00-00"
+      }',
+fecha_rotavirus3 = '${
+        vacunasPreestablecidas.Rotavirus_Tercera || "0000-00-00"
+      }',
+fecha_neumococica1 = '${
+        vacunasPreestablecidas.Neumococica_Primera || "0000-00-00"
+      }',
+fecha_neumococica2 = '${
+        vacunasPreestablecidas.Neumococica_Segunda || "0000-00-00"
+      }',
+fecha_neumococica3 = '${
+        vacunasPreestablecidas.Neumococica_Refuerzo || "0000-00-00"
+      }',
+fecha_influenza1 = '${
+        vacunasPreestablecidas.Influenza_Primera || "0000-00-00"
+      }',
+fecha_influenza2 = '${
+        vacunasPreestablecidas.Influenza_Segunda || "0000-00-00"
+      }',
+fecha_influenza3 = '${
+        vacunasPreestablecidas.Influenza_Revacunación || "0000-00-00"
+      }',
 fecha_srp1 = '${vacunasPreestablecidas.SRP_Primera || "0000-00-00"}',
 fecha_srp2 = '${vacunasPreestablecidas.SRP_Refuerzo || "0000-00-00"}',
 fecha_sabin1 = '${vacunasPreestablecidas.Sabin_1 || "0000-00-00"}',
@@ -1978,7 +1643,11 @@ fecha_sr = '${vacunasPreestablecidas.SR || "0000-00-00"}';
 
       const sqlOtrasVacunas = `
     INSERT INTO vacuna (usuario_id, nombre, enfermedad_preventiva, dosis, edad_frecuencia, fecha_vacunacion)
-    VALUES ('${rowUsuario[0].usuario_id}', '${otrasVacunas.Vacuna || ""}', '${otrasVacunas.Enfermedad_Preventiva || ""}', '${otrasVacunas.Dosis || ""}', '${otrasVacunas.Edad_Frecuencia || ""}', '${otrasVacunas.FechaVacunacion || "0000-00-00"}')
+    VALUES ('${rowUsuario[0].usuario_id}', '${otrasVacunas.Vacuna || ""}', '${
+        otrasVacunas.Enfermedad_Preventiva || ""
+      }', '${otrasVacunas.Dosis || ""}', '${
+        otrasVacunas.Edad_Frecuencia || ""
+      }', '${otrasVacunas.FechaVacunacion || "0000-00-00"}')
     ON DUPLICATE KEY UPDATE
     nombre = '${otrasVacunas.Vacuna || ""}',
     enfermedad_preventiva = '${otrasVacunas.Enfermedad_Preventiva || ""}',
@@ -1988,9 +1657,9 @@ fecha_sr = '${vacunasPreestablecidas.SR || "0000-00-00"}';
 `;
       conexion.query(sqlOtrasVacunas, (err, row) => {
         if (err) {
-          throw err
+          throw err;
         } else {
-          console.log(sqlOtrasVacunas)
+          console.log(sqlOtrasVacunas);
         }
       });
 
@@ -2063,7 +1732,11 @@ fecha_sr = '${vacunasPreestablecidas.SR || "0000-00-00"}';
         ${historialMedico.Problemas_renales ? 1 : 0}, 
         ${historialMedico.Enfermedad_hepatica ? 1 : 0}, 
         ${historialMedico.Ictericia ? 1 : 0}, 
-        ${historialMedico.Problemas_de_tiroides_enfermedad_paratiroidea_o_deficiencia_de_c ? 1 : 0}, 
+        ${
+          historialMedico.Problemas_de_tiroides_enfermedad_paratiroidea_o_deficiencia_de_c
+            ? 1
+            : 0
+        }, 
         ${historialMedico.Deficiencia_hormonal ? 1 : 0}, 
         ${historialMedico.Colesterol_alto_o_toma_de_estatinas ? 1 : 0}, 
         ${historialMedico.Diabetes ? 1 : 0}, 
@@ -2092,61 +1765,108 @@ fecha_sr = '${vacunasPreestablecidas.SR || "0000-00-00"}';
         ${historialMedico.Uso_de_alcohol_drogas_recreativas ? 1 : 0}
     )
     ON DUPLICATE KEY UPDATE
-    hospitalizacion_lesiones = ${historialMedico.hospitalizacion_lesiones ? 1 : 0},
+    hospitalizacion_lesiones = ${
+      historialMedico.hospitalizacion_lesiones ? 1 : 0
+    },
     reacciones_alergicas = ${historialMedico.reacciones_alergicas ? 1 : 0},
     problemas_corazon = ${historialMedico.problemas_corazon ? 1 : 0},
-    marcapasos_desfibrilador = ${historialMedico.marcapasos_desfibrilador ? 1 : 0},
-    antecedentes_endocarditis = ${historialMedico.antecedentes_endocarditis ? 1 : 0},
+    marcapasos_desfibrilador = ${
+      historialMedico.marcapasos_desfibrilador ? 1 : 0
+    },
+    antecedentes_endocarditis = ${
+      historialMedico.antecedentes_endocarditis ? 1 : 0
+    },
     implante_ortopedico = ${historialMedico.implante_ortopedico ? 1 : 0},
     fiebre_reumatica = ${historialMedico.fiebre_reumatica ? 1 : 0},
     presion_arterial = ${historialMedico.presion_arterial ? 1 : 0},
-    accidente_cerebrovascular = ${historialMedico.accidente_cerebrovascular ? 1 : 0},
+    accidente_cerebrovascular = ${
+      historialMedico.accidente_cerebrovascular ? 1 : 0
+    },
     problemas_sanguineos = ${historialMedico.problemas_sanguineos ? 1 : 0},
-    Hemorragia_prolongada_debido_a_un_corte = ${historialMedico.Hemorragia_prolongada_debido_a_un_corte ? 1 : 0},
-    Enfisema_falta_de_aliento_sarcoidosis = ${historialMedico.Enfisema_falta_de_aliento_sarcoidosis ? 1 : 0},
-    Tuberculosis_sarampion_varicela = ${historialMedico.Tuberculosis_sarampion_varicela ? 1 : 0},
+    Hemorragia_prolongada_debido_a_un_corte = ${
+      historialMedico.Hemorragia_prolongada_debido_a_un_corte ? 1 : 0
+    },
+    Enfisema_falta_de_aliento_sarcoidosis = ${
+      historialMedico.Enfisema_falta_de_aliento_sarcoidosis ? 1 : 0
+    },
+    Tuberculosis_sarampion_varicela = ${
+      historialMedico.Tuberculosis_sarampion_varicela ? 1 : 0
+    },
     Asma = ${historialMedico.Asma ? 1 : 0},
-    Problemas_respiratorios_o_de_sueno = ${historialMedico.Problemas_respiratorios_o_de_sueno ? 1 : 0},
+    Problemas_respiratorios_o_de_sueno = ${
+      historialMedico.Problemas_respiratorios_o_de_sueno ? 1 : 0
+    },
     Problemas_renales = ${historialMedico.Problemas_renales ? 1 : 0},
     Enfermedad_hepatica = ${historialMedico.Enfermedad_hepatica ? 1 : 0},
     Ictericia = ${historialMedico.Ictericia ? 1 : 0},
-    Problemas_de_tiroides_enfermedad_paratiroidea_o_deficiencia_de_c = ${historialMedico.Problemas_de_tiroides_enfermedad_paratiroidea_o_deficiencia_de_c ? 1 : 0},
+    Problemas_de_tiroides_enfermedad_paratiroidea_o_deficiencia_de_c = ${
+      historialMedico.Problemas_de_tiroides_enfermedad_paratiroidea_o_deficiencia_de_c
+        ? 1
+        : 0
+    },
     Deficiencia_hormonal = ${historialMedico.Deficiencia_hormonal ? 1 : 0},
-    Colesterol_alto_o_toma_de_estatinas = ${historialMedico.Colesterol_alto_o_toma_de_estatinas ? 1 : 0},
+    Colesterol_alto_o_toma_de_estatinas = ${
+      historialMedico.Colesterol_alto_o_toma_de_estatinas ? 1 : 0
+    },
     Diabetes = ${historialMedico.Diabetes ? 1 : 0},
-    Ulceras_estomacales_o_duodenales = ${historialMedico.Ulceras_estomacales_o_duodenales ? 1 : 0},
+    Ulceras_estomacales_o_duodenales = ${
+      historialMedico.Ulceras_estomacales_o_duodenales ? 1 : 0
+    },
     Trastornos_digestivos = ${historialMedico.Trastornos_digestivos ? 1 : 0},
-    Osteoporosis_osteopenia = ${historialMedico.Osteoporosis_osteopenia ? 1 : 0},
+    Osteoporosis_osteopenia = ${
+      historialMedico.Osteoporosis_osteopenia ? 1 : 0
+    },
     Artritis = ${historialMedico.Artritis ? 1 : 0},
-    Enfermedad_autoinmunitaria = ${historialMedico.Enfermedad_autoinmunitaria ? 1 : 0},
+    Enfermedad_autoinmunitaria = ${
+      historialMedico.Enfermedad_autoinmunitaria ? 1 : 0
+    },
     Glaucoma = ${historialMedico.Glaucoma ? 1 : 0},
     Lentes_de_contacto = ${historialMedico.Lentes_de_contacto ? 1 : 0},
-    Lesiones_en_la_cabeza_o_en_el_cuello = ${historialMedico.Lesiones_en_la_cabeza_o_en_el_cuello ? 1 : 0},
+    Lesiones_en_la_cabeza_o_en_el_cuello = ${
+      historialMedico.Lesiones_en_la_cabeza_o_en_el_cuello ? 1 : 0
+    },
     Epilepsia_convulsiones = ${historialMedico.Epilepsia_convulsiones ? 1 : 0},
-    Trastornos_neurologicos = ${historialMedico.Trastornos_neurologicos ? 1 : 0},
-    Infecciones_virales_y_herpes_labial = ${historialMedico.Infecciones_virales_y_herpes_labial ? 1 : 0},
-    Cualquier_bulto_o_hinchazon_en_la_boca = ${historialMedico.Cualquier_bulto_o_hinchazon_en_la_boca ? 1 : 0},
-    Urticaria_erupcion_cutanea_fiebre_del_heno = ${historialMedico.Urticaria_erupcion_cutanea_fiebre_del_heno ? 1 : 0},
+    Trastornos_neurologicos = ${
+      historialMedico.Trastornos_neurologicos ? 1 : 0
+    },
+    Infecciones_virales_y_herpes_labial = ${
+      historialMedico.Infecciones_virales_y_herpes_labial ? 1 : 0
+    },
+    Cualquier_bulto_o_hinchazon_en_la_boca = ${
+      historialMedico.Cualquier_bulto_o_hinchazon_en_la_boca ? 1 : 0
+    },
+    Urticaria_erupcion_cutanea_fiebre_del_heno = ${
+      historialMedico.Urticaria_erupcion_cutanea_fiebre_del_heno ? 1 : 0
+    },
     ITS_ETS_VPH = ${historialMedico.ITS_ETS_VPH ? 1 : 0},
     Hepatitis = ${historialMedico.Hepatitis ? 1 : 0},
     VIH_SIDA = ${historialMedico.VIH_SIDA ? 1 : 0},
     Tumores = ${historialMedico.Tumores ? 1 : 0},
     Terapia_de_radiacion = ${historialMedico.Terapia_de_radiacion ? 1 : 0},
-    Quimioterapia_medicamentos_inmunosupresores = ${historialMedico.Quimioterapia_medicamentos_inmunosupresores ? 1 : 0},
-    Dificultades_emocionales = ${historialMedico.Dificultades_emocionales ? 1 : 0},
-    Tratamiento_psiquiatrico = ${historialMedico.Tratamiento_psiquiatrico ? 1 : 0},
-    Medicamentos_antidepresivos = ${historialMedico.Medicamentos_antidepresivos ? 1 : 0},
-    Uso_de_alcohol_drogas_recreativas = ${historialMedico.Uso_de_alcohol_drogas_recreativas ? 1 : 0};
+    Quimioterapia_medicamentos_inmunosupresores = ${
+      historialMedico.Quimioterapia_medicamentos_inmunosupresores ? 1 : 0
+    },
+    Dificultades_emocionales = ${
+      historialMedico.Dificultades_emocionales ? 1 : 0
+    },
+    Tratamiento_psiquiatrico = ${
+      historialMedico.Tratamiento_psiquiatrico ? 1 : 0
+    },
+    Medicamentos_antidepresivos = ${
+      historialMedico.Medicamentos_antidepresivos ? 1 : 0
+    },
+    Uso_de_alcohol_drogas_recreativas = ${
+      historialMedico.Uso_de_alcohol_drogas_recreativas ? 1 : 0
+    };
 `;
 
-    conexion.query(sqlHistorialMedico, (err, row )=> {
-      if (err) {
-        throw err
-      } else {
-        console.log("Imprimideishon")
-      }
-    })
-
+      conexion.query(sqlHistorialMedico, (err, row) => {
+        if (err) {
+          throw err;
+        } else {
+          console.log("Imprimideishon");
+        }
+      });
     }
   });
 
