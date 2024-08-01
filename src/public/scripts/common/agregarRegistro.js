@@ -28,6 +28,7 @@ let intervalo;
 
 function iniciarTemporizador(tiempoRestante) {
   document.getElementById("loader__container").style.opacity = 1;
+  document.getElementById("texto__codigo").style.opacity = 0;
   document.getElementById("contenedorCodigo").style.opacity = 0;
   document.getElementById("regenerarCodigo").style.display = "none";
   document.getElementById("temporizadorCodigo").style.display = "none";
