@@ -1,5 +1,5 @@
 <div id="fondo__loader" class="fondo__modal">
-    <div class="loader">
+    <div class="loader" id="loader__white">
         <div class="loader-square"></div>
         <div class="loader-square"></div>
         <div class="loader-square"></div>
@@ -113,12 +113,20 @@
     height: 28px;
     margin: 2px;
     border-radius: 0px;
-    background: white;
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
     animation: square-animation 10s ease-in-out infinite both;
     }
+
+    #loader__white .loader-square {
+        background-color: white;
+    }
+
+    #loader__gray .loader-square {
+        background-color: rgb(48, 48, 48);
+    }
+
 
     .loader-square:nth-of-type(0) {
     animation-delay: 0s;
@@ -150,5 +158,11 @@
 
     .loader-square:nth-of-type(7) {
     animation-delay: -10s;
+    }
+
+    .loader__container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 </style>

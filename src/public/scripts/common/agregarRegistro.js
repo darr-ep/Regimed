@@ -1,13 +1,7 @@
-const contenedorRegistroUsuarios = document.getElementById(
-  "fondo__registro"
-);
-const ventanaRegistroUsuarios = document.getElementById(
-  "modal__registro"
-);
+const contenedorRegistroUsuarios = document.getElementById("fondo__registro");
+const ventanaRegistroUsuarios = document.getElementById("modal__registro");
 const abrirRegistroUsuarios = document.getElementById("abrir__registro");
-const cerrarRegistroUsuarios = document.getElementById(
-  "cerrar_registro"
-);
+const cerrarRegistroUsuarios = document.getElementById("cerrar_registro");
 
 let contenedorQR = document.getElementById("contenedorQR");
 let contenedorCodigo = document.getElementById("contenedorCodigo");
@@ -22,22 +16,28 @@ abrirRegistroUsuarios.addEventListener("click", () => {
 cerrarRegistroUsuarios.addEventListener("click", () => {
   contenedorRegistroUsuarios.classList.remove("mostrar-ventana");
   ventanaRegistroUsuarios.classList.remove("agrandar-ventana");
+  clearInterval(intervalo);
 });
+
+document.getElementById("regenerarCodigo").addEventListener("click", () => {
+  clearInterval(intervalo);
+  iniciarTemporizador();
+})
 
 let intervalo;
 
 function iniciarTemporizador(tiempoRestante) {
+  document.getElementById("loader__container").style.display = "initial";
   document.getElementById("temporizadorCodigo").style.display = "initial";
   document.getElementById("regenerarCodigo").style.display = "none";
 
   fetch("/generarTokenRegistro")
     .then((response) => response.json())
     .then((data) => {
+      document.getElementById("loader__container").style.display = "none";
       // tokenRegistroPendiente = data.token;
       tiempoRestante =
         data.tiempoRestante !== undefined ? data.tiempoRestante : 180;
-
-      console.log(tiempoRestante);
 
       mostrarTiempo(tiempoRestante);
       // // Eliminar el código QR anterior si existe
@@ -45,8 +45,6 @@ function iniciarTemporizador(tiempoRestante) {
       //   contenedorQR.removeChild(contenedorQR.firstChild);
       //   contenedorCodigo.removeChild(contenedorCodigo.firstChild);
       // }
-
-      console.log(data.numeroAleatorio);
 
       // let nuevoContenedorQR = document.createElement("div");
       // nuevoContenedorQR.id = "contenedorQR";
@@ -65,7 +63,6 @@ function iniciarTemporizador(tiempoRestante) {
       //   colorLight: "#f0f0f0",
       //   correctLevel: QRCode.CorrectLevel.H,
       // });
-      
     });
 
   // contenedorQR.style.filter = "blur(0)";
@@ -108,9 +105,7 @@ function formatoNumerico(input) {
 document.getElementById("modal__registro").onsubmit = (e) => {
   e.preventDefault();
 
-  const formData = new FormData(
-    document.getElementById("modal__registro")
-  );
+  const formData = new FormData(document.getElementById("modal__registro"));
   const codigo = formData.get("codigoRegistro");
   const captcha = formData.get("g-recaptcha-response");
 
@@ -164,7 +159,6 @@ document.getElementById("modal__registro").onsubmit = (e) => {
         setTimeout(function () {
           location.reload();
         }, 1500);
-
       }
     });
   document.getElementById("modal__registro").reset();
