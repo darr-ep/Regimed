@@ -2,7 +2,7 @@ const { ejecutarConsulta } = require('../config/database');
 const { obtenerFechaFormateada } = require('../utils/utils');
 
 async function registrarUsuario(idUsuario, nombre_comp, nombre, apellido_paterno, apellido_materno, correo, contrasenia) {
-  const query = `INSERT INTO datos_usuario (usuario_id, nombre_comp, nombre, apellido_paterno, apellido_materno, curp, nacimiento, estatura, peso, sexo, sangre, telefono, nacionalidad, imagen, correo, contrasenia) VALUES (?, ?, ?, ?, ?, '', '', '', '', '', '', '', '', 'usuario.png', ?, ?)`;
+  const query = `INSERT INTO datos_usuario (usuario_id, nombre_comp, nombre, apellido_paterno, apellido_materno, curp, nacimiento, estatura, peso, sexo, sangre, telefono, nacionalidad, imagen, correo, contrasenia) VALUES (?, ?, ?, ?, ?, '', '0000-00-00', '', '', '', '', '', '', 'usuario.png', ?, ?)`;
   await ejecutarConsulta(query, [idUsuario, nombre_comp, nombre, apellido_paterno, apellido_materno, correo, contrasenia]);
 }
 

@@ -5,7 +5,7 @@ async function consultarVacunas(idUsuario) {
   return ejecutarConsulta(query, [idUsuario]);
 }
 
-async function pacienteVerificado(curp) {
+async function consultarVerificado(curp) {
   const query = `
   SELECT datos_usuario.*, verificados.*
   FROM datos_usuario
@@ -17,5 +17,5 @@ async function pacienteVerificado(curp) {
 
 module.exports = {
   consultarVacunas,
-  pacienteVerificado
+  consultarVerificado
 };

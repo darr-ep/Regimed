@@ -1358,7 +1358,7 @@ const client = twilio(
 );
 
 app.post("/verificarCurpPaciente/:curpPaciente", async (req, res) => {
-  const verificado = await patientService.pacienteVerificado(
+  const verificado = await patientService.consultarVerificado(
     req.params.curpPaciente
   );
 
@@ -1450,7 +1450,7 @@ app.post("/verificarCodigoTelefono/:inputCodigo", async (req, res) => {
     if (verificationCheck.status === "approved") {
       console.log("Valido");
       res.json({ codigo: "Valido" });
-      await sharedService.insertarVerificacion(req.session.idUsuario, telefono);
+      await sharedService.registrarVerificacion(req.session.idUsuario, telefono);
     } else {
       console.log("Invalido");
       res.json({ codigo: "Erroneo" });
