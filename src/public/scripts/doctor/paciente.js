@@ -91,8 +91,8 @@ consultarPaciente.addEventListener("click", () => {
   )
     .then((response) => response.json())
     .then((data) => {
+      document.getElementById("fondo__loader").classList.remove("mostrar-ventana");
       if (data.codigo === "Erroneo") {
-        document.getElementById("fondo__loader").classList.remove("mostrar-ventana");
         Swal.fire({
           icon: "error",
           title: "Error",
@@ -101,8 +101,16 @@ consultarPaciente.addEventListener("click", () => {
           timer: 1500,
         });
       } else if (data.codigo === "Valido") {
-        console.log(data.curp);
-        window.open("/paciente/" + data.curp, "_self");
+        contenedorPaciente.classList.remove("mostrar-ventana");
+        ventanaPaciente.classList.remove("agrandar-ventana");
+        Swal.fire({
+          icon: "success",
+          title: "Verificado",
+          text: "El perfil se abrirá en una ventana emergente.",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        window.open(`/paciente/${data.curp}`, '_blank')
       }
     });
 });

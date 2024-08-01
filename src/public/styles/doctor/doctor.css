@@ -588,8 +588,10 @@ button.boton-cancelar:hover {
 }
 
 .modal__codigo {
+  position: relative;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 10px;
 }
 

@@ -1,0 +1,47 @@
+<div id="fondo__registro" class="fondo__modal">
+    <form id="modal__registro" class="modal">
+        <h1 class="modal__titulo">
+            <i class="fa-solid fa-user-group"></i> Registros familiares
+        </h1>
+        <div class="modal__contenido">
+            <div class="modal__codigos">
+                <div class="modal__codigo">
+                    <p id="texto__codigo">Ingresa el código en otro registro</p>
+                    <div class="loader__container" id="loader__container">
+                        <div class="loader" id="loader__gray">
+                            <div class="loader-square"></div>
+                            <div class="loader-square"></div>
+                            <div class="loader-square"></div>
+                            <div class="loader-square"></div>
+                            <div class="loader-square"></div>
+                            <div class="loader-square"></div>
+                            <div class="loader-square"></div>
+                        </div>
+                    </div>
+                    <span id="contenedorCodigo"></span>
+                    <p id="temporizadorCodigo">El código expirará en
+                        <strong id="tiempoRestante"></strong>
+                    </p>
+                    <p id="regenerarCodigo">El código ha expirado,<br><a href="#">regeneralo aquí</a></p>
+                </div>
+                <p>o</p>
+                <div class="modal__codigo">
+                    Ingresa el código del familiar a registrar
+                    <div class="input-group">
+                        <input class="input" type="text" maxlength="6" placeholder="⎯ ⎯ ⎯ ⎯ ⎯ ⎯" oninput="formatoNumerico(this)" name="codigoRegistro">
+                    </div>
+                    <div class="g-recaptcha" data-sitekey="<%= captcha_web %>"></div>
+                </div>
+            </div>
+        </div>
+        <div class="modal__botones">
+            <button type="submit" class="boton-datos" id="enviarCodigo">
+                <i class="fa-solid fa-floppy-disk"></i> Guardar
+            </button>
+            <button type="button" class="boton-datos boton-cancelar" id="cerrar_registro">
+                <i class="fa-solid fa-x"></i> Cancelar
+            </button>
+        </div>
+    </form>
+</div>
+

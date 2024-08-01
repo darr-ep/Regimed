@@ -114,22 +114,22 @@ document.getElementById("modal__registro").onsubmit = (e) => {
   const codigo = formData.get("codigoRegistro");
   const captcha = formData.get("g-recaptcha-response");
 
-  if (!captcha) {
+  if (codigo.length < 6) {
     Swal.fire({
       icon: "error",
       title: "Error",
-      text: "Por favor, completa el captcha.",
+      text: "El código debe tener al menos 6 dígitos.",
       showConfirmButton: false,
       timer: 1500,
     });
     return;
   }
 
-  if (codigo.length < 6) {
+  if (!captcha) {
     Swal.fire({
       icon: "error",
       title: "Error",
-      text: "El código debe tener al menos 6 dígitos.",
+      text: "Por favor, completa el captcha.",
       showConfirmButton: false,
       timer: 1500,
     });
@@ -169,6 +169,8 @@ document.getElementById("modal__registro").onsubmit = (e) => {
           timer: 1500,
         });
       } else if (data.usuario === "Ingresado") {
+        contenedorRegistroUsuarios.classList.remove("mostrar-ventana");
+        ventanaRegistroUsuarios.classList.remove("agrandar-ventana");
         Swal.fire({
           icon: "success",
           title: "Agregado",

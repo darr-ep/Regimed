@@ -166,6 +166,7 @@ document
         console.error("Error al enviar el formulario:", error);
         contenedorDatosPersonales.classList.remove("mostrar-ventana");
         ventanaDatosPersonales.classList.remove("agrandar-ventana");
+        document.getElementById("fondo__loader").classList.remove("mostrar-ventana");
         Swal.fire({
           icon: "error",
           title: "Error",
