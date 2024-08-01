@@ -12,11 +12,11 @@ const verificarTelefono = document.getElementById(
   "verificar__verificarTelefono"
 );
 
-if(verificarNumero){
+if (verificarNumero) {
   verificarNumero.addEventListener("click", () => {
     contenedorVerificarTelefono.classList.add("mostrar-ventana");
     ventanaVerificarTelefono.classList.add("agrandar-ventana");
-  
+
     fetch("/verificarNumeroTelefonico", {
       method: "POST",
     });
@@ -31,12 +31,14 @@ cerrarVerificarTelefono.addEventListener("click", () => {
 verificarTelefono.addEventListener("click", () => {
   const codigoSMS = document.getElementById("codigoSMS").value;
 
-  console.log(codigoSMS)
+  console.log(codigoSMS);
 
   if (codigoSMS.length < 6) {
     alert("El código debe tener al menos 6 dígitos.");
     return;
   }
+
+  document.getElementById("loader__container").style.opacity = 1;
 
   const inputCodigo = document.getElementById("codigoSMS").value;
 
@@ -45,6 +47,7 @@ verificarTelefono.addEventListener("click", () => {
   })
     .then((response) => response.json())
     .then((data) => {
+      document.getElementById("loader__container").style.opacity = 0;
       if (data.codigo === "Valido") {
         Swal.fire({
           icon: "success",

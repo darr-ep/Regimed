@@ -812,12 +812,22 @@
                 <div class="modal__codigos">
                     <div class="modal__codigo">
                         <p id="texto__codigo">Ingresa el código en otro registro</p>
+                        <div class="loader__container" id="loader__container">
+                            <div class="loader" id="loader__gray">
+                                <div class="loader-square"></div>
+                                <div class="loader-square"></div>
+                                <div class="loader-square"></div>
+                                <div class="loader-square"></div>
+                                <div class="loader-square"></div>
+                                <div class="loader-square"></div>
+                                <div class="loader-square"></div>
+                            </div>
+                        </div>
                         <span id="contenedorCodigo"></span>
                         <p id="temporizadorCodigo">El código expirará en
                             <strong id="tiempoRestante"></strong>
                         </p>
-                        <p id="regenerarCodigo">El código ha expirado, <a href="#"
-                            onclick="iniciarTemporizador()">regeneralo aquí</a></p>
+                        <p id="regenerarCodigo">El código ha expirado, <a href="#">regeneralo aquí</a></p>
                     </div>
                     <p>o</p>
                     <div class="modal__codigo">

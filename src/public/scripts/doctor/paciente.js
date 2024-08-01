@@ -62,6 +62,8 @@ consultarPaciente.addEventListener("click", () => {
   const curpPaciente = formData.get("curp");
   const telefonoPaciente = formData.get("telefono");
   const codigo = formData.get("codigoSMS");
+  
+  document.getElementById("loader__container").style.opacity = 1;
 
   fetch(
     "/verificarCodigoPaciente/" +
@@ -78,6 +80,7 @@ consultarPaciente.addEventListener("click", () => {
     .then((response) => response.json())
     .then((data) => {
       if (data.codigo === "Erroneo") {
+        document.getElementById("loader__container").style.opacity = 0;
         Swal.fire({
           icon: "error",
           title: "Error",
