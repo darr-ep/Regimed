@@ -677,6 +677,10 @@ i.fa-circle-xmark {
   color: #757575;
 }
 
+#texto__codigo {
+  opacity: 0;
+}
+
 @media (max-width: 1300px) {
   .contenido {
     min-width: auto;
