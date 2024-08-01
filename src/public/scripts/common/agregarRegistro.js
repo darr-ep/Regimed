@@ -109,21 +109,34 @@ function formatoNumerico(input) {
 
 document.getElementById("modal__registro").onsubmit = (e) => {
   e.preventDefault();
-  document.getElementById("fondo__loader").classList.add("mostrar-ventana");
 
   const formData = new FormData(document.getElementById("modal__registro"));
   const codigo = formData.get("codigoRegistro");
   const captcha = formData.get("g-recaptcha-response");
 
   if (!captcha) {
-    alert("Por favor, completa el captcha.");
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Por favor, completa el captcha.",
+      showConfirmButton: false,
+      timer: 1500,
+    });
     return;
   }
 
   if (codigo.length < 6) {
-    alert("El código debe tener al menos 6 dígitos.");
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "El código debe tener al menos 6 dígitos.",
+      showConfirmButton: false,
+      timer: 1500,
+    });
     return;
   }
+
+  document.getElementById("fondo__loader").classList.add("mostrar-ventana");
 
   fetch("/verificarRegistro/" + encodeURI(codigo) + "/" + encodeURI(captcha), {
     method: "POST",

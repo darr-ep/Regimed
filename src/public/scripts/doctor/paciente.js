@@ -20,8 +20,14 @@ abrirPaciente.addEventListener("click", () => {
   const curpPaciente = document.getElementById("curpPaciente").value;
 
   if (curpPaciente.length !== 18) {
-      alert("Ingresa un curp válido");
-      return;
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Ingresa un curp válido.",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+    return;
   }
 
   contenedorPaciente.classList.add("mostrar-ventana");
@@ -30,7 +36,7 @@ abrirPaciente.addEventListener("click", () => {
   fetch("/verificarCurpPaciente/" + encodeURI(curpPaciente), {
     method: "POST",
   })
-  .then((response) => response.json())
+    .then((response) => response.json())
     .then((data) => {
       if (data.telefono) {
         window.telefonoPaciente = data.telefono;
@@ -51,7 +57,13 @@ consultarPaciente.addEventListener("click", () => {
   const codigoSMS = document.getElementById("codigoSMSPaciente").value;
 
   if (codigoSMS.length < 6) {
-    alert("El código debe tener al menos 6 dígitos.");
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "El código debe tener al menos 6 dígitos.",
+      showConfirmButton: false,
+      timer: 1500,
+    });
     return;
   }
 
@@ -62,7 +74,7 @@ consultarPaciente.addEventListener("click", () => {
   const curpPaciente = formData.get("curp");
   const telefonoPaciente = formData.get("telefono");
   const codigo = formData.get("codigoSMS");
-  
+
   document.getElementById("loader__container").style.opacity = 1;
 
   fetch(
@@ -89,8 +101,8 @@ consultarPaciente.addEventListener("click", () => {
           timer: 1500,
         });
       } else if (data.codigo === "Valido") {
-        console.log(data.curp)
-        window.open('/paciente/' + data.curp, "_self");
+        console.log(data.curp);
+        window.open("/paciente/" + data.curp, "_self");
       }
     });
 });

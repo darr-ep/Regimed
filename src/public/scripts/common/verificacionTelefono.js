@@ -30,15 +30,19 @@ cerrarVerificarTelefono.addEventListener("click", () => {
 
 verificarTelefono.addEventListener("click", () => {
   const codigoSMS = document.getElementById("codigoSMS").value;
-
-  console.log(codigoSMS);
-
+  
   if (codigoSMS.length < 6) {
-    alert("El código debe tener al menos 6 dígitos.");
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "El código debe tener al menos 6 dígitos.",
+      showConfirmButton: false,
+      timer: 1500,
+    });
     return;
   }
-
-  document.getElementById("loader__container").style.opacity = 1;
+  
+  document.getElementById("fondo__loader").classList.add("mostrar-ventana");
 
   const inputCodigo = document.getElementById("codigoSMS").value;
 
@@ -47,7 +51,7 @@ verificarTelefono.addEventListener("click", () => {
   })
     .then((response) => response.json())
     .then((data) => {
-      document.getElementById("loader__container").style.opacity = 0;
+      document.getElementById("fondo__loader").classList.remove("mostrar-ventana");
       if (data.codigo === "Valido") {
         Swal.fire({
           icon: "success",
