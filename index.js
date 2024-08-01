@@ -547,7 +547,7 @@ app.get("/paciente/:curp", async (req, res) => {
     const datosUsuario = await userService.consultarUsuarioPorCurp(req.params.curp);
     const vacunas = await patientService.consultarVacunas(datosUsuario.usuario_id);
 
-    res.render("Paciente/paciente.ejs", {
+    res.render("paciente/paciente", {
       nombre_comp: datosUsuario.nombre_comp,
       curp: req.params.curp,
       imagenAMostrar: datosUsuario.imagen,
@@ -970,7 +970,7 @@ app.post("/acceso", async (req, res) => {
 
   if (correo === "") {
     req.session.correo = correo;
-    return res.render("acceso", {
+    return res.render("auth/acceso", {
       error: "Por favor, ingrese su correo.",
       errorField: "correo",
       correo: req.session.correo,
@@ -978,7 +978,7 @@ app.post("/acceso", async (req, res) => {
     });
   } else if (contrasenia === "") {
     req.session.correo = correo;
-    return res.render("acceso", {
+    return res.render("auth/acceso", {
       error: "Por favor, ingresa la contraseña.",
       errorField: "contrasenia",
       correo: req.session.correo,
@@ -995,7 +995,7 @@ app.post("/acceso", async (req, res) => {
 
     if (!usuario || usuario.length === 0) {
       req.session.correo = correo;
-      return res.render("acceso", {
+      return res.render("auth/acceso", {
         error: "El correo o la contraseña es incorrecta. Inténtelo de nuevo.",
         errorField: "noRes",
         correo: req.session.correo,
@@ -1007,7 +1007,7 @@ app.post("/acceso", async (req, res) => {
 
     if (!match) {
       req.session.correo = correo;
-      return res.render("acceso", {
+      return res.render("auth/acceso", {
         error: "El correo o la contraseña es incorrecta. Inténtelo de nuevo.",
         errorField: "noRes",
         correo: req.session.correo,
@@ -1142,7 +1142,7 @@ app.post("/registro", async (req, res) => {
 
   if (usuario.length > 0) {
     guardarDatosFormulario(req);
-    return res.render("registro", {
+    return res.render("auth/registro", {
       error: "El correo ya está registrado.",
       errorField: "correo",
       formData: req.session.formData,
@@ -1150,7 +1150,7 @@ app.post("/registro", async (req, res) => {
     });
   } else if (nombre === "") {
     guardarDatosFormulario(req);
-    return res.render("registro", {
+    return res.render("auth/registro", {
       error: "Por favor, ingrese su nombre.",
       errorField: "nombre",
       formData: req.session.formData,
@@ -1158,7 +1158,7 @@ app.post("/registro", async (req, res) => {
     });
   } else if (!formatoNombre.test(nombre)) {
     guardarDatosFormulario(req);
-    return res.render("registro", {
+    return res.render("auth/registro", {
       error: "El nombre solo debe contener letras y espacios.",
       errorField: "nombre",
       formData: req.session.formData,
@@ -1166,7 +1166,7 @@ app.post("/registro", async (req, res) => {
     });
   } else if (apellido_paterno === "") {
     guardarDatosFormulario(req);
-    return res.render("registro", {
+    return res.render("auth/registro", {
       error: "Por favor, ingrese su apellido paterno.",
       errorField: "apellido_paterno",
       formData: req.session.formData,
@@ -1174,7 +1174,7 @@ app.post("/registro", async (req, res) => {
     });
   } else if (apellido_materno === "") {
     guardarDatosFormulario(req);
-    return res.render("registro", {
+    return res.render("auth/registro", {
       error: "Por favor, ingrese su apellido materno.",
       errorField: "apellido_materno",
       formData: req.session.formData,
@@ -1185,7 +1185,7 @@ app.post("/registro", async (req, res) => {
     !formatoNombre.test(apellido_materno)
   ) {
     guardarDatosFormulario(req);
-    return res.render("registro", {
+    return res.render("auth/registro", {
       error: "Los apellidos solo debe contener letras y espacios.",
       errorField: "apellido_paterno",
       formData: req.session.formData,
@@ -1193,7 +1193,7 @@ app.post("/registro", async (req, res) => {
     });
   } else if (correo === "") {
     guardarDatosFormulario(req);
-    return res.render("registro", {
+    return res.render("auth/registro", {
       error: "Por favor, ingrese su correo.",
       errorField: "correo",
       formData: req.session.formData,
@@ -1201,7 +1201,7 @@ app.post("/registro", async (req, res) => {
     });
   } else if (!formatoCorreo) {
     guardarDatosFormulario(req);
-    return res.render("registro", {
+    return res.render("auth/registro", {
       error: "El correo ingresado no tiene un formato válido.",
       errorField: "correo",
       formData: req.session.formData,
@@ -1209,7 +1209,7 @@ app.post("/registro", async (req, res) => {
     });
   } else if (contrasenia === "") {
     guardarDatosFormulario(req);
-    return res.render("registro", {
+    return res.render("auth/registro", {
       error: "Por favor, ingresa una contraseña",
       errorField: "contrasenia",
       formData: req.session.formData,
@@ -1220,7 +1220,7 @@ app.post("/registro", async (req, res) => {
     contrasenia.length > longMaxContraseña
   ) {
     guardarDatosFormulario(req);
-    return res.render("registro", {
+    return res.render("auth/registro", {
       error:
         "La contraseña debe tener entre " +
         longMinContraseña +
@@ -1233,7 +1233,7 @@ app.post("/registro", async (req, res) => {
     });
   } else if (!passWithMay || !passWithMin || !passWithEsp) {
     guardarDatosFormulario(req);
-    return res.render("registro", {
+    return res.render("auth/registro", {
       error:
         "La contraseña debe contener al menos una letra mayúscula, una letra minúscula y un carácter especial.",
       errorField: "contrasenia",
@@ -1242,7 +1242,7 @@ app.post("/registro", async (req, res) => {
     });
   } else if (conf_contrasenia === "") {
     guardarDatosFormulario(req);
-    return res.render("registro", {
+    return res.render("auth/registro", {
       error: "Por favor, ingresa nuevamente la contraseña",
       errorField: "conf_contrasenia",
       formData: req.session.formData,
@@ -1250,7 +1250,7 @@ app.post("/registro", async (req, res) => {
     });
   } else if (contrasenia !== conf_contrasenia) {
     guardarDatosFormulario(req);
-    return res.render("registro", {
+    return res.render("auth/registro", {
       error: "Las contraseñas no coinciden.",
       errorField: "dif_Contrasenia",
       formData: req.session.formData,

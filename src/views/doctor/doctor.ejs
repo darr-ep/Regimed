@@ -23,7 +23,7 @@
     <div class="contenido">
         <nav>
             <a href="/">
-                <img class="logo" src="/images/Logo/LogoCompPositive.png" href="">
+                <img class="logo" src="/images/logo/LogoCompPositive.png" href="">
             </a>
             <ul>
                 <li>
@@ -823,18 +823,17 @@
                     <div class="modal__codigo">
                         Ingresa el código del familiar a registrar
                         <div class="input-group">
-                            <label class="label">Código</label>
-                            <input type="text" maxlength="6" placeholder="⎯ ⎯ ⎯ ⎯ ⎯ ⎯" oninput="formatoNumerico(this)" name="codigoRegistro">
+                            <input class="input" type="text" maxlength="6" placeholder="⎯ ⎯ ⎯ ⎯ ⎯ ⎯" oninput="formatoNumerico(this)" name="codigoRegistro">
                         </div>
                         <div class="g-recaptcha" data-sitekey="<%= captcha_web %>"></div>
                     </div>
                 </div>
             </div>
             <div class="modal__botones">
-                <button class="boton-datos" id="enviarCodigo" type="submit">
+                <button type="submit" class="boton-datos" id="enviarCodigo">
                     <i class="fa-solid fa-floppy-disk"></i> Guardar
                 </button>
-                <button class="boton-datos boton-cancelar" id="cerrar_registro" type="button">
+                <button type="button" class="boton-datos boton-cancelar" id="cerrar_registro">
                     <i class="fa-solid fa-x"></i> Cancelar
                 </button>
             </div>
