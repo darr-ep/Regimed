@@ -17,7 +17,6 @@ const qr = require("qrcode");
 const twilio = require("twilio");
 const bodyParser = require("body-parser");
 const sharp = require("sharp");
-require('dotenv').config();
 
 const { pool } = require("./config/database");
 
@@ -27,6 +26,8 @@ const patientService = require("./services/patient-service");
 const sharedService = require("./services/shared-service");
 
 const app = express();
+
+require('dotenv').config();
 
 function generarClaveSecreta() {
   return crypto.randomBytes(32).toString("hex");
