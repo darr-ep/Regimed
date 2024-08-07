@@ -505,6 +505,8 @@ app.get("/perfil", async (req, res) => {
       patientService.consultarHistorial(req.session.idUsuario),
     ]);
 
+    console.log(vacunas)
+
     const telefonoVerificado = await sharedService.consultarVerificado(
       datosUsuario.telefono
     );
@@ -545,9 +547,6 @@ app.use(
 );
 
 app.get("/paciente/:curp", async (req, res) => {
-  req.session.idDoctor =
-    "b365e8a39dd0154308f23235cd4bc3f14d98fa05c07ebfadd7c3e5d61045a3ee";
-  req.session.curpPaciente = "PEAE031008HHGDLDA2";
   if (!req.session.idDoctor || req.session.curpPaciente !== req.params.curp) {
     return res.redirect("/");
   }
@@ -593,11 +592,12 @@ app.get("/usuario/:usuario_id", async (req, res) => {
       req.session.correo = "";
     }
 
-    const [datosUsuario, vacunas, consultas, estudios] = await Promise.all([
+    const [datosUsuario, vacunas, consultas, estudios, historial] = await Promise.all([
       userService.consultarUsuario(req.params.usuario_id),
       patientService.consultarVacunas(req.params.usuario_id),
       patientService.consultarConsultas(req.params.usuario_id),
       patientService.consultarEstudios(req.params.usuario_id),
+      patientService.consultarHistorial(req.params.usuario_id),
     ]);
 
     res.render("visor/visor", {
@@ -614,7 +614,8 @@ app.get("/usuario/:usuario_id", async (req, res) => {
       sangre: datosUsuario.sangre,
       vacunas: vacunas,
       consultas: consultas,
-      estudios: estudios
+      estudios: estudios,
+      historial: historial[0]
     });
   } catch (error) {
     console.error("Error al obtener datos del usuario:", error);
@@ -641,10 +642,13 @@ app.get("/doctor", async (req, res) => {
       return res.redirect("/");
     }
 
-    const [datosUsuario, registrosCompartidos, vacunas] = await Promise.all([
+    const [datosUsuario, registrosCompartidos, vacunas, consultas, estudios, historial] = await Promise.all([
       userService.consultarUsuario(req.session.idUsuario),
       sharedService.consultarCompartidos(req.session.idUsuario),
       patientService.consultarVacunas(req.session.idUsuario),
+      patientService.consultarConsultas(req.session.idUsuario),
+      patientService.consultarEstudios(req.session.idUsuario),
+      patientService.consultarHistorial(req.session.idUsuario),
     ]);
 
     const telefonoVerificado = await sharedService.consultarVerificado(
@@ -667,6 +671,9 @@ app.get("/doctor", async (req, res) => {
       doctor: req.session.idDoctor,
       telefonoVerificado: telefonoVerificado,
       vacunas: vacunas,
+      consultas: consultas,
+      estudios: estudios,
+      historial: historial[0],
       captcha_web: process.env.CAPTCHA_WEB,
     });
   } catch (error) {
@@ -1662,8 +1669,6 @@ app.get("/medicamentos/:consultaId", async (req, res) => {
       idConsulta
     );
 
-    console.log(medicamentos);
-
     res.json(medicamentos);
   } catch (error) {
     console.error("Error al obtener medicamentos:", error);
@@ -1678,8 +1683,6 @@ app.get("/estudio/:estudioId", async (req, res) => {
     const estudio = await patientService.consultarEstudiosConIdEstudio (
       idEstudio
     );
-
-    console.log(estudio);
 
     res.json(estudio);
   } catch (error) {
