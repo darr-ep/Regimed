@@ -77,7 +77,7 @@
             </ul>
             <ul>
                 <li>
-                    <a id="abrir__tarjetaDatos">
+                    <a id="abrir__tarjetaDatos" data-usuario-id="<%= sesion %>">
                         <i class="fa-solid fa-address-card"></i>
                         Descargar Tarjeta
                     </a>
@@ -462,7 +462,7 @@
                                                     <p>Cédula del profesional: <%= vacunas.cedula %>
                                                     </p>
                                                     <% if (vacunas.siguienteDosis && vacunas.siguienteDosis !== '0000-00-00 00:00:00' && vacunas.siguienteDosis !== 'NaN-NaN-NaN') { %>
-                                                        <p>Siguiente dosis: <%= vacunas.siguienteDosis %></p>
+                                                        <p class="siguiente-dosis">Siguiente dosis: <%= vacunas.siguienteDosis %></p>
                                                     <% } %>
                                                 </div>
                                             </div>

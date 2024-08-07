@@ -565,6 +565,7 @@ app.get("/paciente/:curp", async (req, res) => {
     req.session.idPaciente = datosUsuario.usuario_id;
 
     res.render("paciente/paciente", {
+      idPaciente: datosUsuario.usuario_id,
       nombre_comp: datosUsuario.nombre_comp,
       curp: req.params.curp,
       imagenAMostrar: datosUsuario.imagen,
@@ -860,10 +861,12 @@ app.get("/tarjeta", async (req, res) => {
     return res.redirect("/");
   }
 
+  const usuarioId = req.query.usuarioId;
+
+  console.log(usuarioId)
+
   try {
-    const datosUsuario = await userService.consultarUsuario(
-      req.session.idUsuario
-    );
+    const datosUsuario = await userService.consultarUsuario(usuarioId);
 
     const existingPdfBytes = fs.readFileSync(
       path.join(__dirname, "src", "public", "pdf", "tarjeta.pdf")
@@ -1582,6 +1585,7 @@ app.post("/agregarVacuna", async (req, res) => {
   const fechaAplicacion = datos.fechaAplicacion || "";
   const dosisAdministrada = datos.dosisAdministrada || "";
   const lugarAdministracion = datos.lugarAdministacion || "";
+  const siguienteDosis = datos.siguienteDosis || "";
 
   try {
     await patientService.registrarVacuna(
@@ -1593,7 +1597,8 @@ app.post("/agregarVacuna", async (req, res) => {
       numeroSerie,
       fechaAplicacion,
       dosisAdministrada,
-      lugarAdministracion
+      lugarAdministracion,
+      siguienteDosis
     );
     res.status(200).json({ mensaje: "Vacuna agregada correctamente" });
   } catch (error) {

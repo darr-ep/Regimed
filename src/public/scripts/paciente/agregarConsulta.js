@@ -92,7 +92,6 @@ document
       return;
     }
   
-    // Validación de campos requeridos para medicamentos
     let validMedicamentos = true;
     medicamentos.forEach((medicamento) => {
       const requiredMedicamentoFields = ["medicamento__nombre", "medicamento__viaAdministracion", "medicamento__dosis", "medicamento__frecuencia", "medicamento__duracion"];
@@ -114,6 +113,8 @@ document
       return;
     }
   
+    document.getElementById("fondo__loader").classList.add("mostrar-ventana");
+
     enviarConsulta({ datosConsulta, medicamentos });
   });
 
@@ -128,6 +129,7 @@ function enviarConsulta(datos) {
   })
     .then((response) => {
       if (response.ok) {
+        document.getElementById("fondo__loader").classList.remove("mostrar-ventana");
         contenedorAgregarConsulta.classList.remove("mostrar-ventana");
         ventanaAgregarConsulta.classList.remove("agrandar-ventana");
         Swal.fire({
@@ -143,6 +145,7 @@ function enviarConsulta(datos) {
       return response.json();
     })
     .catch((error) => {
+      document.getElementById("fondo__loader").classList.remove("mostrar-ventana");
       Swal.fire({
         icon: "error",
         title: "Error",

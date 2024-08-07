@@ -719,3 +719,7 @@ td {
 .contenido__antecedentesHeredofamiliares .familiares {
   text-align: center;
 }
+
+.siguiente-dosis {
+  font-weight: 800;
+}

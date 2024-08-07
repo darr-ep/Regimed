@@ -728,3 +728,7 @@ td {
   flex-direction: column;
   gap: 5px;
 }
+
+.siguiente-dosis {
+  font-weight: 800;
+}

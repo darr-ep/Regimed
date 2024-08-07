@@ -24,6 +24,8 @@ document
       datos[key] = value;
     });
 
+    document.getElementById("fondo__loader").classList.add("mostrar-ventana");
+
     enviarHistorial(datos);
 })
 
@@ -38,6 +40,7 @@ function enviarHistorial(datos) {
     })
       .then((response) => {
         if (response.ok) {
+          document.getElementById("fondo__loader").classList.remove("mostrar-ventana");
           contenedorAgregarVacuna.classList.remove("mostrar-ventana");
           ventanaAgregarVacuna.classList.remove("agrandar-ventana");
           Swal.fire({
@@ -53,6 +56,7 @@ function enviarHistorial(datos) {
         return response.json();
       })
       .catch((error) => {
+        document.getElementById("fondo__loader").classList.remove("mostrar-ventana");
         Swal.fire({
           icon: "error",
           title: "Error",

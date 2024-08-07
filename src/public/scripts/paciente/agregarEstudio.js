@@ -50,6 +50,8 @@ document
       return;
     }
 
+    document.getElementById("fondo__loader").classList.add("mostrar-ventana");
+
     enviarEstudio(datos);
   });
 
@@ -64,6 +66,7 @@ function enviarEstudio(datos) {
   })
     .then((response) => {
       if (response.ok) {
+        document.getElementById("fondo__loader").classList.remove("mostrar-ventana");
         contenedorAgregarEstudio.classList.remove("mostrar-ventana");
         ventanaAgregarEstudio.classList.remove("agrandar-ventana");
         Swal.fire({
@@ -79,6 +82,7 @@ function enviarEstudio(datos) {
       return response.json();
     })
     .catch((error) => {
+      document.getElementById("fondo__loader").classList.remove("mostrar-ventana");
       Swal.fire({
         icon: "error",
         title: "Error",

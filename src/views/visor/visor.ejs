@@ -387,7 +387,7 @@
                                         <p>Profesional: <%= vacunas.nombre %></p>
                                         <p>Cédula del profesional: <%= vacunas.cedula %></p>
                                         <% if (vacunas.siguienteDosis && vacunas.siguienteDosis !== '0000-00-00 00:00:00' && vacunas.siguienteDosis !== 'NaN-NaN-NaN') { %>
-                                            <p>Siguiente dosis: <%= vacunas.siguienteDosis %></p>
+                                            <p class="siguiente-dosis">Siguiente dosis: <%= vacunas.siguienteDosis %></p>
                                         <% } %>
                                     </div>
                                 </div>

@@ -41,6 +41,7 @@ document
     });
 
     const siguienteDosis = document.getElementById("siguienteDosis");
+
     if (!siguienteDosis.disabled && !datos["siguienteDosis"]) {
       valid = false;
     }
@@ -56,6 +57,8 @@ document
       return;
     }
 
+    document.getElementById("fondo__loader").classList.add("mostrar-ventana");
+
     enviarVacuna(datos);
   });
 
@@ -70,6 +73,7 @@ function enviarVacuna(datos) {
   })
     .then((response) => {
       if (response.ok) {
+        document.getElementById("fondo__loader").classList.remove("mostrar-ventana");
         contenedorAgregarVacuna.classList.remove("mostrar-ventana");
         ventanaAgregarVacuna.classList.remove("agrandar-ventana");
         Swal.fire({
@@ -85,6 +89,7 @@ function enviarVacuna(datos) {
       return response.json();
     })
     .catch((error) => {
+      document.getElementById("fondo__loader").classList.remove("mostrar-ventana");
       Swal.fire({
         icon: "error",
         title: "Error",

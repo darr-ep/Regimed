@@ -1,7 +1,13 @@
 var boton = document.getElementById('abrir__tarjetaDatos');
 
-    // Agregar un evento 'click' al botón
-    boton.addEventListener('click', function() {
-        // Abrir una nueva ventana con la ruta '/modificar'
-        window.open("/tarjeta", "_blank");
-    });
+boton.addEventListener('click', function(event) {
+    const usuarioId = event.target.getAttribute("data-usuario-id");
+
+    if (!usuarioId) {
+        console.error("Usuario ID no encontrado.");
+        return;
+    }
+
+    console.log(usuarioId);
+    window.open("/tarjeta?usuarioId=" + usuarioId, "_blank");
+});
