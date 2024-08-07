@@ -677,43 +677,45 @@
                 <h2>Personales Patológicos</h2>
                 <div class="contenido__historial contenido__personalesPatologicos">
                     <span>Alergias:</span>
-                    <input name="alergias" type="text" class="input" value="<%= historial.pp ? historial.pp.alergias : '' %>">
+                    <input name="alergias" type="text" class="input" value="<%= historial && historial.pp ? historial.pp.alergias : '' %>">
                     <span>Tabaco:</span>
-                    <input name="tabaco" type="text" class="input" value="<%= historial.pp ? historial.pp.tabaco : '' %>">
+                    <input name="tabaco" type="text" class="input" value="<%= historial && historial.pp ? historial.pp.tabaco : '' %>">
                     <span>Alcohol:</span>
-                    <input name="alcohol" type="text" class="input" value="<%= historial.pp ? historial.pp.alcohol : '' %>">
+                    <input name="alcohol" type="text" class="input" value="<%= historial && historial.pp ? historial.pp.alcohol : '' %>">
                     <span>Drogas:</span>
-                    <input name="drogas" type="text" class="input" value="<%= historial.pp ? historial.pp.drogas : '' %>">
+                    <input name="drogas" type="text" class="input" value="<%= historial && historial.pp ? historial.pp.drogas : '' %>">
                     <span>Padecimientos:</span>
-                    <input name="padecimientos" type="text" class="input" value="<%= historial.pp ? historial.pp.padecimientos : '' %>">
+                    <input name="padecimientos" type="text" class="input" value="<%= historial && historial.pp ? historial.pp.padecimientos : '' %>">
                     <span>Medicamentos:</span>
-                    <input name="medicamentos" type="text" class="input" value="<%= historial.pp ? historial.pp.medicamentos : '' %>">
+                    <input name="medicamentos" type="text" class="input" value="<%= historial && historial.pp ? historial.pp.medicamentos : '' %>">
                     <span>Quirúrgicos:</span>
-                    <input name="quirurgicos" type="text" class="input" value="<%= historial.pp ? historial.pp.quirurgicos : '' %>">
+                    <input name="quirurgicos" type="text" class="input" value="<%= historial && historial.pp ? historial.pp.quirurgicos : '' %>">
                     <span>Traumatológicos:</span>
-                    <input name="traumatologicos" type="text" class="input" value="<%= historial.pp ? historial.pp.traumatologicos : '' %>">
+                    <input name="traumatologicos" type="text" class="input" value="<%= historial && historial.pp ? historial.pp.traumatologicos : '' %>">
                     <span>Transfusionales:</span>
-                    <input name="transfusionales" type="text" class="input" value="<%= historial.pp ? historial.pp.transfusionales : '' %>">
+                    <input name="transfusionales" type="text" class="input" value="<%= historial && historial.pp ? historial.pp.transfusionales : '' %>">
                     <span>Intolerancia a Medicamentos:</span>
-                    <input name="intoleranciaMedicamentos" type="text" class="input" value="<%= historial.pp ? historial.pp.intoleranciaMedicamentos : '' %>">
+                    <input name="intoleranciaMedicamentos" type="text" class="input" value="<%= historial && historial.pp ? historial.pp.intoleranciaMedicamentos : '' %>">
                     <span>Otros:</span>
-                    <input name="perPatOtros" type="text" class="input" value="<%= historial.pp ? historial.pp.otros : '' %>">
+                    <input name="perPatOtros" type="text" class="input" value="<%= historial && historial.pp ? historial.pp.otros : '' %>">
                 </div>
+                
                 <h2>Personales No Patológicos</h2>
                 <div class="contenido__historial contenido__personalesNoPatologicos">
                     <span>Ejercicio:</span>
-                    <input name="ejercicio" type="text" class="input" value="<%= historial.pnp ? historial.pnp.ejercicio : '' %>">
+                    <input name="ejercicio" type="text" class="input" value="<%= historial && historial.pnp ? historial.pnp.ejercicio : '' %>">
                     <span>Suplementos:</span>
-                    <input name="suplementos" type="text" class="input" value="<%= historial.pnp ? historial.pnp.suplementos : '' %>">
+                    <input name="suplementos" type="text" class="input" value="<%= historial && historial.pnp ? historial.pnp.suplementos : '' %>">
                     <span>Viajes Recientes:</span>
-                    <input name="viajesRecientes" type="text" class="input" value="<%= historial.pnp ? historial.pnp.viajesRecientes : '' %>">
+                    <input name="viajesRecientes" type="text" class="input" value="<%= historial && historial.pnp ? historial.pnp.viajesRecientes : '' %>">
                     <span>Tatuajes:</span>
-                    <input name="tatuajes" type="text" class="input" value="<%= historial.pnp ? historial.pnp.tatuajes : '' %>">
+                    <input name="tatuajes" type="text" class="input" value="<%= historial && historial.pnp ? historial.pnp.tatuajes : '' %>">
                     <span>Perforaciones:</span>
-                    <input name="perforaciones" type="text" class="input" value="<%= historial.pnp ? historial.pnp.perforaciones : '' %>">
+                    <input name="perforaciones" type="text" class="input" value="<%= historial && historial.pnp ? historial.pnp.perforaciones : '' %>">
                     <span>Otros:</span>
-                    <input name="perNoPatOtros" type="text" class="input" value="<%= historial.pnp ? historial.pnp.otros : '' %>">
+                    <input name="perNoPatOtros" type="text" class="input" value="<%= historial && historial.pnp ? historial.pnp.otros : '' %>">
                 </div>
+
                 <h2>Antecedentes Heredofamiliares</h2>
                 <div class="contenido__historial contenido__antecedentesHeredofamiliares">
                     <span></span>
@@ -721,42 +723,48 @@
                     <span class="familiares">Padre</span>
                     <span class="familiares">Madre</span>
                     <span class="familiares">Hermanos</span>
-        
+
                     <span>Diabetes:</span>
-                    <input name="diabetesAbuelos" type="text" class="input" value="<%= historial.ah ? historial.ah.diabetesAbuelos : '' %>">
-                    <input name="diabetesPadre" type="text" class="input" value="<%= historial.ah ? historial.ah.diabetesPadre : '' %>">
-                    <input name="diabetesMadre" type="text" class="input" value="<%= historial.ah ? historial.ah.diabetesMadre : '' %>">
-                    <input name="diabetesHermanos" type="text" class="input" value="<%= historial.ah ? historial.ah.diabetesHermanos : '' %>">
+                    <input name="diabetesAbuelos" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.diabetesAbuelos : '' %>">
+                    <input name="diabetesPadre" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.diabetesPadre : '' %>">
+                    <input name="diabetesMadre" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.diabetesMadre : '' %>">
+                    <input name="diabetesHermanos" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.diabetesHermanos : '' %>">
+
                     <span>Nefropatías:</span>
-                    <input name="nefropatiasAbuelos" type="text" class="input" value="<%= historial.ah ? historial.ah.nefropatiasAbuelos : '' %>">
-                    <input name="nefropatiasPadre" type="text" class="input" value="<%= historial.ah ? historial.ah.nefropatiasPadre : '' %>">
-                    <input name="nefropatiasMadre" type="text" class="input" value="<%= historial.ah ? historial.ah.nefropatiasMadre : '' %>">
-                    <input name="nefropatiasHermanos" type="text" class="input" value="<%= historial.ah ? historial.ah.nefropatiasHermanos : '' %>">
+                    <input name="nefropatiasAbuelos" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.nefropatiasAbuelos : '' %>">
+                    <input name="nefropatiasPadre" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.nefropatiasPadre : '' %>">
+                    <input name="nefropatiasMadre" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.nefropatiasMadre : '' %>">
+                    <input name="nefropatiasHermanos" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.nefropatiasHermanos : '' %>">
+
                     <span>Enfermedades Mentales:</span>
-                    <input name="mentalesAbuelos" type="text" class="input" value="<%= historial.ah ? historial.ah.mentalesAbuelos : '' %>">
-                    <input name="mentalesPadre" type="text" class="input" value="<%= historial.ah ? historial.ah.mentalesPadre : '' %>">
-                    <input name="mentalesMadre" type="text" class="input" value="<%= historial.ah ? historial.ah.mentalesMadre : '' %>">
-                    <input name="mentalesHermanos" type="text" class="input" value="<%= historial.ah ? historial.ah.mentalesHermanos : '' %>">
+                    <input name="mentalesAbuelos" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.mentalesAbuelos : '' %>">
+                    <input name="mentalesPadre" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.mentalesPadre : '' %>">
+                    <input name="mentalesMadre" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.mentalesMadre : '' %>">
+                    <input name="mentalesHermanos" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.mentalesHermanos : '' %>">
+
                     <span>Hipertensión Arterial:</span>
-                    <input name="hipertensionAbuelos" type="text" class="input" value="<%= historial.ah ? historial.ah.hipertensionAbuelos : '' %>">
-                    <input name="hipertensionPadre" type="text" class="input" value="<%= historial.ah ? historial.ah.hipertensionPadre : '' %>">
-                    <input name="hipertensionMadre" type="text" class="input" value="<%= historial.ah ? historial.ah.hipertensionMadre : '' %>">
-                    <input name="hipertensionHermanos" type="text" class="input" value="<%= historial.ah ? historial.ah.hipertensionHermanos : '' %>">
+                    <input name="hipertensionAbuelos" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.hipertensionAbuelos : '' %>">
+                    <input name="hipertensionPadre" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.hipertensionPadre : '' %>">
+                    <input name="hipertensionMadre" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.hipertensionMadre : '' %>">
+                    <input name="hipertensionHermanos" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.hipertensionHermanos : '' %>">
+
                     <span>Oncológicos:</span>
-                    <input name="oncologicosAbuelos" type="text" class="input" value="<%= historial.ah ? historial.ah.oncologicosAbuelos : '' %>">
-                    <input name="oncologicosPadre" type="text" class="input" value="<%= historial.ah ? historial.ah.oncologicosPadre : '' %>">
-                    <input name="oncologicosMadre" type="text" class="input" value="<%= historial.ah ? historial.ah.oncologicosMadre : '' %>">
-                    <input name="oncologicosHermanos" type="text" class="input" value="<%= historial.ah ? historial.ah.oncologicosHermanos : '' %>">
+                    <input name="oncologicosAbuelos" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.oncologicosAbuelos : '' %>">
+                    <input name="oncologicosPadre" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.oncologicosPadre : '' %>">
+                    <input name="oncologicosMadre" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.oncologicosMadre : '' %>">
+                    <input name="oncologicosHermanos" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.oncologicosHermanos : '' %>">
+
                     <span>Hepatopatías:</span>
-                    <input name="hepatopatiasAbuelos" type="text" class="input" value="<%= historial.ah ? historial.ah.hepatopatiasAbuelos : '' %>">
-                    <input name="hepatopatiasPadre" type="text" class="input" value="<%= historial.ah ? historial.ah.hepatopatiasPadre : '' %>">
-                    <input name="hepatopatiasMadre" type="text" class="input" value="<%= historial.ah ? historial.ah.hepatopatiasMadre : '' %>">
-                    <input name="hepatopatiasHermanos" type="text" class="input" value="<%= historial.ah ? historial.ah.hepatopatiasHermanos : '' %>">
+                    <input name="hepatopatiasAbuelos" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.hepatopatiasAbuelos : '' %>">
+                    <input name="hepatopatiasPadre" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.hepatopatiasPadre : '' %>">
+                    <input name="hepatopatiasMadre" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.hepatopatiasMadre : '' %>">
+                    <input name="hepatopatiasHermanos" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.hepatopatiasHermanos : '' %>">
+
                     <span>Otros:</span>
-                    <input name="heredoOtrosAbuelos" type="text" class="input" value="<%= historial.ah ? historial.ah.heredoOtrosAbuelos : '' %>">
-                    <input name="heredoOtrosPadre" type="text" class="input" value="<%= historial.ah ? historial.ah.heredoOtrosPadre : '' %>">
-                    <input name="heredoOtrosMadre" type="text" class="input" value="<%= historial.ah ? historial.ah.heredoOtrosMadre : '' %>">
-                    <input name="heredoOtrosHermanos" type="text" class="input" value="<%= historial.ah ? historial.ah.heredoOtrosHermanos : '' %>">
+                    <input name="heredoOtrosAbuelos" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.heredoOtrosAbuelos : '' %>">
+                    <input name="heredoOtrosPadre" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.heredoOtrosPadre : '' %>">
+                    <input name="heredoOtrosMadre" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.heredoOtrosMadre : '' %>">
+                    <input name="heredoOtrosHermanos" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.heredoOtrosHermanos : '' %>">
                 </div>
             </div>
             <div class="modal__botones">
