@@ -255,8 +255,6 @@
                 </div>
 
                 <div class="seccion__contenido seccion__contenido--historial">
-                <%= historial.length%>
-                <%= historial.length%>
                 <% if (historial && (historial.pp && Object.values(historial.pp).some(value => value) || historial.pnp && Object.values(historial.pnp).some(value => value) || historial.ah && Object.values(historial.ah).some(value => value))) { %>
                     <% if (historial.pp && Object.values(historial.pp).some(value => value)) { %>
                     <h2>Personales Patológicos</h2>

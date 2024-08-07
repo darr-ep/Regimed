@@ -1,15 +1,19 @@
-const mysql = require('mysql');
+const mysql = require('mysql2');
 require('dotenv').config();
 
-const pool = mysql.createPool({
-  connectionLimit: 50,
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  acquireTimeout: 50000,
-  connectTimeout: 50000,
-});
+const connectionUrl = 'mysql://uucgykcbtx5rhjvu:v8CouqLwuDQ8VH8B88A@bf5mu1kpvnsvupvo04be-mysql.services.clever-cloud.com:21649/bf5mu1kpvnsvupvo04be';
+
+const pool = mysql.createPool(connectionUrl);
+
+// const pool = mysql.createPool({
+//   connectionLimit: 50,
+//   host: process.env.DB_HOST,
+//   database: process.env.DB_NAME,
+//   user: process.env.DB_USER,
+//   password: process.env.DB_PASSWORD,
+//   acquireTimeout: 50000,
+//   connectTimeout: 50000,
+// });
 
 function obtenerConexion() {
   return new Promise((resolve, reject) => {
