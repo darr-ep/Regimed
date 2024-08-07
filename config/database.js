@@ -1,7 +1,7 @@
 const mysql = require('mysql2');
 require('dotenv').config();
 
-const connectionUrl = 'mysql://uucgykcbtx5rhjvu:v8CouqLwuDQ8VH8B88A@bf5mu1kpvnsvupvo04be-mysql.services.clever-cloud.com:21649/bf5mu1kpvnsvupvo04be';
+const connectionUrl = process.env.DB_URL;
 
 const pool = mysql.createPool(connectionUrl);
 
@@ -32,5 +32,6 @@ async function ejecutarConsulta(query, params) {
 }
 
 module.exports = {
-  ejecutarConsulta
+  ejecutarConsulta,
+  pool
 };

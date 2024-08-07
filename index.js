@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const express = require("express");
 const session = require("express-session");
+const MySQLStore = require("express-mysql-session")(session);
 const path = require("path");
 const uuid = require("uuid");
 const nodemailer = require("nodemailer");
@@ -18,6 +19,8 @@ const twilio = require("twilio");
 const bodyParser = require("body-parser");
 const sharp = require("sharp");
 
+const { pool } = require("./config/database");
+
 const userService = require("./services/user-service");
 const doctorService = require("./services/doctor-service");
 const patientService = require("./services/patient-service");
@@ -31,6 +34,8 @@ function generarClaveSecreta() {
   return crypto.randomBytes(32).toString("hex");
 }
 
+const sessionStore = new MySQLStore({}, pool);
+
 const claveSecreta = generarClaveSecreta();
 
 app.use(
@@ -38,7 +43,8 @@ app.use(
     secret: claveSecreta,
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false },
+    store: sessionStore,
+    cookie: { secure: true },
   })
 );
 
