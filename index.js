@@ -7,7 +7,6 @@ const path = require("path");
 const uuid = require("uuid");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
-const dotenv = require("dotenv");
 const multer = require("multer");
 const fs = require("fs");
 const { random } = require("lodash");
@@ -18,6 +17,7 @@ const qr = require("qrcode");
 const twilio = require("twilio");
 const bodyParser = require("body-parser");
 const sharp = require("sharp");
+require('dotenv').config();
 
 const { pool } = require("./config/database");
 
@@ -27,8 +27,6 @@ const patientService = require("./services/patient-service");
 const sharedService = require("./services/shared-service");
 
 const app = express();
-
-dotenv.config();
 
 function generarClaveSecreta() {
   return crypto.randomBytes(32).toString("hex");
