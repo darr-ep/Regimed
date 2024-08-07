@@ -13,7 +13,7 @@
     <script defer src="/scripts/common/aside.js"></script>
     <script defer src="/scripts/common/datosPersonales.js"></script>
     <script defer src="/scripts/common/tarjetaDatos.js"></script>
-    <script defer src="/scripts/common/buscadorVacunas.js"></script>
+    <script defer src="/scripts/common/buscador.js"></script>
     <script defer src="/scripts/common/agregarRegistro.js"></script>
     <script defer src="/scripts/common/interfazUsuario.js"></script>
     <script defer src="/scripts/common/verificacionTelefono.js"></script>
@@ -421,8 +421,8 @@
     
                     <div class="seccion__vacunas">
                         <div class="seccion__contenido">
-                            <div class="buscador">
-                                <input class="input" type="text" id="buscar" placeholder="Buscar vacuna...">
+                            <div class="buscador__vacunas">
+                                <input class="input" type="text" id="buscar__vacuna" placeholder="Buscar vacuna...">
     
                                 <select class="input" id="ordenarPor">
                                     <option value="nombre" selected>Nombre</option>
@@ -483,11 +483,14 @@
                             <div class="modal__subtitulo">
                                 <h2>Consultas</h2>
                             </div>
+                            <div class="buscador__consultas">
+                                <input class="input" type="text" id="buscar__consulta" placeholder="Buscar consulta...">
+                            </div>
                             <div class="seccion__contenido--consultas">
                                 <% consultas.forEach(consultas=> { %>
                                     <div class="consulta">
                                         <div class="consulta--informacion">
-                                            <p>
+                                            <p class="observaciones">
                                                 <%= consultas.observaciones %>
                                             </p>
                                             <p>Profesional: <%= consultas.nombre %>
@@ -511,9 +514,12 @@
                             <div class="modal__subtitulo">
                                 <h2>Estudios</h2>
                             </div>
+                            <div class="buscador__estudios">
+                                <input class="input" type="text" id="buscar__estudio" placeholder="Buscar estudio...">
+                            </div>
                             <div class="seccion__contenido--consultas">
                                 <% estudios.forEach(estudios=> { %>
-                                    <div class="consulta">
+                                    <div class="estudio">
                                         <div class="consulta--informacion">
                                             <p class="vacuna__nombre">
                                                 <%= estudios.tipoEstudio %>

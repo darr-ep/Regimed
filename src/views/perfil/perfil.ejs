@@ -18,7 +18,7 @@
     <script defer src="/scripts/common/datosPersonales.js"></script>
     <script defer src="/scripts/common/tarjetaDatos.js"></script>
     <script defer src="/scripts/common/interfazUsuario.js"></script>
-    <script defer src="/scripts/common/buscadorVacunas.js"></script>
+    <script defer src="/scripts/common/buscador.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
         integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA=="
@@ -409,13 +409,18 @@
                 </div>
                 <div class="seccion__vacunas">
                     <div class="seccion__contenido">
-                        <div class="buscador">
-                            <input class="input" type="text" id="buscar" placeholder="Buscar vacuna...">
-                            
+                        <div class="buscador__vacunas">
+                            <input class="input" type="text" id="buscar__vacuna" placeholder="Buscar vacuna...">
+
                             <select class="input" id="ordenarPor">
                                 <option value="nombre" selected>Nombre</option>
                                 <option value="fecha">Fecha</option>
                                 <option value="profesional">Profesional</option>
+                                <option value="fabricante">Fabricante</option>
+                                <option value="lote">Número de Lote</option>
+                                <option value="serie">Número de Serie</option>
+                                <option value="dosis">Dosis Administrada</option>
+                                <option value="lugar">Lugar de Administración</option>
                             </select>
                         </div>
                         
@@ -453,11 +458,14 @@
                         <div class="modal__subtitulo">
                             <h2>Consultas</h2>
                         </div>
+                        <div class="buscador__consultas">
+                            <input class="input" type="text" id="buscar__consulta" placeholder="Buscar consulta...">
+                        </div>
                         <div class="seccion__contenido--consultas">
                             <% consultas.forEach(consultas=> { %>
                                 <div class="consulta">
                                     <div class="consulta--informacion">
-                                        <p>
+                                        <p class="observaciones">
                                             <%= consultas.observaciones %>
                                         </p>
                                         <p>Profesional: <%= consultas.nombre %>
@@ -481,9 +489,12 @@
                         <div class="modal__subtitulo">
                             <h2>Estudios</h2>
                         </div>
+                        <div class="buscador__estudios">
+                            <input class="input" type="text" id="buscar__estudio" placeholder="Buscar estudio...">
+                        </div>
                         <div class="seccion__contenido--consultas">
                             <% estudios.forEach(estudios=> { %>
-                                <div class="consulta">
+                                <div class="estudio">
                                     <div class="consulta--informacion">
                                         <p class="vacuna__nombre">
                                             <%= estudios.tipoEstudio %>

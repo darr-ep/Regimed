@@ -313,7 +313,7 @@ button.boton-datos:active {
   font-size: 16px;
 }
 
-.vacuna button.boton-datos {
+.vacuna button.boton-datos, .consulta button.boton-datos, .estudio button.boton-datos {
   background: var(--color-terciary);
   cursor: pointer;
   transition: ease-out 0.4s;
@@ -322,13 +322,12 @@ button.boton-datos:active {
   box-shadow: inset 0 0 0 0 white;
 }
 
-.vacuna .boton-datos:hover {
+.vacuna .boton-datos:hover, .consulta .boton-datos:hover, .estudio button.boton-datos:hover {
   color: var(--color-terciary);
   box-shadow: inset 0 -80px 0 0 white;
 }
 
-.consulta--informacion,
-.vacuna--informacion {
+.consulta--informacion, .vacuna--informacion {
   color: var(--color-terciary);
   font-weight: 500;
   display: flex;
@@ -336,8 +335,7 @@ button.boton-datos:active {
   gap: 5px;
 }
 
-.consulta,
-.vacuna {
+.consulta, .vacuna, .estudio {
   padding: 20px;
   border-radius: 20px;
   display: flex;
@@ -346,22 +344,8 @@ button.boton-datos:active {
   background-color: var(--color-secundary);
 }
 
-.consulta p {
+.consulta p, .estudio p {
   font-size: 16px;
-}
-
-.consulta button.boton-datos {
-  background: var(--color-terciary);
-  cursor: pointer;
-  transition: ease-out 0.4s;
-  border: 2px solid var(--color-terciary);
-  border-radius: 5px;
-  box-shadow: inset 0 0 0 0 white;
-}
-
-.consulta .boton-datos:hover {
-  color: var(--color-terciary);
-  box-shadow: inset 0 -80px 0 0 white;
 }
 
 p.receta__nombre,
@@ -536,21 +520,25 @@ button.nuevo__registro:hover {
   color: #05060fc2;
 }
 
-.buscador {
+.buscador__vacunas {
   display: flex;
 }
 
-.buscador .input#buscar {
-  width: 65%;
+.buscador__vacunas .input#buscar__vacuna {
+  width: 75%;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
   border-right: 2px solid #cfcfcf;
 }
 
-.buscador .input#ordenarPor {
-  width: 35%;
+.buscador__vacunas .input#ordenarPor {
+  width: 25%;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
+}
+
+.buscador__consultas .input#buscar__consulta, .buscador__estudios .input#buscar__estudio {
+  width: 100%;
 }
 
 button.boton-cancelar {

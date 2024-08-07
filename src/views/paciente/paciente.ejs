@@ -16,7 +16,7 @@
     <script defer src="/scripts/common/verEstudio.js"></script>
     <script defer src="/scripts/common/aside.js"></script>
     <script defer src="/scripts/common/tarjetaDatos.js"></script>
-    <script defer src="/scripts/common/buscadorVacunas.js"></script>
+    <script defer src="/scripts/common/buscador.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
         integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA=="
@@ -385,8 +385,8 @@
 
                 <div class="seccion__vacunas">
                     <div class="seccion__contenido">
-                        <div class="buscador">
-                            <input class="input" type="text" id="buscar" placeholder="Buscar vacuna...">
+                        <div class="buscador__vacunas">
+                            <input class="input" type="text" id="buscar__vacuna" placeholder="Buscar vacuna...">
 
                             <select class="input" id="ordenarPor">
                                 <option value="nombre" selected>Nombre</option>
@@ -399,6 +399,7 @@
                                 <option value="lugar">Lugar de Administración</option>
                             </select>
                         </div>
+                        
                         <div class="seccion__contenido--vacunas vacunas">
                             <% if (vacunas.length==0) {%>
                                 <p>Ups... no hay registros existentes todavía</p>
@@ -450,11 +451,14 @@
                                 <i class="fa-solid fa-plus"></i> Agregar
                             </button>
                         </div>
+                        <div class="buscador__consultas">
+                            <input class="input" type="text" id="buscar__consulta" placeholder="Buscar consulta...">
+                        </div>
                         <div class="seccion__contenido--consultas">
                             <% consultas.forEach(consultas=> { %>
                                 <div class="consulta">
                                     <div class="consulta--informacion">
-                                        <p>
+                                        <p class="observaciones">
                                             <%= consultas.observaciones %>
                                         </p>
                                         <p>Profesional: <%= consultas.nombre %>
@@ -481,9 +485,12 @@
                                 <i class="fa-solid fa-plus"></i> Agregar
                             </button>
                         </div>
+                        <div class="buscador__estudios">
+                            <input class="input" type="text" id="buscar__estudio" placeholder="Buscar estudio...">
+                        </div>
                         <div class="seccion__contenido--consultas">
                             <% estudios.forEach(estudios=> { %>
-                                <div class="consulta">
+                                <div class="estudio">
                                     <div class="consulta--informacion">
                                         <p class="vacuna__nombre">
                                             <%= estudios.tipoEstudio %>

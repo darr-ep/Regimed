@@ -1,13 +1,41 @@
-document.getElementById('buscar').addEventListener('keyup', function() {
+document.getElementById('buscar__vacuna').addEventListener('keyup', function() {
     let filter = this.value.toLowerCase();
     let vacunas = document.querySelectorAll('.vacuna');
 
     vacunas.forEach(function(vacuna) {
         let nombre = vacuna.querySelector('.vacuna__nombre').textContent.toLowerCase();
         if (nombre.includes(filter)) {
-            vacuna.style.display = '';
+             vacuna.style.display = '';
         } else {
             vacuna.style.display = 'none';
+        }
+    });
+});
+
+document.getElementById('buscar__consulta').addEventListener('keyup', function() {
+    let filter = this.value.toLowerCase();
+    let consultas = document.querySelectorAll('.consulta');
+
+    consultas.forEach(function(consulta) {
+        let nombre = consulta.querySelector('.observaciones').textContent.toLowerCase();
+        if (nombre.includes(filter)) {
+            consulta.style.display = '';
+        } else {
+            consulta.style.display = 'none';
+        }
+    });
+});
+
+document.getElementById('buscar__estudio').addEventListener('keyup', function() {
+    let filter = this.value.toLowerCase();
+    let estudios = document.querySelectorAll('.estudio');
+
+    estudios.forEach(function(estudio) {
+        let nombre = estudio.querySelector('.vacuna__nombre').textContent.toLowerCase();
+        if (nombre.includes(filter)) {
+            estudio.style.display = '';
+        } else {
+            estudio.style.display = 'none';
         }
     });
 });
