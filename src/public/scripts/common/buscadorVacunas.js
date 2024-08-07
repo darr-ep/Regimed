@@ -24,11 +24,26 @@ document.getElementById('ordenarPor').addEventListener('change', function() {
             valorA = a.querySelector('.vacuna__nombre').textContent;
             valorB = b.querySelector('.vacuna__nombre').textContent;
         } else if (ordenarPor === 'fecha') {
-            valorA = new Date(a.querySelector('.vacuna--informacion p:nth-child(2)').textContent.split(': ')[1]);
-            valorB = new Date(b.querySelector('.vacuna--informacion p:nth-child(2)').textContent.split(': ')[1]);
+            valorA = new Date(a.querySelector('.vacuna--informacion p:nth-child(3)').textContent.split(': ')[1]);
+            valorB = new Date(b.querySelector('.vacuna--informacion p:nth-child(3)').textContent.split(': ')[1]);
         } else if (ordenarPor === 'profesional') {
-            valorA = a.querySelector('.vacuna--informacion p:last-child').textContent.split(': ')[1];
-            valorB = b.querySelector('.vacuna--informacion p:last-child').textContent.split(': ')[1];
+            valorA = a.querySelector('.vacuna--informacion p:nth-last-child(3)').textContent.split(': ')[1];
+            valorB = b.querySelector('.vacuna--informacion p:nth-last-child(3)').textContent.split(': ')[1];
+        } else if (ordenarPor === 'fabricante') {
+            valorA = a.querySelector('.vacuna--informacion p:nth-child(2)').textContent.split(': ')[1];
+            valorB = b.querySelector('.vacuna--informacion p:nth-child(2)').textContent.split(': ')[1];
+        } else if (ordenarPor === 'lote') {
+            valorA = a.querySelector('.vacuna--informacion p:nth-child(4)').textContent.split(': ')[1];
+            valorB = b.querySelector('.vacuna--informacion p:nth-child(4)').textContent.split(': ')[1];
+        } else if (ordenarPor === 'serie') {
+            valorA = a.querySelector('.vacuna--informacion p:nth-child(5)').textContent.split(': ')[1];
+            valorB = b.querySelector('.vacuna--informacion p:nth-child(5)').textContent.split(': ')[1];
+        } else if (ordenarPor === 'dosis') {
+            valorA = a.querySelector('.vacuna--informacion p:nth-child(6)').textContent.split(': ')[1];
+            valorB = b.querySelector('.vacuna--informacion p:nth-child(6)').textContent.split(': ')[1];
+        } else if (ordenarPor === 'lugar') {
+            valorA = a.querySelector('.vacuna--informacion p:nth-child(7)').textContent.split(': ')[1];
+            valorB = b.querySelector('.vacuna--informacion p:nth-child(7)').textContent.split(': ')[1];
         }
 
         if (valorA < valorB) {

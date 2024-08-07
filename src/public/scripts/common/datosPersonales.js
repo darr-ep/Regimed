@@ -26,14 +26,11 @@ inputImagenUsuario.addEventListener("change", (e) => {
   }
 });
 
-function formatoTelefono(input) {
-  // Eliminar todos los caracteres que no sean dígitos
+function formatoTelefono(input) { 
   var formatted = input.value.replace(/\D/g, "");
 
-  // Agregar el símbolo de más (+) al principio del número
   formatted = "+" + formatted;
 
-  // Aplicar el formato deseado: "+xx xxx xxx xxxx"
   if (formatted.length > 3) {
     formatted = formatted.substring(0, 3) + " " + formatted.substring(3);
   }
@@ -44,7 +41,6 @@ function formatoTelefono(input) {
     formatted = formatted.substring(0, 11) + " " + formatted.substring(11);
   }
 
-  // Establecer el valor formateado en el input
   input.value = formatted;
 }
 

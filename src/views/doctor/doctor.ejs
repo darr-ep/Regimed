@@ -228,7 +228,7 @@
                     </ul>
                 </div>
             </div>
-            <div class="seccion">
+            <div id="paciente" class="seccion">
                 <div class="seccion__titulo">
                     <h1 class="seccion__titulo--titulo">
                         <i class="fa-solid fa-user"></i> Paciente
@@ -262,197 +262,22 @@
                             </select>
                         </div>
                         <div class="seccion__contenido--vacunas vacunas">
-                            <div class="vacuna">
-                                <div class="vacuna--informacion">
-                                    <p class="vacuna__nombre">BCG</p>
-                                    <p>Fecha: 25-Junio-2024</p>
-                                    <p>Lote: BCG-2024-01</p>
-                                    <p>Fecha de caducidad: 25-Junio-2025</p>
-                                    <p>Reacciones adversas: Ninguna</p>
-                                    <p>Profesional: Dr. Pérez</p>
+                            <% vacunas.forEach(vacunas=> { %>
+                                <div class="vacuna">
+                                    <div class="vacuna--informacion">
+                                        <p class="vacuna__nombre"><%= vacunas.vacuna_aplicada %></p>
+                                        <p>Fabricante: <%= vacunas.fabricante %></p>
+                                        <p>Aplicación: <%= vacunas.fechaAplicacion %></p>
+                                        <p>Dosis: <%= vacunas.dosisAdministrada %></p>
+                                        <p>No. Lote: <%= vacunas.numeroLote %></p>
+                                        <p>No. Serie: <%= vacunas.numeroSerie %></p>
+                                        <p>Lugar de administración: <%= vacunas.lugarAdministracion %></p>
+                                        <p>Profesional: <%= vacunas.nombre %></p>
+                                        <p>Cédula del profesional: <%= vacunas.cedula %></p>
+                                        <p>Siguiente dosis: <%= vacunas.siguienteDosis %></p>
+                                    </div>
                                 </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
-                        
-                            <div class="vacuna">
-                                <div class="vacuna--informacion">
-                                    <p class="vacuna__nombre">DTP (Difteria, Tétanos, Pertussis)</p>
-                                    <p>Fecha: 30-Junio-2024</p>
-                                    <p>Lote: DTP-2024-03</p>
-                                    <p>Fecha de caducidad: 30-Junio-2025</p>
-                                    <p>Reacciones adversas: Dolor en el sitio de inyección</p>
-                                    <p>Profesional: Dra. López</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
-                        
-                            <div class="vacuna">
-                                <div class="vacuna--informacion">
-                                    <p class="vacuna__nombre">Hepatitis A</p>
-                                    <p>Fecha: 02-Julio-2024</p>
-                                    <p>Lote: HEPA-2024-06</p>
-                                    <p>Fecha de caducidad: 02-Julio-2025</p>
-                                    <p>Reacciones adversas: Ninguna</p>
-                                    <p>Profesional: Dra. Ramírez</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
-                        
-                            <div class="vacuna">
-                                <div class="vacuna--informacion">
-                                    <p class="vacuna__nombre">Hepatitis B</p>
-                                    <p>Fecha: 26-Junio-2024</p>
-                                    <p>Lote: HEPB-2024-05</p>
-                                    <p>Fecha de caducidad: 26-Junio-2025</p>
-                                    <p>Reacciones adversas: Ninguna</p>
-                                    <p>Profesional: Dra. Gómez</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
-                        
-                            <div class="vacuna">
-                                <div class="vacuna--informacion">
-                                    <p class="vacuna__nombre">Influenza</p>
-                                    <p>Fecha: 01-Julio-2024</p>
-                                    <p>Lote: INF-2024-08</p>
-                                    <p>Fecha de caducidad: 01-Julio-2025</p>
-                                    <p>Reacciones adversas: Fiebre leve</p>
-                                    <p>Profesional: Dr. Martínez</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
-                        
-                            <div class="vacuna">
-                                <div class="vacuna--informacion">
-                                    <p class="vacuna__nombre">Meningococo</p>
-                                    <p>Fecha: 06-Julio-2024</p>
-                                    <p>Lote: MEN-2024-02</p>
-                                    <p>Fecha de caducidad: 06-Julio-2025</p>
-                                    <p>Reacciones adversas: Fiebre leve</p>
-                                    <p>Profesional: Dra. Castillo</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
-                        
-                            <div class="vacuna">
-                                <div class="vacuna--informacion">
-                                    <p class="vacuna__nombre">Neumococo</p>
-                                    <p>Fecha: 04-Julio-2024</p>
-                                    <p>Lote: PNEU-2024-10</p>
-                                    <p>Fecha de caducidad: 04-Julio-2025</p>
-                                    <p>Reacciones adversas: Ninguna</p>
-                                    <p>Profesional: Dra. Hernández</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
-                        
-                            <div class="vacuna">
-                                <div class="vacuna--informacion">
-                                    <p class="vacuna__nombre">Polio</p>
-                                    <p>Fecha: 29-Junio-2024</p>
-                                    <p>Lote: POL-2024-07</p>
-                                    <p>Fecha de caducidad: 29-Junio-2025</p>
-                                    <p>Reacciones adversas: Fiebre leve</p>
-                                    <p>Profesional: Dr. Sánchez</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
-                        
-                            <div class="vacuna">
-                                <div class="vacuna--informacion">
-                                    <p class="vacuna__nombre">Rotavirus</p>
-                                    <p>Fecha: 05-Julio-2024</p>
-                                    <p>Lote: ROTA-2024-04</p>
-                                    <p>Fecha de caducidad: 05-Julio-2025</p>
-                                    <p>Reacciones adversas: Diarrea leve</p>
-                                    <p>Profesional: Dr. Díaz</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
-                        
-                            <div class="vacuna">
-                                <div class="vacuna--informacion">
-                                    <p class="vacuna__nombre">Tifoidea</p>
-                                    <p>Fecha: 07-Julio-2024</p>
-                                    <p>Lote: TIF-2024-13</p>
-                                    <p>Fecha de caducidad: 07-Julio-2025</p>
-                                    <p>Reacciones adversas: Dolor abdominal leve</p>
-                                    <p>Profesional: Dr. Morales</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
-                        
-                            <div class="vacuna">
-                                <div class="vacuna--informacion">
-                                    <p class="vacuna__nombre">VPH (Virus del Papiloma Humano)</p>
-                                    <p>Fecha: 03-Julio-2024</p>
-                                    <p>Lote: VPH-2024-11</p>
-                                    <p>Fecha de caducidad: 03-Julio-2025</p>
-                                    <p>Reacciones adversas: Dolor en el sitio de inyección</p>
-                                    <p>Profesional: Dr. Torres</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
-                        
-                            <div class="vacuna">
-                                <div class="vacuna--informacion">
-                                    <p class="vacuna__nombre">Varicela</p>
-                                    <p>Fecha: 28-Junio-2024</p>
-                                    <p>Lote: VAR-2024-12</p>
-                                    <p>Fecha de caducidad: 28-Junio-2025</p>
-                                    <p>Reacciones adversas: Ninguna</p>
-                                    <p>Profesional: Dra. Martínez</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
+                            <%})%>
                         </div>
                     </div>
                 </div>

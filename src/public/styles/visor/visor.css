@@ -43,6 +43,7 @@ h2 {
 
 span {
   font-size: 16px;
+  font-weight: 800;
 }
 
 .swal2-icon {
@@ -76,7 +77,7 @@ span {
 }
 
 .contenido {
-  min-width: 1250px;
+  width: 1250px;
   display: grid;
   grid-template-columns: 250px 1fr;
   grid-template-areas:
@@ -340,8 +341,9 @@ button.boton-datos:active {
   box-shadow: inset 0 -80px 0 0 white;
 }
 
-.receta__nombre, .vacuna__nombre {
+p.receta__nombre, p.vacuna__nombre {
   font-weight: 700;
+  font-size: 22px;
 }
 
 .seccion__consultas {
@@ -350,6 +352,9 @@ button.boton-datos:active {
 }
 
 .seccion__consultas--contenedor {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   padding: 30px;
 }
 
@@ -367,10 +372,6 @@ button.boton-datos:active {
   gap: 20px;
   max-height: 550px;
   overflow-y: auto;
-}
-
-.seccion__consultas--contenedor h2 {
-  padding-bottom: 20px;
 }
 
 .registro {
@@ -650,4 +651,41 @@ i.fa-circle-xmark {
 
 .vacio {
   color: #757575;
+}
+
+.modal__subtitulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.consulta__medicamentos {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.consulta__medicamento {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  gap: 0px 30px;
+}
+
+.consulta__datos {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.consulta__dato {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.consultas__textArea {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }

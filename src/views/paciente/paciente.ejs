@@ -8,7 +8,12 @@
     <link rel="icon" href="/images/logo/LogoPositive.png" type="image/png">
     <link rel="stylesheet" href="/styles/paciente/paciente.css">
     <script src="https://kit.fontawesome.com/f5b8feb020.js" crossorigin="anonymous"></script>
+    <script defer src="/scripts/paciente/agregarVacuna.js"></script>
+    <script defer src="/scripts/paciente/agregarConsulta.js"></script>
+    <script defer src="/scripts/paciente/agregarEstudio.js"></script>
+    <script defer src="/scripts/paciente/editarHistorial.js"></script>
     <script defer src="/scripts/common/verConsulta.js"></script>
+    <script defer src="/scripts/common/verEstudio.js"></script>
     <script defer src="/scripts/common/aside.js"></script>
     <script defer src="/scripts/common/tarjetaDatos.js"></script>
     <script defer src="/scripts/common/buscadorVacunas.js"></script>
@@ -43,6 +48,12 @@
                     </a>
                 </li>
                 <li>
+                    <a href="#historial">
+                        <i class="fa-solid fa-file-medical"></i>
+                        Historial médico
+                    </a>
+                </li>
+                <li>
                     <a href="#vacunas">
                         <i class="fa-solid fa-syringe"></i>
                         Vacunas
@@ -54,12 +65,6 @@
                         Consultas
                     </a>
                 </li>
-                <!-- <li>
-                    <a href="#historial">
-                        <i class="fa-solid fa-file-medical"></i>
-                        Historial médico
-                    </a>
-                </li> -->
             </ul>
             <ul>
                 <li>
@@ -80,15 +85,21 @@
                 <div class="seccion__contenido informacion__general">
                     <div class="informacion__general--informacion informacion__primero">
                         <img src="/images/users/<%= imagenAMostrar %>" alt="" id="imagenGuardada">
-                        <p> <%= nombre_comp %> </p>
+                        <p>
+                            <%= nombre_comp %>
+                        </p>
                         <ul>
                             <li>
                                 <span>CURP</span>
-                                <p> <%= curp %> </p>
+                                <p>
+                                    <%= curp %>
+                                </p>
                             </li>
                             <li>
                                 <span>Teléfono</span>
-                                <p> <%= telefono %> </p>
+                                <p>
+                                    <%= telefono %>
+                                </p>
                             </li>
                         </ul>
                     </div>
@@ -189,224 +200,244 @@
                     </ul>
                 </div>
             </div>
+            
+            <div id="historial" class="seccion">
+                <div class="seccion__titulo">
+                    <h1 class="seccion__titulo--titulo">
+                        <i class="fa-solid fa-file-medical"></i> Historial Médico
+                    </h1>
+                    <div class="seccion__titulo--boton">
+                        <button type="button" class="boton-datos" id="abrir__editarHistorial">
+                            <i class="fa-solid fa-pen-to-square"></i> Editar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="seccion__contenido seccion__contenido--historial">
+                <% if (historial && (historial.pp && Object.values(historial.pp).some(value => value) || historial.pnp && Object.values(historial.pnp).some(value => value) || historial.ah && Object.values(historial.ah).some(value => value))) { %>
+                    <% if (historial.pp && Object.values(historial.pp).some(value => value)) { %>
+                    <h2>Personales Patológicos</h2>
+                    <div class="contenido__personalesPatologicos">
+                        <% if (historial.pp.alergias) { %>
+                        <span>Alergias:</span>
+                        <input name="alergias" type="text" class="input" value="<%= historial.pp.alergias %>" disabled>
+                        <% } %>
+                        <% if (historial.pp.tabaco) { %>
+                        <span>Tabaco:</span>
+                        <input name="tabaco" type="text" class="input" value="<%= historial.pp.tabaco %>" disabled>
+                        <% } %>
+                        <% if (historial.pp.alcohol) { %>
+                        <span>Alcohol:</span>
+                        <input name="alcohol" type="text" class="input" value="<%= historial.pp.alcohol %>" disabled>
+                        <% } %>
+                        <% if (historial.pp.drogas) { %>
+                        <span>Drogas:</span>
+                        <input name="drogas" type="text" class="input" value="<%= historial.pp.drogas %>" disabled>
+                        <% } %>
+                        <% if (historial.pp.padecimientos) { %>
+                        <span>Padecimientos:</span>
+                        <input name="padecimientos" type="text" class="input" value="<%= historial.pp.padecimientos %>" disabled>
+                        <% } %>
+                        <% if (historial.pp.medicamentos) { %>
+                        <span>Medicamentos:</span>
+                        <input name="medicamentos" type="text" class="input" value="<%= historial.pp.medicamentos %>" disabled>
+                        <% } %>
+                        <% if (historial.pp.quirurgicos) { %>
+                        <span>Quirúrgicos:</span>
+                        <input name="quirurgicos" type="text" class="input" value="<%= historial.pp.quirurgicos %>" disabled>
+                        <% } %>
+                        <% if (historial.pp.traumatologicos) { %>
+                        <span>Traumatológicos:</span>
+                        <input name="traumatologicos" type="text" class="input" value="<%= historial.pp.traumatologicos %>" disabled>
+                        <% } %>
+                        <% if (historial.pp.transfusionales) { %>
+                        <span>Transfusionales:</span>
+                        <input name="transfusionales" type="text" class="input" value="<%= historial.pp.transfusionales %>" disabled>
+                        <% } %>
+                        <% if (historial.pp.intoleranciaMedicamentos) { %>
+                        <span>Intolerancia a Medicamentos:</span>
+                        <input name="intoleranciaMedicamentos" type="text" class="input" value="<%= historial.pp.intoleranciaMedicamentos %>" disabled>
+                        <% } %>
+                        <% if (historial.pp.otros) { %>
+                        <span>Otros:</span>
+                        <input name="otros" type="text" class="input" value="<%= historial.pp.otros %>" disabled>
+                        <% } %>
+                    </div>
+                    <% } %>
+                    
+                    <% if (historial.pnp && Object.values(historial.pnp).some(value => value)) { %>
+                    <h2>Personales No Patológicos</h2>
+                    <div class="contenido__personalesNoPatologicos">
+                        <% if (historial.pnp.ejercicio) { %>
+                        <span>Ejercicio:</span>
+                        <input name="ejercicio" type="text" class="input" value="<%= historial.pnp.ejercicio %>" disabled>
+                        <% } %>
+                        <% if (historial.pnp.suplementos) { %>
+                        <span>Suplementos:</span>
+                        <input name="suplementos" type="text" class="input" value="<%= historial.pnp.suplementos %>" disabled>
+                        <% } %>
+                        <% if (historial.pnp.viajesRecientes) { %>
+                        <span>Viajes Recientes:</span>
+                        <input name="viajesRecientes" type="text" class="input" value="<%= historial.pnp.viajesRecientes %>" disabled>
+                        <% } %>
+                        <% if (historial.pnp.tatuajes) { %>
+                        <span>Tatuajes:</span>
+                        <input name="tatuajes" type="text" class="input" value="<%= historial.pnp.tatuajes %>" disabled>
+                        <% } %>
+                        <% if (historial.pnp.perforaciones) { %>
+                        <span>Perforaciones:</span>
+                        <input name="perforaciones" type="text" class="input" value="<%= historial.pnp.perforaciones %>" disabled>
+                        <% } %>
+                        <% if (historial.pnp.otros) { %>
+                        <span>Otros:</span>
+                        <input name="otros" type="text" class="input" value="<%= historial.pnp.otros %>" disabled>
+                        <% } %>
+                    </div>
+                    <% } %>
+                    
+                    <% if (historial.ah && Object.values(historial.ah).some(value => value)) { %>
+                    <h2>Antecedentes Heredofamiliares</h2>
+                    <div class="contenido__antecedentesHeredofamiliares">
+                        <span></span>
+                        <span class="familiares">Abuelos</span>
+                        <span class="familiares">Padre</span>
+                        <span class="familiares">Madre</span>
+                        <span class="familiares">Hermanos</span>
+                    
+                        <% if (historial.ah.diabetesAbuelos || historial.ah.diabetesPadre || historial.ah.diabetesMadre || historial.ah.diabetesHermanos) { %>
+                        <span>Diabetes:</span>
+                        <input name="diabetesAbuelos" type="text" class="input" value="<%= historial.ah.diabetesAbuelos %>" disabled>
+                        <input name="diabetesPadre" type="text" class="input" value="<%= historial.ah.diabetesPadre %>" disabled>
+                        <input name="diabetesMadre" type="text" class="input" value="<%= historial.ah.diabetesMadre %>" disabled>
+                        <input name="diabetesHermanos" type="text" class="input" value="<%= historial.ah.diabetesHermanos %>" disabled>
+                        <% } %>
+                    
+                        <% if (historial.ah.nefropatiasAbuelos || historial.ah.nefropatiasPadre || historial.ah.nefropatiasMadre || historial.ah.nefropatiasHermanos) { %>
+                        <span>Nefropatías:</span>
+                        <input name="nefropatiasAbuelos" type="text" class="input" value="<%= historial.ah.nefropatiasAbuelos %>" disabled>
+                        <input name="nefropatiasPadre" type="text" class="input" value="<%= historial.ah.nefropatiasPadre %>" disabled>
+                        <input name="nefropatiasMadre" type="text" class="input" value="<%= historial.ah.nefropatiasMadre %>" disabled>
+                        <input name="nefropatiasHermanos" type="text" class="input" value="<%= historial.ah.nefropatiasHermanos %>" disabled>
+                        <% } %>
+                    
+                        <% if (historial.ah.mentalesAbuelos || historial.ah.mentalesPadre || historial.ah.mentalesMadre || historial.ah.mentalesHermanos) { %>
+                        <span>Enfermedades Mentales:</span>
+                        <input name="mentalesAbuelos" type="text" class="input" value="<%= historial.ah.mentalesAbuelos %>" disabled>
+                        <input name="mentalesPadre" type="text" class="input" value="<%= historial.ah.mentalesPadre %>" disabled>
+                        <input name="mentalesMadre" type="text" class="input" value="<%= historial.ah.mentalesMadre %>" disabled>
+                        <input name="mentalesHermanos" type="text" class="input" value="<%= historial.ah.mentalesHermanos %>" disabled>
+                        <% } %>
+                    
+                        <% if (historial.ah.hipertensionAbuelos || historial.ah.hipertensionPadre || historial.ah.hipertensionMadre || historial.ah.hipertensionHermanos) { %>
+                        <span>Hipertensión Arterial:</span>
+                        <input name="hipertensionAbuelos" type="text" class="input" value="<%= historial.ah.hipertensionAbuelos %>" disabled>
+                        <input name="hipertensionPadre" type="text" class="input" value="<%= historial.ah.hipertensionPadre %>" disabled>
+                        <input name="hipertensionMadre" type="text" class="input" value="<%= historial.ah.hipertensionMadre %>" disabled>
+                        <input name="hipertensionHermanos" type="text" class="input" value="<%= historial.ah.hipertensionHermanos %>" disabled>
+                        <% } %>
+                    
+                        <% if (historial.ah.oncologicosAbuelos || historial.ah.oncologicosPadre || historial.ah.oncologicosMadre || historial.ah.oncologicosHermanos) { %>
+                        <span>Oncológicos:</span>
+                        <input name="oncologicosAbuelos" type="text" class="input" value="<%= historial.ah.oncologicosAbuelos %>" disabled>
+                        <input name="oncologicosPadre" type="text" class="input" value="<%= historial.ah.oncologicosPadre %>" disabled>
+                        <input name="oncologicosMadre" type="text" class="input" value="<%= historial.ah.oncologicosMadre %>" disabled>
+                        <input name="oncologicosHermanos" type="text" class="input" value="<%= historial.ah.oncologicosHermanos %>" disabled>
+                        <% } %>
+                    
+                        <% if (historial.ah.hepatopatiasAbuelos || historial.ah.hepatopatiasPadre || historial.ah.hepatopatiasMadre || historial.ah.hepatopatiasHermanos) { %>
+                        <span>Hepatopatías:</span>
+                        <input name="hepatopatiasAbuelos" type="text" class="input" value="<%= historial.ah.hepatopatiasAbuelos %>" disabled>
+                        <input name="hepatopatiasPadre" type="text" class="input" value="<%= historial.ah.hepatopatiasPadre %>" disabled>
+                        <input name="hepatopatiasMadre" type="text" class="input" value="<%= historial.ah.hepatopatiasMadre %>" disabled>
+                        <input name="hepatopatiasHermanos" type="text" class="input" value="<%= historial.ah.hepatopatiasHermanos %>" disabled>
+                        <% } %>
+                    
+                        <% if (historial.ah.heredoOtrosAbuelos || historial.ah.heredoOtrosPadre || historial.ah.heredoOtrosMadre || historial.ah.heredoOtrosHermanos) { %>
+                        <span>Otros:</span>
+                        <input name="heredoOtrosAbuelos" type="text" class="input" value="<%= historial.ah.heredoOtrosAbuelos %>" disabled>
+                        <input name="heredoOtrosPadre" type="text" class="input" value="<%= historial.ah.heredoOtrosPadre %>" disabled>
+                        <input name="heredoOtrosMadre" type="text" class="input" value="<%= historial.ah.heredoOtrosMadre %>" disabled>
+                        <input name="heredoOtrosHermanos" type="text" class="input" value="<%= historial.ah.heredoOtrosHermanos %>" disabled>
+                        <% } %>
+                    </div>
+                    <% } %>
+                    <span>Última modificación: <%= historial.ultimaModificacion %> <br>
+                        por el médico <%= historial.doctor.nombre %> <br>
+                        de cédula <%= historial.doctor.cedula %></span>
+                        
+                    </div>
+                    <% } else { %>
+                        <p>No hay datos en el historial.</p>
+                    <% } %>
+                </div>
+
             <div id="vacunas" class="seccion">
                 <div class="seccion__titulo">
                     <h1 class="seccion__titulo--titulo">
                         <i class="fa-solid fa-syringe"></i> Vacunas
                     </h1>
                     <div class="seccion__titulo--boton">
-                        <button type="button" class="boton-datos" id="abrir__vacunas">
-                            <i class="fa-solid fa-plus"></i> Añadir
+                        <button type="button" class="boton-datos" id="abrir__agregarVacuna">
+                            <i class="fa-solid fa-plus"></i> Agregar
                         </button>
                     </div>
                 </div>
+
                 <div class="seccion__vacunas">
                     <div class="seccion__contenido">
                         <div class="buscador">
                             <input class="input" type="text" id="buscar" placeholder="Buscar vacuna...">
-                            
+
                             <select class="input" id="ordenarPor">
                                 <option value="nombre" selected>Nombre</option>
                                 <option value="fecha">Fecha</option>
                                 <option value="profesional">Profesional</option>
+                                <option value="fabricante">Fabricante</option>
+                                <option value="lote">Número de Lote</option>
+                                <option value="serie">Número de Serie</option>
+                                <option value="dosis">Dosis Administrada</option>
+                                <option value="lugar">Lugar de Administración</option>
                             </select>
                         </div>
                         <div class="seccion__contenido--vacunas vacunas">
-                            <div class="vacuna">
-                                <div class="vacuna--informacion">
-                                    <p class="vacuna__nombre">BCG</p>
-                                    <p>Fecha: 25-Junio-2024</p>
-                                    <p>Lote: BCG-2024-01</p>
-                                    <p>Fecha de caducidad: 25-Junio-2025</p>
-                                    <p>Reacciones adversas: Ninguna</p>
-                                    <p>Profesional: Dr. Pérez</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
-                        
-                            <div class="vacuna">
-                                <div class="vacuna--informacion">
-                                    <p class="vacuna__nombre">DTP (Difteria, Tétanos, Pertussis)</p>
-                                    <p>Fecha: 30-Junio-2024</p>
-                                    <p>Lote: DTP-2024-03</p>
-                                    <p>Fecha de caducidad: 30-Junio-2025</p>
-                                    <p>Reacciones adversas: Dolor en el sitio de inyección</p>
-                                    <p>Profesional: Dra. López</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
-                        
-                            <div class="vacuna">
-                                <div class="vacuna--informacion">
-                                    <p class="vacuna__nombre">Hepatitis A</p>
-                                    <p>Fecha: 02-Julio-2024</p>
-                                    <p>Lote: HEPA-2024-06</p>
-                                    <p>Fecha de caducidad: 02-Julio-2025</p>
-                                    <p>Reacciones adversas: Ninguna</p>
-                                    <p>Profesional: Dra. Ramírez</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
-                        
-                            <div class="vacuna">
-                                <div class="vacuna--informacion">
-                                    <p class="vacuna__nombre">Hepatitis B</p>
-                                    <p>Fecha: 26-Junio-2024</p>
-                                    <p>Lote: HEPB-2024-05</p>
-                                    <p>Fecha de caducidad: 26-Junio-2025</p>
-                                    <p>Reacciones adversas: Ninguna</p>
-                                    <p>Profesional: Dra. Gómez</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
-                        
-                            <div class="vacuna">
-                                <div class="vacuna--informacion">
-                                    <p class="vacuna__nombre">Influenza</p>
-                                    <p>Fecha: 01-Julio-2024</p>
-                                    <p>Lote: INF-2024-08</p>
-                                    <p>Fecha de caducidad: 01-Julio-2025</p>
-                                    <p>Reacciones adversas: Fiebre leve</p>
-                                    <p>Profesional: Dr. Martínez</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
-                        
-                            <div class="vacuna">
-                                <div class="vacuna--informacion">
-                                    <p class="vacuna__nombre">Meningococo</p>
-                                    <p>Fecha: 06-Julio-2024</p>
-                                    <p>Lote: MEN-2024-02</p>
-                                    <p>Fecha de caducidad: 06-Julio-2025</p>
-                                    <p>Reacciones adversas: Fiebre leve</p>
-                                    <p>Profesional: Dra. Castillo</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
-                        
-                            <div class="vacuna">
-                                <div class="vacuna--informacion">
-                                    <p class="vacuna__nombre">Neumococo</p>
-                                    <p>Fecha: 04-Julio-2024</p>
-                                    <p>Lote: PNEU-2024-10</p>
-                                    <p>Fecha de caducidad: 04-Julio-2025</p>
-                                    <p>Reacciones adversas: Ninguna</p>
-                                    <p>Profesional: Dra. Hernández</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
-                        
-                            <div class="vacuna">
-                                <div class="vacuna--informacion">
-                                    <p class="vacuna__nombre">Polio</p>
-                                    <p>Fecha: 29-Junio-2024</p>
-                                    <p>Lote: POL-2024-07</p>
-                                    <p>Fecha de caducidad: 29-Junio-2025</p>
-                                    <p>Reacciones adversas: Fiebre leve</p>
-                                    <p>Profesional: Dr. Sánchez</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
-                        
-                            <div class="vacuna">
-                                <div class="vacuna--informacion">
-                                    <p class="vacuna__nombre">Rotavirus</p>
-                                    <p>Fecha: 05-Julio-2024</p>
-                                    <p>Lote: ROTA-2024-04</p>
-                                    <p>Fecha de caducidad: 05-Julio-2025</p>
-                                    <p>Reacciones adversas: Diarrea leve</p>
-                                    <p>Profesional: Dr. Díaz</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
-                        
-                            <div class="vacuna">
-                                <div class="vacuna--informacion">
-                                    <p class="vacuna__nombre">Tifoidea</p>
-                                    <p>Fecha: 07-Julio-2024</p>
-                                    <p>Lote: TIF-2024-13</p>
-                                    <p>Fecha de caducidad: 07-Julio-2025</p>
-                                    <p>Reacciones adversas: Dolor abdominal leve</p>
-                                    <p>Profesional: Dr. Morales</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
-                        
-                            <div class="vacuna">
-                                <div class="vacuna--informacion">
-                                    <p class="vacuna__nombre">VPH (Virus del Papiloma Humano)</p>
-                                    <p>Fecha: 03-Julio-2024</p>
-                                    <p>Lote: VPH-2024-11</p>
-                                    <p>Fecha de caducidad: 03-Julio-2025</p>
-                                    <p>Reacciones adversas: Dolor en el sitio de inyección</p>
-                                    <p>Profesional: Dr. Torres</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
-                        
-                            <div class="vacuna">
-                                <div class="vacuna--informacion">
-                                    <p class="vacuna__nombre">Varicela</p>
-                                    <p>Fecha: 28-Junio-2024</p>
-                                    <p>Lote: VAR-2024-12</p>
-                                    <p>Fecha de caducidad: 28-Junio-2025</p>
-                                    <p>Reacciones adversas: Ninguna</p>
-                                    <p>Profesional: Dra. Martínez</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
+                            <% if (vacunas.length==0) {%>
+                                <p>Ups... no hay registros existentes todavía</p>
+                                <%} else {%>
+                                    <% vacunas.forEach(vacunas=> { %>
+                                        <div class="vacuna">
+                                            <div class="vacuna--informacion">
+                                                <p class="vacuna__nombre">
+                                                    <%= vacunas.vacuna_aplicada %>
+                                                </p>
+                                                <p>Fabricante: <%= vacunas.fabricante %>
+                                                </p>
+                                                <p>Aplicación: <%= vacunas.fechaAplicacion %>
+                                                </p>
+                                                <p>No. Lote: <%= vacunas.numeroLote %>
+                                                </p>
+                                                <p>No. Serie: <%= vacunas.numeroSerie %>
+                                                </p>
+                                                <p>Dosis: <%= vacunas.dosisAdministrada %>
+                                                </p>
+                                                <p>Lugar de administración: <%= vacunas.lugarAdministracion %>
+                                                </p>
+                                                <p>Profesional: <%= vacunas.nombre %>
+                                                </p>
+                                                <p>Cédula del profesional: <%= vacunas.cedula %>
+                                                </p>
+                                                <% if (vacunas.siguienteDosis !=='0000-00-00' ) { %>
+                                                    <p class="siguiente-dosis">Siguiente dosis: <%=
+                                                            vacunas.siguienteDosis %>
+                                                    </p>
+                                                    <% } %>
+                                            </div>
+                                        </div>
+                                        <% })} %>
                         </div>
                     </div>
                 </div>
             </div>
+
             <div id="consultas" class="seccion">
                 <div id="consultas" class="seccion__titulo">
                     <h1 class="seccion__titulo--titulo">
@@ -415,161 +446,331 @@
                 </div>
                 <div class="seccion__consultas">
                     <div class="seccion__contenido seccion__consultas--contenedor">
-                        <h2>Recetas</h2>
+                        <div class="modal__subtitulo">
+                            <h2>Consultas</h2>
+                            <button type="button" class="boton-datos" id="abrir__agregarConsulta">
+                                <i class="fa-solid fa-plus"></i> Agregar
+                            </button>
+                        </div>
                         <div class="seccion__contenido--consultas">
-                            <div class="consulta">
-                                <div class="consulta--informacion">
-                                    <p class="receta__nombre">Dr. Susano López Arriaga</p>
-                                    <p class="receta__cedula">Cédula: 1561615615</p>
-                                    <p class="receta__fecha">Fecha: 25-Junio-2024</p>
-                                    <p class="receta__institucion">Institución: Clinica Tulancingo</p>
+                            <% consultas.forEach(consultas=> { %>
+                                <div class="consulta">
+                                    <div class="consulta--informacion">
+                                        <p>
+                                            <%= consultas.observaciones %>
+                                        </p>
+                                        <p>Profesional: <%= consultas.nombre %>
+                                        </p>
+                                        <p>Cédula del profesional: <%= consultas.cedula %>
+                                        </p>
+                                        <p>Fecha: <%= consultas.fechaConsulta %>
+                                        </p>
+                                    </div>
+                                    <div class="consulta__boton">
+                                        <button class="boton-datos abrir__consulta"
+                                            data-consulta-id="<%= consultas.consulta_id %>">
+                                            Ver Consulta
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="consulta">
-                                <div class="consulta--informacion">
-                                    <p class="receta__nombre">Dr. Susano López Arriaga</p>
-                                    <p class="receta__cedula">Cédula: 1561615615</p>
-                                    <p class="receta__fecha">Fecha: 25-Junio-2024</p>
-                                    <p class="receta__institucion">Institución: Clinica Tulancingo</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="consulta">
-                                <div class="consulta--informacion">
-                                    <p class="receta__nombre">Dr. Susano López Arriaga</p>
-                                    <p class="receta__cedula">Cédula: 1561615615</p>
-                                    <p class="receta__fecha">Fecha: 25-Junio-2024</p>
-                                    <p class="receta__institucion">Institución: Clinica Tulancingo</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="consulta">
-                                <div class="consulta--informacion">
-                                    <p class="receta__nombre">Dr. Susano López Arriaga</p>
-                                    <p class="receta__cedula">Cédula: 1561615615</p>
-                                    <p class="receta__fecha">Fecha: 25-Junio-2024</p>
-                                    <p class="receta__institucion">Institución: Clinica Tulancingo</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="consulta">
-                                <div class="consulta--informacion">
-                                    <p class="receta__nombre">Dr. Susano López Arriaga</p>
-                                    <p class="receta__cedula">Cédula: 1561615615</p>
-                                    <p class="receta__fecha">Fecha: 25-Junio-2024</p>
-                                    <p class="receta__institucion">Institución: Clinica Tulancingo</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="consulta">
-                                <div class="consulta--informacion">
-                                    <p class="receta__nombre">Dr. Susano López Arriaga</p>
-                                    <p class="receta__cedula">Cédula: 1561615615</p>
-                                    <p class="receta__fecha">Fecha: 25-Junio-2024</p>
-                                    <p class="receta__institucion">Institución: Clinica Tulancingo</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__receta" class="boton-datos">
-                                        Ver Receta
-                                    </button>
-                                </div>
-                            </div>
+                                <% }) %>
                         </div>
                     </div>
                     <div class="seccion__contenido seccion__consultas--contenedor">
-                        <h2>Estudios</h2>
+                        <div class="modal__subtitulo">
+                            <h2>Estudios</h2>
+                            <button type="button" class="boton-datos" id="abrir__agregarEstudio">
+                                <i class="fa-solid fa-plus"></i> Agregar
+                            </button>
+                        </div>
                         <div class="seccion__contenido--consultas">
-                            <div class="consulta">
-                                <div class="consulta--informacion">
-                                    <p class="estudio__diagnostico">Osteosarcoma</p>
-                                    <p class="estudio__doctor">Aguilar Saenz Lopez Alejandro</p>
-                                    <p class="estudio__fecha">22/10/2023</p>
+                            <% estudios.forEach(estudios=> { %>
+                                <div class="consulta">
+                                    <div class="consulta--informacion">
+                                        <p class="vacuna__nombre">
+                                            <%= estudios.tipoEstudio %>
+                                        </p>
+                                        <p>Motivo: <%= estudios.motivoEstudio %>
+                                        </p>
+                                        <p>Profesional: <%= estudios.nombre %>
+                                        </p>
+                                        <p>Cédula del profesional: <%= estudios.cedula %>
+                                        </p>
+                                        <p>Fecha: <%= estudios.fechaEstudio %>
+                                        </p>
+                                    </div>
+                                    <div class="estudio__boton">
+                                        <button class="boton-datos abrir__estudio"
+                                            data-estudio-id="<%= estudios.estudio_id %>">
+                                            Ver Estudio
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__estudio" class="boton-datos">
-                                        Ver estudio
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="consulta">
-                                <div class="consulta--informacion">
-                                    <p class="estudio__diagnostico">Osteosarcoma</p>
-                                    <p class="estudio__doctor">Aguilar Saenz Lopez Alejandro</p>
-                                    <p class="estudio__fecha">22/10/2023</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__estudio" class="boton-datos">
-                                        Ver estudio
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="consulta">
-                                <div class="consulta--informacion">
-                                    <p class="estudio__diagnostico">Osteosarcoma</p>
-                                    <p class="estudio__doctor">Aguilar Saenz Lopez Alejandro</p>
-                                    <p class="estudio__fecha">22/10/2023</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__estudio" class="boton-datos">
-                                        Ver estudio
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="consulta">
-                                <div class="consulta--informacion">
-                                    <p class="estudio__diagnostico">Osteosarcoma</p>
-                                    <p class="estudio__doctor">Aguilar Saenz Lopez Alejandro</p>
-                                    <p class="estudio__fecha">22/10/2023</p>
-                                </div>
-                                <div class="receta__boton">
-                                    <button id="abrir__estudio" class="boton-datos">
-                                        Ver estudio
-                                    </button>
-                                </div>
-                            </div>
+                                <% }) %>
                         </div>
                     </div>
                 </div>
             </div>
         </main>
     </div>
-    
-    <div id="fondo__vacunas" class="fondo__modal">
-        <div id="ventana__vacunas" class="modal">
+
+    <div id="fondo__agregarVacuna" class="fondo__modal">
+        <form id="modal__agregarVacuna" class="modal">
             <h1 class="modal__titulo">
-                <i class="fa-solid fa-circle-check"></i>Agregar vacuna
+                <i class="fa-solid fa-syringe"></i> Agregar Vacuna
             </h1>
-            <div class="modal__contenido">
-                <input type="text" id="codigoSMS" class="input" placeholder="- - - - - -" maxlength="6"
-                    oninput="formatoNumerico(this)" name="codigoRegistro">
+            <div class="modal__contenido modal__contenido--agregarVacuna">
+                <label class="label">Vacuna aplicada <span class="asterisk">*</span></label>
+                <input name="vacunaAplicada" type="text" class="input">
+                <label class="label">Fabricante <span class="asterisk">*</span></label>
+                <input name="fabricante" type="text" class="input">
+                <label class="label">No. de lote <span class="asterisk">*</span></label>
+                <input name="numeroLote" type="text" class="input">
+                <label class="label">No. de serie <span class="asterisk">*</span></label>
+                <input name="numeroSerie" type="text" class="input">
+                <label class="label">Fecha de aplicación</label>
+                <input name="fechaAplicacion" type="date" class="input" id="fechaAplicacion">
+                <label class="label">Dosis administrada <span class="asterisk">*</span></label>
+                <select name="dosisAdministrada" class="input" id="dosisAdministrada">
+                    <option selected disabled>Selecciona</option>
+                    <option value="Única">Única</option>
+                    <option value="1ª dosis">1ª dosis</option>
+                    <option value="2ª dosis">2ª dosis</option>
+                    <option value="3ª dosis">3ª dosis</option>
+                    <option value="4ª dosis">4ª dosis</option>
+                    <option value="5ª dosis">5ª dosis</option>
+                    <option value="Refuerzo">Refuerzo</option>
+                </select>
+                <label class="label">Lugar de administración <span class="asterisk">*</span></label>
+                <input name="lugarAdministacion" type="text" class="input">
+                <label class="label">Siguiente dosis <span class="asterisk asterisk-siguienteDosis">*</span></label>
+                <input name="siguienteDosis" type="date" class="input" id="siguienteDosis" disabled>
             </div>
             <div class="modal__botones">
-                <button id="verificar__verificarTelefono" class="boton-datos">Verificar</button>
-                <button id="cerrar__verificarTelefono" class="boton-datos boton-cancelar">Cancelar</button>
+                <button type="submit" class="boton-datos" id="agregarVacuna">
+                    <i class="fa-solid fa-plus"></i> Agregar
+                </button>
+                <button type="button" class="boton-datos boton-cancelar" id="cerrar__agregarVacuna">
+                    <i class="fa-solid fa-x"></i> Cancelar
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div id="fondo__agregarConsulta" class="fondo__modal">
+        <form id="modal__agregarConsulta" class="modal">
+            <h1 class="modal__titulo">
+                <i class="fa-solid fa-notes-medical"></i> Agregar Consulta
+            </h1>
+            <div class="modal__contenido modal__contenido--agregarConsulta">
+                <div class="consultas__textArea">
+                    <label class="label">Observaciones <span class="asterisk">*</span></label>
+                    <textarea name="observaciones" class="input"></textarea>
+                    <label class="label">Pronostico <span class="asterisk">*</span></label>
+                    <textarea name="pronostico" class="input"></textarea>
+                    <label class="label">Plan Terapeutico <span class="asterisk">*</span></label>
+                    <textarea name="planTerapeutico" class="input"></textarea>
+                </div>
+
+                <div class="modal__contenido--medicamentos">
+                    <div class="modal__subtitulo">
+                        <h2>Medicamentos</h2>
+                        <div class="seccion__titulo--boton">
+                            <button type="button" class="boton-datos" id="agregarMedicamento">
+                                <i class="fa-solid fa-plus"></i> Añadir
+                            </button>
+                        </div>
+                    </div>
+                    <div id="medicamentosContainer"></div>
+                </div>
+            </div>
+            <div class="modal__botones">
+                <button type="submit" class="boton-datos" id="agregarConsulta">
+                    <i class="fa-solid fa-plus"></i> Agregar
+                </button>
+                <button type="button" class="boton-datos boton-cancelar" id="cerrar__agregarConsulta">
+                    <i class="fa-solid fa-x"></i> Cancelar
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div id="fondo__consulta" class="fondo__modal">
+        <div id="ventana__consulta" class="modal">
+            <h1 class="modal__titulo">
+                <i class="fa-solid fa-square-virus"></i>Consulta
+            </h1>
+            <div class="modal__contenido consulta__contenido">
+                <div class="consulta__datos" id="consulta__datos">
+                    <!-- Aquí se mostrarán las observaciones, pronóstico y plan terapéutico -->
+                </div>
+                <div id="consulta__medicamentos" class="consulta__dato">
+                    <h2>Medicamentos</h2>
+                    <div class="consulta__medicamentos">
+                        <table>
+                            <!-- Aquí se mostrarán los medicamentos -->
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal__botones">
+                <button id="cerrar__consulta" class="boton-datos">Cerrar</button>
             </div>
         </div>
     </div>
+
+    <div id="fondo__agregarEstudio" class="fondo__modal">
+        <form id="modal__agregarEstudio" class="modal">
+            <h1 class="modal__titulo">
+                <i class="fa-solid fa-notes-medical"></i> Agregar Estudio
+            </h1>
+            <div class="modal__contenido modal__contenido--agregarEstudio">
+                <div class="consultas__textArea">
+                    <label class="label">Tipo de estudio <span class="asterisk">*</span></label>
+                    <input name="tipoEstudio" class="input" type="text">
+                    <label class="label">Motivo del estudio <span class="asterisk">*</span></label>
+                    <textarea name="motivoEstudio" class="input"></textarea>
+                    <label class="label">Descripción <span class="asterisk">*</span></label>
+                    <textarea name="descripcion" class="input"></textarea>
+                    <label class="label">Resultados</label>
+                    <textarea name="resultados" class="input"></textarea>
+                    <!-- <label class="label">Archivos adjuntos</label>
+			        <input class="inputFile" name="archivosAdjuntos" id="archivosAdjuntos" type="file"> -->
+                    <label class="label">Fecha del estudio</label>
+                    <input name="fechaEstudio" type="date" class="input" id="fechaEstudio">
+
+                </div>
+            </div>
+            <div class="modal__botones">
+                <button type="submit" class="boton-datos" id="agregarEstudio">
+                    <i class="fa-solid fa-plus"></i> Agregar
+                </button>
+                <button type="button" class="boton-datos boton-cancelar" id="cerrar__agregarEstudio">
+                    <i class="fa-solid fa-x"></i> Cancelar
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div id="fondo__estudio" class="fondo__modal">
+        <div id="ventana__estudio" class="modal">
+            <h1 class="modal__titulo">
+                <i class="fa-solid fa-square-virus"></i> Estudio
+            </h1>
+            <div class="modal__contenido estudio__contenido">
+                <div class="estudio__datos" id="estudio__datos">
+                    <!-- Aquí se mostrarán los detalles del estudio -->
+                </div>
+            </div>
+            <div class="modal__botones">
+                <button id="cerrar__estudio" class="boton-datos">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="fondo__editarHistorial" class="fondo__modal">
+        <form id="modal__editarHistorial" class="modal">
+            <h1 class="modal__titulo">
+                <i class="fa-solid fa-file-medical"></i> Historial Médico
+            </h1>
+            <div class="modal__contenido modal__contenido--historial">
+                <h2>Personales Patológicos</h2>
+                <div class="contenido__historial contenido__personalesPatologicos">
+                    <span>Alergias:</span>
+                    <input name="alergias" type="text" class="input" value="<%= historial.pp ? historial.pp.alergias : '' %>">
+                    <span>Tabaco:</span>
+                    <input name="tabaco" type="text" class="input" value="<%= historial.pp ? historial.pp.tabaco : '' %>">
+                    <span>Alcohol:</span>
+                    <input name="alcohol" type="text" class="input" value="<%= historial.pp ? historial.pp.alcohol : '' %>">
+                    <span>Drogas:</span>
+                    <input name="drogas" type="text" class="input" value="<%= historial.pp ? historial.pp.drogas : '' %>">
+                    <span>Padecimientos:</span>
+                    <input name="padecimientos" type="text" class="input" value="<%= historial.pp ? historial.pp.padecimientos : '' %>">
+                    <span>Medicamentos:</span>
+                    <input name="medicamentos" type="text" class="input" value="<%= historial.pp ? historial.pp.medicamentos : '' %>">
+                    <span>Quirúrgicos:</span>
+                    <input name="quirurgicos" type="text" class="input" value="<%= historial.pp ? historial.pp.quirurgicos : '' %>">
+                    <span>Traumatológicos:</span>
+                    <input name="traumatologicos" type="text" class="input" value="<%= historial.pp ? historial.pp.traumatologicos : '' %>">
+                    <span>Transfusionales:</span>
+                    <input name="transfusionales" type="text" class="input" value="<%= historial.pp ? historial.pp.transfusionales : '' %>">
+                    <span>Intolerancia a Medicamentos:</span>
+                    <input name="intoleranciaMedicamentos" type="text" class="input" value="<%= historial.pp ? historial.pp.intoleranciaMedicamentos : '' %>">
+                    <span>Otros:</span>
+                    <input name="perPatOtros" type="text" class="input" value="<%= historial.pp ? historial.pp.otros : '' %>">
+                </div>
+                <h2>Personales No Patológicos</h2>
+                <div class="contenido__historial contenido__personalesNoPatologicos">
+                    <span>Ejercicio:</span>
+                    <input name="ejercicio" type="text" class="input" value="<%= historial.pnp ? historial.pnp.ejercicio : '' %>">
+                    <span>Suplementos:</span>
+                    <input name="suplementos" type="text" class="input" value="<%= historial.pnp ? historial.pnp.suplementos : '' %>">
+                    <span>Viajes Recientes:</span>
+                    <input name="viajesRecientes" type="text" class="input" value="<%= historial.pnp ? historial.pnp.viajesRecientes : '' %>">
+                    <span>Tatuajes:</span>
+                    <input name="tatuajes" type="text" class="input" value="<%= historial.pnp ? historial.pnp.tatuajes : '' %>">
+                    <span>Perforaciones:</span>
+                    <input name="perforaciones" type="text" class="input" value="<%= historial.pnp ? historial.pnp.perforaciones : '' %>">
+                    <span>Otros:</span>
+                    <input name="perNoPatOtros" type="text" class="input" value="<%= historial.pnp ? historial.pnp.otros : '' %>">
+                </div>
+                <h2>Antecedentes Heredofamiliares</h2>
+                <div class="contenido__historial contenido__antecedentesHeredofamiliares">
+                    <span></span>
+                    <span class="familiares">Abuelos</span>
+                    <span class="familiares">Padre</span>
+                    <span class="familiares">Madre</span>
+                    <span class="familiares">Hermanos</span>
+        
+                    <span>Diabetes:</span>
+                    <input name="diabetesAbuelos" type="text" class="input" value="<%= historial.ah ? historial.ah.diabetesAbuelos : '' %>">
+                    <input name="diabetesPadre" type="text" class="input" value="<%= historial.ah ? historial.ah.diabetesPadre : '' %>">
+                    <input name="diabetesMadre" type="text" class="input" value="<%= historial.ah ? historial.ah.diabetesMadre : '' %>">
+                    <input name="diabetesHermanos" type="text" class="input" value="<%= historial.ah ? historial.ah.diabetesHermanos : '' %>">
+                    <span>Nefropatías:</span>
+                    <input name="nefropatiasAbuelos" type="text" class="input" value="<%= historial.ah ? historial.ah.nefropatiasAbuelos : '' %>">
+                    <input name="nefropatiasPadre" type="text" class="input" value="<%= historial.ah ? historial.ah.nefropatiasPadre : '' %>">
+                    <input name="nefropatiasMadre" type="text" class="input" value="<%= historial.ah ? historial.ah.nefropatiasMadre : '' %>">
+                    <input name="nefropatiasHermanos" type="text" class="input" value="<%= historial.ah ? historial.ah.nefropatiasHermanos : '' %>">
+                    <span>Enfermedades Mentales:</span>
+                    <input name="mentalesAbuelos" type="text" class="input" value="<%= historial.ah ? historial.ah.mentalesAbuelos : '' %>">
+                    <input name="mentalesPadre" type="text" class="input" value="<%= historial.ah ? historial.ah.mentalesPadre : '' %>">
+                    <input name="mentalesMadre" type="text" class="input" value="<%= historial.ah ? historial.ah.mentalesMadre : '' %>">
+                    <input name="mentalesHermanos" type="text" class="input" value="<%= historial.ah ? historial.ah.mentalesHermanos : '' %>">
+                    <span>Hipertensión Arterial:</span>
+                    <input name="hipertensionAbuelos" type="text" class="input" value="<%= historial.ah ? historial.ah.hipertensionAbuelos : '' %>">
+                    <input name="hipertensionPadre" type="text" class="input" value="<%= historial.ah ? historial.ah.hipertensionPadre : '' %>">
+                    <input name="hipertensionMadre" type="text" class="input" value="<%= historial.ah ? historial.ah.hipertensionMadre : '' %>">
+                    <input name="hipertensionHermanos" type="text" class="input" value="<%= historial.ah ? historial.ah.hipertensionHermanos : '' %>">
+                    <span>Oncológicos:</span>
+                    <input name="oncologicosAbuelos" type="text" class="input" value="<%= historial.ah ? historial.ah.oncologicosAbuelos : '' %>">
+                    <input name="oncologicosPadre" type="text" class="input" value="<%= historial.ah ? historial.ah.oncologicosPadre : '' %>">
+                    <input name="oncologicosMadre" type="text" class="input" value="<%= historial.ah ? historial.ah.oncologicosMadre : '' %>">
+                    <input name="oncologicosHermanos" type="text" class="input" value="<%= historial.ah ? historial.ah.oncologicosHermanos : '' %>">
+                    <span>Hepatopatías:</span>
+                    <input name="hepatopatiasAbuelos" type="text" class="input" value="<%= historial.ah ? historial.ah.hepatopatiasAbuelos : '' %>">
+                    <input name="hepatopatiasPadre" type="text" class="input" value="<%= historial.ah ? historial.ah.hepatopatiasPadre : '' %>">
+                    <input name="hepatopatiasMadre" type="text" class="input" value="<%= historial.ah ? historial.ah.hepatopatiasMadre : '' %>">
+                    <input name="hepatopatiasHermanos" type="text" class="input" value="<%= historial.ah ? historial.ah.hepatopatiasHermanos : '' %>">
+                    <span>Otros:</span>
+                    <input name="heredoOtrosAbuelos" type="text" class="input" value="<%= historial.ah ? historial.ah.heredoOtrosAbuelos : '' %>">
+                    <input name="heredoOtrosPadre" type="text" class="input" value="<%= historial.ah ? historial.ah.heredoOtrosPadre : '' %>">
+                    <input name="heredoOtrosMadre" type="text" class="input" value="<%= historial.ah ? historial.ah.heredoOtrosMadre : '' %>">
+                    <input name="heredoOtrosHermanos" type="text" class="input" value="<%= historial.ah ? historial.ah.heredoOtrosHermanos : '' %>">
+                </div>
+            </div>
+            <div class="modal__botones">
+                <button type="submit" class="boton-datos" id="guardarHistorial">
+                    <i class="fa-solid fa-floppy-disk"></i> Guardar
+                </button>
+                <button type="button" class="boton-datos boton-cancelar" id="cerrar__editarHistorial">
+                    <i class="fa-solid fa-x"></i> Cancelar
+                </button>
+            </div>
+        </form>        
+    </div>
+
+    <%- include('../includes/loader') %>
 </body>
 
 </html>

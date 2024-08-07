@@ -1,9 +1,25 @@
-const { ejecutarConsulta } = require('../config/database');
-const { obtenerFechaFormateada } = require('../utils/utils');
+const { ejecutarConsulta } = require("../config/database");
+const { obtenerFechaFormateada } = require("../utils/utils");
 
-async function registrarUsuario(idUsuario, nombre_comp, nombre, apellido_paterno, apellido_materno, correo, contrasenia) {
+async function registrarUsuario(
+  idUsuario,
+  nombre_comp,
+  nombre,
+  apellido_paterno,
+  apellido_materno,
+  correo,
+  contrasenia
+) {
   const query = `INSERT INTO datos_usuario (usuario_id, nombre_comp, nombre, apellido_paterno, apellido_materno, curp, nacimiento, estatura, peso, sexo, sangre, telefono, nacionalidad, imagen, correo, contrasenia) VALUES (?, ?, ?, ?, ?, '', '0000-00-00', '0', '0', '', '', '', '', 'usuario.png', ?, ?)`;
-  await ejecutarConsulta(query, [idUsuario, nombre_comp, nombre, apellido_paterno, apellido_materno, correo, contrasenia]);
+  await ejecutarConsulta(query, [
+    idUsuario,
+    nombre_comp,
+    nombre,
+    apellido_paterno,
+    apellido_materno,
+    correo,
+    contrasenia,
+  ]);
 }
 
 async function consultarUsuario(idUsuario) {
@@ -23,13 +39,13 @@ async function consultarUsuario(idUsuario) {
     sangre: row.sangre,
     telefono: row.telefono,
     nacionalidad: row.nacionalidad,
-    imagen: row.imagen ? row.imagen : "usuario.png"
+    imagen: row.imagen ? row.imagen : "usuario.png",
   };
 }
 
 async function consultarUsuarioPorCorreo(correo) {
   const query = `SELECT * FROM datos_usuario WHERE correo = ?`;
-  return ejecutarConsulta(query, [correo]);
+  return await ejecutarConsulta(query, [correo]);
 }
 
 async function consultarUsuarioPorCurp(curp) {
@@ -88,7 +104,7 @@ async function actualizarUsuario(
     nacionalidad,
     sangre,
     imagen,
-    idUsuario
+    idUsuario,
   ]);
 }
 
@@ -97,5 +113,5 @@ module.exports = {
   consultarUsuario,
   consultarUsuarioPorCorreo,
   consultarUsuarioPorCurp,
-  actualizarUsuario
+  actualizarUsuario,
 };

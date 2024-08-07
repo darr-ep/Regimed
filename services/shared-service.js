@@ -1,4 +1,4 @@
-const { ejecutarConsulta } = require('../config/database');
+const { ejecutarConsulta } = require("../config/database");
 
 async function registrarCodigo(idUsuario, codigo) {
   const query = `INSERT INTO codigos_temporales (usuario_id, codigo, hora_registro) VALUES (?, ?, NOW())`;
@@ -7,12 +7,12 @@ async function registrarCodigo(idUsuario, codigo) {
 
 async function consultarCodigo(idUsuario) {
   const query = `SELECT * FROM codigos_temporales WHERE usuario_id = ?`;
-  return ejecutarConsulta(query, [idUsuario]);
+  return await ejecutarConsulta(query, [idUsuario]);
 }
 
 async function consultarCodigoExistente(codigo) {
   const query = `SELECT * FROM codigos_temporales WHERE codigo = ?`;
-  return ejecutarConsulta(query, [codigo]);
+  return await ejecutarConsulta(query, [codigo]);
 }
 
 async function eliminarCodigo(idUsuario) {
@@ -32,12 +32,17 @@ async function consultarCompartidos(idUsuario) {
       INNER JOIN datos_usuario
       ON registros_compartidos.usuarioCompartido_id = datos_usuario.usuario_id
       WHERE registros_compartidos.usuario_id = ?`;
-  return ejecutarConsulta(query, [idUsuario]);
+  return await ejecutarConsulta(query, [idUsuario]);
 }
 
 async function consultarCompartidoExistente(idUsuario, idUsuarioCompartido) {
   const query = `SELECT * FROM registros_compartidos WHERE usuario_id = ? AND usuarioCompartido_id = ? OR usuario_id = ? AND usuarioCompartido_id = ?`;
-  return ejecutarConsulta(query, [idUsuario, idUsuarioCompartido, idUsuarioCompartido, idUsuario]);
+  return await ejecutarConsulta(query, [
+    idUsuario,
+    idUsuarioCompartido,
+    idUsuarioCompartido,
+    idUsuario,
+  ]);
 }
 
 async function consultarVerificado(telefono) {
@@ -62,7 +67,6 @@ async function eliminarVerificacion(idUsuario) {
   await ejecutarConsulta(query, [idUsuario]);
 }
 
-
 module.exports = {
   registrarCodigo,
   registrarCompartido,
@@ -73,5 +77,5 @@ module.exports = {
   consultarCompartidoExistente,
   consultarVerificado,
   eliminarCodigo,
-  eliminarVerificacion
+  eliminarVerificacion,
 };

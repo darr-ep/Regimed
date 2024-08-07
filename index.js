@@ -496,10 +496,13 @@ app.get("/perfil", async (req, res) => {
       return res.redirect("/");
     }
 
-    const [datosUsuario, registrosCompartidos, vacunas] = await Promise.all([
+    const [datosUsuario, registrosCompartidos, vacunas, consultas, estudios, historial] = await Promise.all([
       userService.consultarUsuario(req.session.idUsuario),
       sharedService.consultarCompartidos(req.session.idUsuario),
       patientService.consultarVacunas(req.session.idUsuario),
+      patientService.consultarConsultas(req.session.idUsuario),
+      patientService.consultarEstudios(req.session.idUsuario),
+      patientService.consultarHistorial(req.session.idUsuario),
     ]);
 
     const telefonoVerificado = await sharedService.consultarVerificado(
@@ -521,6 +524,9 @@ app.get("/perfil", async (req, res) => {
       sesion: req.session.idUsuario,
       telefonoVerificado: telefonoVerificado,
       vacunas: vacunas,
+      consultas: consultas,
+      estudios: estudios,
+      historial: historial[0],
       captcha_web: process.env.CAPTCHA_WEB,
     });
   } catch (error) {
@@ -539,13 +545,25 @@ app.use(
 );
 
 app.get("/paciente/:curp", async (req, res) => {
+  req.session.idDoctor =
+    "b365e8a39dd0154308f23235cd4bc3f14d98fa05c07ebfadd7c3e5d61045a3ee";
+  req.session.curpPaciente = "PEAE031008HHGDLDA2";
   if (!req.session.idDoctor || req.session.curpPaciente !== req.params.curp) {
     return res.redirect("/");
   }
   try {
+    const datosUsuario = await userService.consultarUsuarioPorCurp(
+      req.params.curp
+    );
 
-    const datosUsuario = await userService.consultarUsuarioPorCurp(req.params.curp);
-    const vacunas = await patientService.consultarVacunas(datosUsuario.usuario_id);
+    const [vacunas, consultas, estudios, historial] = await Promise.all([
+      patientService.consultarVacunas(datosUsuario.usuario_id),
+      patientService.consultarConsultas(datosUsuario.usuario_id),
+      patientService.consultarEstudios(datosUsuario.usuario_id),
+      patientService.consultarHistorial(datosUsuario.usuario_id),
+    ]);
+
+    req.session.idPaciente = datosUsuario.usuario_id;
 
     res.render("paciente/paciente", {
       nombre_comp: datosUsuario.nombre_comp,
@@ -558,8 +576,10 @@ app.get("/paciente/:curp", async (req, res) => {
       sexo: datosUsuario.sexo,
       nacionalidad: datosUsuario.nacionalidad,
       sangre: datosUsuario.sangre,
-      doctor: req.session.idDoctor,
       vacunas: vacunas,
+      consultas: consultas,
+      estudios: estudios,
+      historial: historial[0]
     });
   } catch (error) {
     console.error("Error al obtener datos:", error);
@@ -573,9 +593,11 @@ app.get("/usuario/:usuario_id", async (req, res) => {
       req.session.correo = "";
     }
 
-    const [datosUsuario, vacunas] = await Promise.all([
+    const [datosUsuario, vacunas, consultas, estudios] = await Promise.all([
       userService.consultarUsuario(req.params.usuario_id),
       patientService.consultarVacunas(req.params.usuario_id),
+      patientService.consultarConsultas(req.params.usuario_id),
+      patientService.consultarEstudios(req.params.usuario_id),
     ]);
 
     res.render("visor/visor", {
@@ -591,6 +613,8 @@ app.get("/usuario/:usuario_id", async (req, res) => {
       nacionalidad: datosUsuario.nacionalidad,
       sangre: datosUsuario.sangre,
       vacunas: vacunas,
+      consultas: consultas,
+      estudios: estudios
     });
   } catch (error) {
     console.error("Error al obtener datos del usuario:", error);
@@ -676,32 +700,34 @@ app.get("/verificar_correo", (req, res) => {
       console.log("Token inválido");
       res.send("Token inválido");
     } else {
-      // const usuario = await consultarUsuario(decoded.correo);
-
-      // if (usuario.length === 0) {
-      const nombre_comp =
-        decoded.nombre +
-        " " +
-        decoded.apellido_paterno +
-        " " +
-        decoded.apellido_materno;
-
-      await userService.registrarUsuario(
-        decoded.usuario_id,
-        nombre_comp,
-        decoded.nombre,
-        decoded.apellido_paterno,
-        decoded.apellido_materno,
-        decoded.correo,
-        decoded.contrasenia
+      const usuario = await userService.consultarUsuarioPorCorreo(
+        decoded.correo
       );
 
-      req.session.idUsuario = decoded.usuario_id;
-      res.redirect("/perfil");
-      // } else {
-      //   req.session.idUsuario = usuario[0].usuario_id;
-      //   res.redirect("/perfil");
-      // }
+      if (usuario.length === 0) {
+        const nombre_comp =
+          decoded.nombre +
+          " " +
+          decoded.apellido_paterno +
+          " " +
+          decoded.apellido_materno;
+
+        await userService.registrarUsuario(
+          decoded.usuario_id,
+          nombre_comp,
+          decoded.nombre,
+          decoded.apellido_paterno,
+          decoded.apellido_materno,
+          decoded.correo,
+          decoded.contrasenia
+        );
+
+        req.session.idUsuario = decoded.usuario_id;
+        res.redirect("/perfil");
+      } else {
+        req.session.idUsuario = usuario[0].usuario_id;
+        res.redirect("/perfil");
+      }
     }
   });
 });
@@ -868,7 +894,14 @@ app.get("/tarjeta", async (req, res) => {
 
     await agregarImagen(
       page,
-      path.join(__dirname, "src", "public", "images", "users", datosUsuario.imagen),
+      path.join(
+        __dirname,
+        "src",
+        "public",
+        "images",
+        "users",
+        datosUsuario.imagen
+      ),
       0,
       pdfDoc
     );
@@ -887,7 +920,13 @@ app.get("/tarjeta", async (req, res) => {
     agregarTexto(page, datosUsuario.sangre, 7, hel, 40, 22);
 
     const modifiedPdfBytes = await pdfDoc.save();
-    const outputFilePath = path.join(__dirname, "src", "public", "temp", "tarjeta.pdf");
+    const outputFilePath = path.join(
+      __dirname,
+      "src",
+      "public",
+      "temp",
+      "tarjeta.pdf"
+    );
     fs.writeFileSync(outputFilePath, modifiedPdfBytes);
 
     res.contentType("application/pdf");
@@ -941,7 +980,13 @@ async function agregarImagen(page, imagePath, x, pdfDoc) {
     const size = page.getWidth() / 2;
     const y = page.getHeight() - size;
 
-    const recortadaImagePath = path.join(__dirname, "src", "public", "temp", "recortada.png");
+    const recortadaImagePath = path.join(
+      __dirname,
+      "src",
+      "public",
+      "temp",
+      "recortada.png"
+    );
 
     await recortarImagen(imagePath, recortadaImagePath, size);
 
@@ -1294,7 +1339,9 @@ const storage = multer.diskStorage({
     // Obtener la extensión del archivo original
     const extension = file.originalname.split(".").pop();
     // Generar un nuevo nombre para el archivo que incluya la extensión
-    const nuevoNombre = `${req.session.idUsuario.slice(-5)}_${Date.now()}.${extension}`;
+    const nuevoNombre = `${req.session.idUsuario.slice(
+      -5
+    )}_${Date.now()}.${extension}`;
     cb(null, nuevoNombre);
   },
 });
@@ -1317,13 +1364,16 @@ app.post("/datosUsuario", upload.single("imagen"), async (req, res) => {
   const imagenGuardada = datos.imagenGuardada;
 
   if (imagenGuardada !== imagen && imagenGuardada !== "usuario.png") {
-    fs.unlink(path.join(__dirname, 'src', 'public', 'images', 'users', imagenGuardada), (err) => {
-      if (err) {
-        console.error("Error al eliminar el archivo:", err);
-      } else {
-        console.log("Archivo eliminado exitosamente");
+    fs.unlink(
+      path.join(__dirname, "src", "public", "images", "users", imagenGuardada),
+      (err) => {
+        if (err) {
+          console.error("Error al eliminar el archivo:", err);
+        } else {
+          console.log("Archivo eliminado exitosamente");
+        }
       }
-    });
+    );
   }
 
   if (telefono !== req.session.telefono) {
@@ -1449,7 +1499,10 @@ app.post("/verificarCodigoTelefono/:inputCodigo", async (req, res) => {
     if (verificationCheck.status === "approved") {
       console.log("Valido");
       res.json({ codigo: "Valido" });
-      await sharedService.registrarVerificacion(req.session.idUsuario, telefono);
+      await sharedService.registrarVerificacion(
+        req.session.idUsuario,
+        telefono
+      );
     } else {
       console.log("Invalido");
       res.json({ codigo: "Erroneo" });
@@ -1512,365 +1565,189 @@ app.post("/verificarRegistro/:codigo/:captcha", async (req, res) => {
   }
 });
 
-app.post("/guardarDatosPaciente", (req, res) => {
-  const telefono = req.body.telefono;
-  const vacunasPreestablecidas = req.body.vacunasPreestablecidas;
-  const otrasVacunas = req.body.otrasVacunas;
-  const historialMedico = req.body.historialMedico;
+app.post("/agregarVacuna", async (req, res) => {
+  const datos = req.body;
 
-  const telefonoFormateado =
-    telefono.substring(0, 3) +
-    " " + // Los primeros dos caracteres
-    telefono.substring(3, 6) +
-    " " + // Del tercero al quinto (incluyendo el tercero)
-    telefono.substring(6, 9) +
-    " " + // Del sexto al séptimo (incluyendo el sexto)
-    telefono.substring(9); // Del octavo al undécimo (incluyendo el undécimo)
-  // telefono.substring(11); // El resto del número
+  const vacunaAplicada = datos.vacunaAplicada || "";
+  const fabricante = datos.fabricante || "";
+  const numeroLote = datos.numeroLote || "";
+  const numeroSerie = datos.numeroSerie || "";
+  const fechaAplicacion = datos.fechaAplicacion || "";
+  const dosisAdministrada = datos.dosisAdministrada || "";
+  const lugarAdministracion = datos.lugarAdministacion || "";
 
-  console.log(historialMedico.hospitalizacion_lesiones);
-  console.log(historialMedico.hospitalizacion_lesiones ? 1 : 0);
+  try {
+    await patientService.registrarVacuna(
+      req.session.idPaciente,
+      req.session.idDoctor,
+      vacunaAplicada,
+      fabricante,
+      numeroLote,
+      numeroSerie,
+      fechaAplicacion,
+      dosisAdministrada,
+      lugarAdministracion
+    );
+    res.status(200).json({ mensaje: "Vacuna agregada correctamente" });
+  } catch (error) {
+    console.error("Error al agregar la vacuna:", error);
+    res.status(500).json({ mensaje: "Error al agregar la vacuna" });
+  }
+});
 
-  const usuario = `SELECT * FROM datos_personales WHERE telefono = '${telefonoFormateado}'`;
+app.post("/agregarConsulta", async (req, res) => {
+  console.log(req.body);
 
-  conexion.query(usuario, (err, rowUsuario) => {
-    if (err) {
-      throw err;
-    } else {
-      console.log(vacunasPreestablecidas.BCG);
-      const sqlVacunasPreestablecidas = `
-    INSERT INTO vacunas_preestablecidas
-    (usuario_id, fecha_bcg, fecha_hepatitisb1, fecha_hepatitisb2, fecha_hepatitisb3, fecha_prevalente1, fecha_prevalente2, fecha_prevalente3, fecha_prevalente4, fecha_dpt, fecha_rotavirus1, fecha_rotavirus2, fecha_rotavirus3, fecha_neumococica1, fecha_neumococica2, fecha_neumococica3, fecha_influenza1, fecha_influenza2, fecha_influenza3, fecha_srp1, fecha_srp2, fecha_sabin1, fecha_sabin2, fecha_sabin3, fecha_sabin4, fecha_sabin5, fecha_sabin6, fecha_sabin7, fecha_sabin8, fecha_sr)
-    VALUES
-    (
-      '${rowUsuario[0].usuario_id}',
-      '${vacunasPreestablecidas.BCG || "0000-00-00"}',
-      '${vacunasPreestablecidas.Hepatitis_B_Primera || "0000-00-00"}',
-      '${vacunasPreestablecidas.Hepatitis_B_Segunda || "0000-00-00"}',
-      '${vacunasPreestablecidas.Hepatitis_B_Tercera || "0000-00-00"}',
-      '${vacunasPreestablecidas.Pentavalente_Primera || "0000-00-00"}',
-      '${vacunasPreestablecidas.Pentavalente_Segunda || "0000-00-00"}',
-      '${vacunasPreestablecidas.Pentavalente_Tercera || "0000-00-00"}',
-      '${vacunasPreestablecidas.Pentavalente_Cuarta || "0000-00-00"}',
-      '${vacunasPreestablecidas.DPT || "0000-00-00"}',
-      '${vacunasPreestablecidas.Rotavirus_Primera || "0000-00-00"}',
-      '${vacunasPreestablecidas.Rotavirus_Segunda || "0000-00-00"}',
-      '${vacunasPreestablecidas.Rotavirus_Tercera || "0000-00-00"}',
-      '${vacunasPreestablecidas.Neumococica_Primera || "0000-00-00"}',
-      '${vacunasPreestablecidas.Neumococica_Segunda || "0000-00-00"}',
-      '${vacunasPreestablecidas.Neumococica_Refuerzo || "0000-00-00"}',
-      '${vacunasPreestablecidas.Influenza_Primera || "0000-00-00"}',
-      '${vacunasPreestablecidas.Influenza_Segunda || "0000-00-00"}',
-      '${vacunasPreestablecidas.Influenza_Revacunación || "0000-00-00"}',
-      '${vacunasPreestablecidas.SRP_Primera || "0000-00-00"}',
-      '${vacunasPreestablecidas.SRP_Refuerzo || "0000-00-00"}',
-      '${vacunasPreestablecidas.Sabin_1 || "0000-00-00"}',
-      '${vacunasPreestablecidas.Sabin_2 || "0000-00-00"}',
-      '${vacunasPreestablecidas.Sabin_3 || "0000-00-00"}',
-      '${vacunasPreestablecidas.Sabin_4 || "0000-00-00"}',
-      '${vacunasPreestablecidas.Sabin_5 || "0000-00-00"}',
-      '${vacunasPreestablecidas.Sabin_6 || "0000-00-00"}',
-      '${vacunasPreestablecidas.Sabin_7 || "0000-00-00"}',
-      '${vacunasPreestablecidas.Sabin_8 || "0000-00-00"}',
-      '${vacunasPreestablecidas.SR || "0000-00-00"}'
-    )
-    ON DUPLICATE KEY UPDATE
-    fecha_bcg = '${vacunasPreestablecidas.BCG || "0000-00-00"}',
-fecha_hepatitisb1 = '${
-        vacunasPreestablecidas.Hepatitis_B_Primera || "0000-00-00"
-      }',
-fecha_hepatitisb2 = '${
-        vacunasPreestablecidas.Hepatitis_B_Segunda || "0000-00-00"
-      }',
-fecha_hepatitisb3 = '${
-        vacunasPreestablecidas.Hepatitis_B_Tercera || "0000-00-00"
-      }',
-fecha_prevalente1 = '${
-        vacunasPreestablecidas.Pentavalente_Primera || "0000-00-00"
-      }',
-fecha_prevalente2 = '${
-        vacunasPreestablecidas.Pentavalente_Segunda || "0000-00-00"
-      }',
-fecha_prevalente3 = '${
-        vacunasPreestablecidas.Pentavalente_Tercera || "0000-00-00"
-      }',
-fecha_prevalente4 = '${
-        vacunasPreestablecidas.Pentavalente_Cuarta || "0000-00-00"
-      }',
-fecha_dpt = '${vacunasPreestablecidas.DPT || "0000-00-00"}',
-fecha_rotavirus1 = '${
-        vacunasPreestablecidas.Rotavirus_Primera || "0000-00-00"
-      }',
-fecha_rotavirus2 = '${
-        vacunasPreestablecidas.Rotavirus_Segunda || "0000-00-00"
-      }',
-fecha_rotavirus3 = '${
-        vacunasPreestablecidas.Rotavirus_Tercera || "0000-00-00"
-      }',
-fecha_neumococica1 = '${
-        vacunasPreestablecidas.Neumococica_Primera || "0000-00-00"
-      }',
-fecha_neumococica2 = '${
-        vacunasPreestablecidas.Neumococica_Segunda || "0000-00-00"
-      }',
-fecha_neumococica3 = '${
-        vacunasPreestablecidas.Neumococica_Refuerzo || "0000-00-00"
-      }',
-fecha_influenza1 = '${
-        vacunasPreestablecidas.Influenza_Primera || "0000-00-00"
-      }',
-fecha_influenza2 = '${
-        vacunasPreestablecidas.Influenza_Segunda || "0000-00-00"
-      }',
-fecha_influenza3 = '${
-        vacunasPreestablecidas.Influenza_Revacunación || "0000-00-00"
-      }',
-fecha_srp1 = '${vacunasPreestablecidas.SRP_Primera || "0000-00-00"}',
-fecha_srp2 = '${vacunasPreestablecidas.SRP_Refuerzo || "0000-00-00"}',
-fecha_sabin1 = '${vacunasPreestablecidas.Sabin_1 || "0000-00-00"}',
-fecha_sabin2 = '${vacunasPreestablecidas.Sabin_2 || "0000-00-00"}',
-fecha_sabin3 = '${vacunasPreestablecidas.Sabin_3 || "0000-00-00"}',
-fecha_sabin4 = '${vacunasPreestablecidas.Sabin_4 || "0000-00-00"}',
-fecha_sabin5 = '${vacunasPreestablecidas.Sabin_5 || "0000-00-00"}',
-fecha_sabin6 = '${vacunasPreestablecidas.Sabin_6 || "0000-00-00"}',
-fecha_sabin7 = '${vacunasPreestablecidas.Sabin_7 || "0000-00-00"}',
-fecha_sabin8 = '${vacunasPreestablecidas.Sabin_8 || "0000-00-00"}',
-fecha_sr = '${vacunasPreestablecidas.SR || "0000-00-00"}';
+  const { datosConsulta, medicamentos } = req.body;
 
-`;
-      conexion.query(sqlVacunasPreestablecidas);
+  try {
+    const idConsulta = await patientService.registrarConsulta(
+      req.session.idPaciente,
+      req.session.idDoctor,
+      datosConsulta.observaciones,
+      datosConsulta.pronostico,
+      datosConsulta.planTerapeutico
+    );
 
-      const sqlOtrasVacunas = `
-    INSERT INTO vacuna (usuario_id, nombre, enfermedad_preventiva, dosis, edad_frecuencia, fecha_vacunacion)
-    VALUES ('${rowUsuario[0].usuario_id}', '${otrasVacunas.Vacuna || ""}', '${
-        otrasVacunas.Enfermedad_Preventiva || ""
-      }', '${otrasVacunas.Dosis || ""}', '${
-        otrasVacunas.Edad_Frecuencia || ""
-      }', '${otrasVacunas.FechaVacunacion || "0000-00-00"}')
-    ON DUPLICATE KEY UPDATE
-    nombre = '${otrasVacunas.Vacuna || ""}',
-    enfermedad_preventiva = '${otrasVacunas.Enfermedad_Preventiva || ""}',
-    dosis = '${otrasVacunas.Dosis || ""}',
-    edad_frecuencia = '${otrasVacunas.Edad_Frecuencia || ""}',
-    fecha_vacunacion = '${otrasVacunas.FechaVacunacion || "0000-00-00"}';
-`;
-      conexion.query(sqlOtrasVacunas, (err, row) => {
-        if (err) {
-          throw err;
-        } else {
-          console.log(sqlOtrasVacunas);
-        }
-      });
-
-      const sqlHistorialMedico = `
-    INSERT INTO historial_medico (
-        usuario_id, 
-        hospitalizacion_lesiones, 
-        reacciones_alergicas, 
-        problemas_corazon, 
-        marcapasos_desfibrilador, 
-        antecedentes_endocarditis, 
-        implante_ortopedico, 
-        fiebre_reumatica, 
-        presion_arterial, 
-        accidente_cerebrovascular, 
-        problemas_sanguineos, 
-        Hemorragia_prolongada_debido_a_un_corte, 
-        Enfisema_falta_de_aliento_sarcoidosis, 
-        Tuberculosis_sarampion_varicela, 
-        Asma, 
-        Problemas_respiratorios_o_de_sueno, 
-        Problemas_renales, 
-        Enfermedad_hepatica, 
-        Ictericia, 
-        Problemas_de_tiroides_enfermedad_paratiroidea_o_deficiencia_de_c, 
-        Deficiencia_hormonal, 
-        Colesterol_alto_o_toma_de_estatinas, 
-        Diabetes, 
-        Ulceras_estomacales_o_duodenales, 
-        Trastornos_digestivos, 
-        Osteoporosis_osteopenia, 
-        Artritis, 
-        Enfermedad_autoinmunitaria, 
-        Glaucoma, 
-        Lentes_de_contacto, 
-        Lesiones_en_la_cabeza_o_en_el_cuello, 
-        Epilepsia_convulsiones, 
-        Trastornos_neurologicos, 
-        Infecciones_virales_y_herpes_labial, 
-        Cualquier_bulto_o_hinchazon_en_la_boca, 
-        Urticaria_erupcion_cutanea_fiebre_del_heno, 
-        ITS_ETS_VPH, 
-        Hepatitis, 
-        VIH_SIDA, 
-        Tumores, 
-        Terapia_de_radiacion, 
-        Quimioterapia_medicamentos_inmunosupresores, 
-        Dificultades_emocionales, 
-        Tratamiento_psiquiatrico, 
-        Medicamentos_antidepresivos, 
-        Uso_de_alcohol_drogas_recreativas
-    )
-    VALUES (
-        '${rowUsuario[0].usuario_id}', 
-        ${historialMedico.hospitalizacion_lesiones ? 1 : 0}, 
-        ${historialMedico.reacciones_alergicas ? 1 : 0}, 
-        ${historialMedico.problemas_corazon ? 1 : 0}, 
-        ${historialMedico.marcapasos_desfibrilador ? 1 : 0}, 
-        ${historialMedico.antecedentes_endocarditis ? 1 : 0}, 
-        ${historialMedico.implante_ortopedico ? 1 : 0}, 
-        ${historialMedico.fiebre_reumatica ? 1 : 0}, 
-        ${historialMedico.presion_arterial ? 1 : 0}, 
-        ${historialMedico.accidente_cerebrovascular ? 1 : 0}, 
-        ${historialMedico.problemas_sanguineos ? 1 : 0}, 
-        ${historialMedico.Hemorragia_prolongada_debido_a_un_corte ? 1 : 0}, 
-        ${historialMedico.Enfisema_falta_de_aliento_sarcoidosis ? 1 : 0}, 
-        ${historialMedico.Tuberculosis_sarampion_varicela ? 1 : 0}, 
-        ${historialMedico.Asma ? 1 : 0}, 
-        ${historialMedico.Problemas_respiratorios_o_de_sueno ? 1 : 0}, 
-        ${historialMedico.Problemas_renales ? 1 : 0}, 
-        ${historialMedico.Enfermedad_hepatica ? 1 : 0}, 
-        ${historialMedico.Ictericia ? 1 : 0}, 
-        ${
-          historialMedico.Problemas_de_tiroides_enfermedad_paratiroidea_o_deficiencia_de_c
-            ? 1
-            : 0
-        }, 
-        ${historialMedico.Deficiencia_hormonal ? 1 : 0}, 
-        ${historialMedico.Colesterol_alto_o_toma_de_estatinas ? 1 : 0}, 
-        ${historialMedico.Diabetes ? 1 : 0}, 
-        ${historialMedico.Ulceras_estomacales_o_duodenales ? 1 : 0}, 
-        ${historialMedico.Trastornos_digestivos ? 1 : 0}, 
-        ${historialMedico.Osteoporosis_osteopenia ? 1 : 0}, 
-        ${historialMedico.Artritis ? 1 : 0}, 
-        ${historialMedico.Enfermedad_autoinmunitaria ? 1 : 0}, 
-        ${historialMedico.Glaucoma ? 1 : 0}, 
-        ${historialMedico.Lentes_de_contacto ? 1 : 0}, 
-        ${historialMedico.Lesiones_en_la_cabeza_o_en_el_cuello ? 1 : 0}, 
-        ${historialMedico.Epilepsia_convulsiones ? 1 : 0}, 
-        ${historialMedico.Trastornos_neurologicos ? 1 : 0}, 
-        ${historialMedico.Infecciones_virales_y_herpes_labial ? 1 : 0}, 
-        ${historialMedico.Cualquier_bulto_o_hinchazon_en_la_boca ? 1 : 0}, 
-        ${historialMedico.Urticaria_erupcion_cutanea_fiebre_del_heno ? 1 : 0}, 
-        ${historialMedico.ITS_ETS_VPH ? 1 : 0}, 
-        ${historialMedico.Hepatitis ? 1 : 0}, 
-        ${historialMedico.VIH_SIDA ? 1 : 0}, 
-        ${historialMedico.Tumores ? 1 : 0}, 
-        ${historialMedico.Terapia_de_radiacion ? 1 : 0}, 
-        ${historialMedico.Quimioterapia_medicamentos_inmunosupresores ? 1 : 0}, 
-        ${historialMedico.Dificultades_emocionales ? 1 : 0}, 
-        ${historialMedico.Tratamiento_psiquiatrico ? 1 : 0}, 
-        ${historialMedico.Medicamentos_antidepresivos ? 1 : 0}, 
-        ${historialMedico.Uso_de_alcohol_drogas_recreativas ? 1 : 0}
-    )
-    ON DUPLICATE KEY UPDATE
-    hospitalizacion_lesiones = ${
-      historialMedico.hospitalizacion_lesiones ? 1 : 0
-    },
-    reacciones_alergicas = ${historialMedico.reacciones_alergicas ? 1 : 0},
-    problemas_corazon = ${historialMedico.problemas_corazon ? 1 : 0},
-    marcapasos_desfibrilador = ${
-      historialMedico.marcapasos_desfibrilador ? 1 : 0
-    },
-    antecedentes_endocarditis = ${
-      historialMedico.antecedentes_endocarditis ? 1 : 0
-    },
-    implante_ortopedico = ${historialMedico.implante_ortopedico ? 1 : 0},
-    fiebre_reumatica = ${historialMedico.fiebre_reumatica ? 1 : 0},
-    presion_arterial = ${historialMedico.presion_arterial ? 1 : 0},
-    accidente_cerebrovascular = ${
-      historialMedico.accidente_cerebrovascular ? 1 : 0
-    },
-    problemas_sanguineos = ${historialMedico.problemas_sanguineos ? 1 : 0},
-    Hemorragia_prolongada_debido_a_un_corte = ${
-      historialMedico.Hemorragia_prolongada_debido_a_un_corte ? 1 : 0
-    },
-    Enfisema_falta_de_aliento_sarcoidosis = ${
-      historialMedico.Enfisema_falta_de_aliento_sarcoidosis ? 1 : 0
-    },
-    Tuberculosis_sarampion_varicela = ${
-      historialMedico.Tuberculosis_sarampion_varicela ? 1 : 0
-    },
-    Asma = ${historialMedico.Asma ? 1 : 0},
-    Problemas_respiratorios_o_de_sueno = ${
-      historialMedico.Problemas_respiratorios_o_de_sueno ? 1 : 0
-    },
-    Problemas_renales = ${historialMedico.Problemas_renales ? 1 : 0},
-    Enfermedad_hepatica = ${historialMedico.Enfermedad_hepatica ? 1 : 0},
-    Ictericia = ${historialMedico.Ictericia ? 1 : 0},
-    Problemas_de_tiroides_enfermedad_paratiroidea_o_deficiencia_de_c = ${
-      historialMedico.Problemas_de_tiroides_enfermedad_paratiroidea_o_deficiencia_de_c
-        ? 1
-        : 0
-    },
-    Deficiencia_hormonal = ${historialMedico.Deficiencia_hormonal ? 1 : 0},
-    Colesterol_alto_o_toma_de_estatinas = ${
-      historialMedico.Colesterol_alto_o_toma_de_estatinas ? 1 : 0
-    },
-    Diabetes = ${historialMedico.Diabetes ? 1 : 0},
-    Ulceras_estomacales_o_duodenales = ${
-      historialMedico.Ulceras_estomacales_o_duodenales ? 1 : 0
-    },
-    Trastornos_digestivos = ${historialMedico.Trastornos_digestivos ? 1 : 0},
-    Osteoporosis_osteopenia = ${
-      historialMedico.Osteoporosis_osteopenia ? 1 : 0
-    },
-    Artritis = ${historialMedico.Artritis ? 1 : 0},
-    Enfermedad_autoinmunitaria = ${
-      historialMedico.Enfermedad_autoinmunitaria ? 1 : 0
-    },
-    Glaucoma = ${historialMedico.Glaucoma ? 1 : 0},
-    Lentes_de_contacto = ${historialMedico.Lentes_de_contacto ? 1 : 0},
-    Lesiones_en_la_cabeza_o_en_el_cuello = ${
-      historialMedico.Lesiones_en_la_cabeza_o_en_el_cuello ? 1 : 0
-    },
-    Epilepsia_convulsiones = ${historialMedico.Epilepsia_convulsiones ? 1 : 0},
-    Trastornos_neurologicos = ${
-      historialMedico.Trastornos_neurologicos ? 1 : 0
-    },
-    Infecciones_virales_y_herpes_labial = ${
-      historialMedico.Infecciones_virales_y_herpes_labial ? 1 : 0
-    },
-    Cualquier_bulto_o_hinchazon_en_la_boca = ${
-      historialMedico.Cualquier_bulto_o_hinchazon_en_la_boca ? 1 : 0
-    },
-    Urticaria_erupcion_cutanea_fiebre_del_heno = ${
-      historialMedico.Urticaria_erupcion_cutanea_fiebre_del_heno ? 1 : 0
-    },
-    ITS_ETS_VPH = ${historialMedico.ITS_ETS_VPH ? 1 : 0},
-    Hepatitis = ${historialMedico.Hepatitis ? 1 : 0},
-    VIH_SIDA = ${historialMedico.VIH_SIDA ? 1 : 0},
-    Tumores = ${historialMedico.Tumores ? 1 : 0},
-    Terapia_de_radiacion = ${historialMedico.Terapia_de_radiacion ? 1 : 0},
-    Quimioterapia_medicamentos_inmunosupresores = ${
-      historialMedico.Quimioterapia_medicamentos_inmunosupresores ? 1 : 0
-    },
-    Dificultades_emocionales = ${
-      historialMedico.Dificultades_emocionales ? 1 : 0
-    },
-    Tratamiento_psiquiatrico = ${
-      historialMedico.Tratamiento_psiquiatrico ? 1 : 0
-    },
-    Medicamentos_antidepresivos = ${
-      historialMedico.Medicamentos_antidepresivos ? 1 : 0
-    },
-    Uso_de_alcohol_drogas_recreativas = ${
-      historialMedico.Uso_de_alcohol_drogas_recreativas ? 1 : 0
-    };
-`;
-
-      conexion.query(sqlHistorialMedico, (err, row) => {
-        if (err) {
-          throw err;
-        } else {
-          console.log("Imprimideishon");
-        }
-      });
+    for (const medicamento of medicamentos) {
+      await patientService.registrarMedicamento(
+        idConsulta,
+        medicamento.medicamento__nombre,
+        medicamento.medicamento__viaAdministracion,
+        medicamento.medicamento__dosis,
+        medicamento.medicamento__frecuencia,
+        medicamento.medicamento__duracion
+      );
     }
-  });
+    res.status(200).json({ mensaje: "Consulta agregada correctamente" });
+  } catch (error) {
+    console.error("Error al agregar la consulta:", error);
+    res.status(500).json({ mensaje: "Error al agregar la consulta" });
+  }
+});
 
-  console.log(telefono);
-  // console.log(vacunasPreestablecidas);
-  // console.log(historialMedico);
-  // console.log(otrasVacunas);
+app.post("/agregarEstudio", async (req, res) => {
+  console.log(req.body);
+
+  const datos = req.body;
+
+  const tipoEstudio = datos.tipoEstudio;
+  const motivoEstudio = datos.motivoEstudio;
+  const descripcion = datos.descripcion;
+  const resultados = datos.resultados;
+  const fechaEstudio = datos.fechaEstudio;
+
+  try {
+    await patientService.registrarEstudio(
+      req.session.idPaciente,
+      req.session.idDoctor,
+      tipoEstudio,
+      motivoEstudio,
+      descripcion,
+      resultados,
+      fechaEstudio
+    );
+    res.status(200).json({ mensaje: "Estudio agregado correctamente" });
+  } catch (error) {
+    console.error("Error al agregar el estudio:", error);
+    res.status(500).json({ mensaje: "Error al agregar el estudio" });
+  }
+});
+
+app.get("/medicamentos/:consultaId", async (req, res) => {
+  const idConsulta = req.params.consultaId;
+
+  try {
+    const medicamentos = await patientService.consultarMedicamentosYconsultas(
+      idConsulta
+    );
+
+    console.log(medicamentos);
+
+    res.json(medicamentos);
+  } catch (error) {
+    console.error("Error al obtener medicamentos:", error);
+    res.status(500).send("Error interno del servidor");
+  }
+});
+
+app.get("/estudio/:estudioId", async (req, res) => {
+  const idEstudio = req.params.estudioId;
+
+  try {
+    const estudio = await patientService.consultarEstudiosConIdEstudio (
+      idEstudio
+    );
+
+    console.log(estudio);
+
+    res.json(estudio);
+  } catch (error) {
+    console.error("Error al obtener el estudio:", error);
+    res.status(500).send("Error interno del servidor");
+  }
+});
+
+app.post("/editarHistorial", async (req, res) => {
+  const datos = req.body;
+
+  const historialMedico = {
+    alergias: datos.alergias || "",
+    tabaco: datos.tabaco || "",
+    alcohol: datos.alcohol || "",
+    drogas: datos.drogas || "",
+    padecimientos: datos.padecimientos || "",
+    medicamentos: datos.medicamentos || "",
+    quirurgicos: datos.quirurgicos || "",
+    traumatologicos: datos.traumatologicos || "",
+    transfusionales: datos.transfusionales || "",
+    intoleranciaMedicamentos: datos.intoleranciaMedicamentos || "",
+    perPatOtros: datos.perPatOtros || "",
+    ejercicio: datos.ejercicio || "",
+    suplementos: datos.suplementos || "",
+    viajesRecientes: datos.viajesRecientes || "",
+    tatuajes: datos.tatuajes || "",
+    perforaciones: datos.perforaciones || "",
+    perNoPatOtros: datos.perNoPatOtros || "",
+    diabetesAbuelos: datos.diabetesAbuelos || "",
+    diabetesPadre: datos.diabetesPadre || "",
+    diabetesMadre: datos.diabetesMadre || "",
+    diabetesHermanos: datos.diabetesHermanos || "",
+    nefropatiasAbuelos: datos.nefropatiasAbuelos || "",
+    nefropatiasPadre: datos.nefropatiasPadre || "",
+    nefropatiasMadre: datos.nefropatiasMadre || "",
+    nefropatiasHermanos: datos.nefropatiasHermanos || "",
+    mentalesAbuelos: datos.mentalesAbuelos || "",
+    mentalesPadre: datos.mentalesPadre || "",
+    mentalesMadre: datos.mentalesMadre || "",
+    mentalesHermanos: datos.mentalesHermanos || "",
+    hipertensionAbuelos: datos.hipertensionAbuelos || "",
+    hipertensionPadre: datos.hipertensionPadre || "",
+    hipertensionMadre: datos.hipertensionMadre || "",
+    hipertensionHermanos: datos.hipertensionHermanos || "",
+    oncologicosAbuelos: datos.oncologicosAbuelos || "",
+    oncologicosPadre: datos.oncologicosPadre || "",
+    oncologicosMadre: datos.oncologicosMadre || "",
+    oncologicosHermanos: datos.oncologicosHermanos || "",
+    hepatopatiasAbuelos: datos.hepatopatiasAbuelos || "",
+    hepatopatiasPadre: datos.hepatopatiasPadre || "",
+    hepatopatiasMadre: datos.hepatopatiasMadre || "",
+    hepatopatiasHermanos: datos.hepatopatiasHermanos || "",
+    heredoOtrosAbuelos: datos.heredoOtrosAbuelos || "",
+    heredoOtrosPadre: datos.heredoOtrosPadre || "",
+    heredoOtrosMadre: datos.heredoOtrosMadre || "",
+    heredoOtrosHermanos: datos.heredoOtrosHermanos || ""
+  };
+
+  try {
+    await patientService.registrarHistorial(
+      req.session.idPaciente,
+      req.session.idDoctor,
+      historialMedico
+    );
+    res.status(200).json({ mensaje: "Historial médico actualizado correctamente" });
+  } catch (error) {
+    console.error("Error al actualizar el historial médico:", error);
+    res.status(500).json({ mensaje: "Error al actualizar el historial médico" });
+  }
 });
