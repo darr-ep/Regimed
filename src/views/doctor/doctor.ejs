@@ -418,62 +418,54 @@
                             <i class="fa-solid fa-syringe"></i> Vacunas
                         </h1>
                     </div>
-    
                     <div class="seccion__vacunas">
                         <div class="seccion__contenido">
-                            <div class="buscador__vacunas">
+                            <div class="buscador">
                                 <input class="input" type="text" id="buscar__vacuna" placeholder="Buscar vacuna...">
     
-                                <select class="input" id="ordenarPor">
-                                    <option value="nombre" selected>Nombre</option>
+                                <select id="ordenarPorVacunas">
+                                    <option value="" selected disabled>Ordenar</option>
+                                    <option value="nombre">Nombre</option>
                                     <option value="fecha">Fecha</option>
                                     <option value="profesional">Profesional</option>
-                                    <option value="fabricante">Fabricante</option>
-                                    <option value="lote">Número de Lote</option>
-                                    <option value="serie">Número de Serie</option>
-                                    <option value="dosis">Dosis Administrada</option>
-                                    <option value="lugar">Lugar de Administración</option>
                                 </select>
+                                
+                                <select id="mostrarVacunas">
+                                    <option value="" selected disabled>Mostrar</option>
+                                    <option value="cualquiera">Cualquier fecha</option>
+                                    <option value="unDia">Últimas 24 horas</option>
+                                    <option value="unaSemana">Última semana</option>
+                                    <option value="unMes">Último mes</option>
+                                    <option value="unAño">Último año</option>
+                                </select>
+                                
                             </div>
+                            
                             <div class="seccion__contenido--vacunas vacunas">
-                                <% if (vacunas.length==0) {%>
-                                    <p>Ups... no hay registros existentes todavía</p>
-                                    <%} else {%>
-                                        <% vacunas.forEach(vacunas=> { %>
-                                            <div class="vacuna">
-                                                <div class="vacuna--informacion">
-                                                    <p class="vacuna__nombre">
-                                                        <%= vacunas.vacuna_aplicada %>
-                                                    </p>
-                                                    <p>Fabricante: <%= vacunas.fabricante %>
-                                                    </p>
-                                                    <p>Aplicación: <%= vacunas.fechaAplicacion %>
-                                                    </p>
-                                                    <p>No. Lote: <%= vacunas.numeroLote %>
-                                                    </p>
-                                                    <p>No. Serie: <%= vacunas.numeroSerie %>
-                                                    </p>
-                                                    <p>Dosis: <%= vacunas.dosisAdministrada %>
-                                                    </p>
-                                                    <p>Lugar de administración: <%= vacunas.lugarAdministracion %>
-                                                    </p>
-                                                    <p>Profesional: <%= vacunas.nombre %>
-                                                    </p>
-                                                    <p>Cédula del profesional: <%= vacunas.cedula %>
-                                                    </p>
-                                                    <% if (vacunas.siguienteDosis && vacunas.siguienteDosis !== '0000-00-00 00:00:00' && vacunas.siguienteDosis !== 'NaN-NaN-NaN') { %>
-                                                        <p class="siguiente-dosis">Siguiente dosis: <%= vacunas.siguienteDosis %></p>
-                                                    <% } %>
-                                                </div>
-                                            </div>
-                                            <% })} %>
+                                <% vacunas.forEach(vacunas=> { %>
+                                    <div class="vacuna">
+                                        <div class="vacuna--informacion">
+                                            <p class="vacuna__nombre"><%= vacunas.vacuna_aplicada %></p>
+                                            <p>Fabricante: <%= vacunas.fabricante %></p>
+                                            <p>Aplicación: <%= vacunas.fechaAplicacion %></p>
+                                            <p>Dosis: <%= vacunas.dosisAdministrada %></p>
+                                            <p>No. Lote: <%= vacunas.numeroLote %></p>
+                                            <p>No. Serie: <%= vacunas.numeroSerie %></p>
+                                            <p>Lugar de administración: <%= vacunas.lugarAdministracion %></p>
+                                            <p>Profesional: <%= vacunas.nombre %></p>
+                                            <p>Cédula del profesional: <%= vacunas.cedula %></p>
+                                            <% if (vacunas.siguienteDosis && vacunas.siguienteDosis !== '0000-00-00 00:00:00' && vacunas.siguienteDosis !== 'NaN-NaN-NaN') { %>
+                                                <p class="siguiente-dosis">Siguiente dosis: <%= vacunas.siguienteDosis %></p>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                <%})%>
                             </div>
                         </div>
                     </div>
                 </div>
-    
                 <div id="consultas" class="seccion">
-                    <div id="consultas" class="seccion__titulo">
+                    <div class="seccion__titulo">
                         <h1 class="seccion__titulo--titulo">
                             <i class="fa-solid fa-notes-medical"></i> Consultas
                         </h1>
@@ -483,8 +475,24 @@
                             <div class="modal__subtitulo">
                                 <h2>Consultas</h2>
                             </div>
-                            <div class="buscador__consultas">
+                            <div class="buscador" id="buscador--consultas">
                                 <input class="input" type="text" id="buscar__consulta" placeholder="Buscar consulta...">
+    
+                                <select id="ordenarPorConsultas">
+                                    <option value="" selected disabled>Ordenar</option>
+                                    <option value="nombre">Nombre</option>
+                                    <option value="fecha">Fecha</option>
+                                    <option value="profesional">Profesional</option>
+                                </select>
+                                
+                                <select id="mostrarConsultas">
+                                    <option value="" selected disabled>Mostrar</option>
+                                    <option value="cualquiera">Cualquier fecha</option>
+                                    <option value="unDia">Últimas 24 horas</option>
+                                    <option value="unaSemana">Última semana</option>
+                                    <option value="unMes">Último mes</option>
+                                    <option value="unAño">Último año</option>
+                                </select>
                             </div>
                             <div class="seccion__contenido--consultas">
                                 <% consultas.forEach(consultas=> { %>
@@ -514,14 +522,30 @@
                             <div class="modal__subtitulo">
                                 <h2>Estudios</h2>
                             </div>
-                            <div class="buscador__estudios">
+                            <div class="buscador" id="buscador--estudios">
                                 <input class="input" type="text" id="buscar__estudio" placeholder="Buscar estudio...">
+    
+                                <select id="ordenarPorEstudios">
+                                    <option value="" selected disabled>Ordenar</option>
+                                    <option value="nombre">Nombre</option>
+                                    <option value="fecha">Fecha</option>
+                                    <option value="profesional">Profesional</option>
+                                </select>
+                                
+                                <select id="mostrarEstudios">
+                                    <option value="" selected disabled>Mostrar</option>
+                                    <option value="cualquiera">Cualquier fecha</option>
+                                    <option value="unDia">Últimas 24 horas</option>
+                                    <option value="unaSemana">Última semana</option>
+                                    <option value="unMes">Último mes</option>
+                                    <option value="unAño">Último año</option>
+                                </select>
                             </div>
-                            <div class="seccion__contenido--consultas">
+                            <div class="seccion__contenido--estudios">
                                 <% estudios.forEach(estudios=> { %>
                                     <div class="estudio">
-                                        <div class="consulta--informacion">
-                                            <p class="vacuna__nombre">
+                                        <div class="estudio--informacion">
+                                            <p class="estudio__nombre">
                                                 <%= estudios.tipoEstudio %>
                                             </p>
                                             <p>Motivo: <%= estudios.motivoEstudio %>

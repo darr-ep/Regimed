@@ -327,7 +327,7 @@ button.boton-datos:active {
   box-shadow: inset 0 -80px 0 0 white;
 }
 
-.consulta--informacion, .vacuna--informacion {
+.consulta--informacion, .vacuna--informacion, .estudio--informacion {
   color: var(--color-terciary);
   font-weight: 500;
   display: flex;
@@ -348,8 +348,7 @@ button.boton-datos:active {
   font-size: 16px;
 }
 
-p.receta__nombre,
-p.vacuna__nombre {
+p.vacuna__nombre, p.estudio__nombre {
   font-weight: 700;
   font-size: 22px;
 }
@@ -366,9 +365,10 @@ p.vacuna__nombre {
   padding: 30px;
 }
 
-.seccion__contenido--consultas {
+.seccion__contenido--consultas, .seccion__contenido--estudios {
   display: flex;
   flex-direction: column;
+  gap: 20px;
   max-height: 550px;
   overflow-y: auto;
 }
@@ -512,7 +512,6 @@ button.nuevo__registro:hover {
 .input:focus,
 .input-group:hover .input {
   outline: none;
-  border-color: #05060f;
 }
 
 .input-group:hover .label,
@@ -520,25 +519,18 @@ button.nuevo__registro:hover {
   color: #05060fc2;
 }
 
-.buscador__vacunas {
-  display: flex;
+.buscador #ordenarPorVacunas, #ordenarPorConsultas, #ordenarPorEstudios {
+  width: 150px;
+  margin: 10px;
+  background-color: transparent;
+  border: transparent;
 }
 
-.buscador__vacunas .input#buscar__vacuna {
-  width: 75%;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-  border-right: 2px solid #cfcfcf;
-}
-
-.buscador__vacunas .input#ordenarPor {
-  width: 25%;
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-}
-
-.buscador__consultas .input#buscar__consulta, .buscador__estudios .input#buscar__estudio {
-  width: 100%;
+.buscador #mostrarVacunas, #mostrarConsultas, #mostrarEstudios {
+  width: 150px;
+  margin: 10px;
+  background-color: transparent;
+  border: transparent;
 }
 
 button.boton-cancelar {
@@ -652,7 +644,7 @@ i.fa-circle-xmark {
   justify-content: space-between;
 }
 
-.seccion__contenido--consultas {
+.seccion__contenido--consultas, .seccion__contenido--estudios {
   display: flex;
   gap: 30px;
 }

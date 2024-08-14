@@ -24,7 +24,7 @@ async function consultarVacunas(idUsuario) {
   const resultadosFormateados = resultados.map((vacuna) => ({
     ...vacuna,
     fechaAplicacion: obtenerFechaFormateada(vacuna.fechaAplicacion),
-    siguienteDosis: obtenerFechaFormateada(vacuna.siguienteDosis), // Asegúrate de que la columna siguienteDosis exista en tu tabla
+    siguienteDosis: obtenerFechaFormateada(vacuna.siguienteDosis),
   }));
 
   return resultadosFormateados;
@@ -37,7 +37,7 @@ async function consultarConsultas(idUsuario) {
   INNER JOIN doctor
   ON consultas.doctor_id = doctor.doctor_id
   WHERE consultas.usuario_id = ?
-  ORDER BY fechaConsulta;`;
+  ORDER BY observaciones;`;
   const resultados = await ejecutarConsulta(query, [idUsuario]);
 
   const resultadosFormateados = resultados.map((vacuna) => ({
@@ -55,7 +55,7 @@ async function consultarEstudios(idUsuario) {
   INNER JOIN doctor
   ON estudios.doctor_id = doctor.doctor_id
   WHERE estudios.usuario_id = ?
-  ORDER BY fechaEstudio;`;
+  ORDER BY tipoEstudio;`;
   const resultados = await ejecutarConsulta(query, [idUsuario]);
 
   const resultadosFormateados = resultados.map((vacuna) => ({

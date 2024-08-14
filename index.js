@@ -51,8 +51,8 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, "src", "public")));
 
-app.listen(process.env.DB_PORT, function () {
-  console.log("Servidor activo: " + process.env.DB_PORT);
+app.listen(process.env.PORT, function () {
+  console.log("Servidor activo: " + process.env.PORT);
 });
 
 const transporter = nodemailer.createTransport({
