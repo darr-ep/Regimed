@@ -529,14 +529,14 @@ button.nuevo__registro:hover {
 
 .buscador #ordenarPorVacunas, #ordenarPorConsultas, #ordenarPorEstudios {
   width: 150px;
-  margin: 10px;
+  margin-top: 10px;
   background-color: transparent;
   border: transparent;
 }
 
 .buscador #mostrarVacunas, #mostrarConsultas, #mostrarEstudios {
   width: 150px;
-  margin: 10px;
+  margin-top: 10px;
   background-color: transparent;
   border: transparent;
 }
