@@ -37,19 +37,34 @@ function obtenerConexion() {
 
 async function ejecutarConsulta(query, params) {
   try {
-    const connection = await obtenerConexion();
+    let connection = await obtenerConexion();
+    
     return new Promise((resolve, reject) => {
-      connection.query(query, params, (err, results) => {
-        connection.release();
-        if (err) {
-          if (err.code === 'ECONNRESET') {
-            console.error('Error ECONNRESET al ejecutar la consulta:', err);
+      const intentarConsulta = () => {
+        connection.query(query, params, (err, results) => {
+          if (err) {
+            if (err.code === 'ECONNRESET') {
+              console.error('La conexión fue reiniciada. Reintentando...');
+              setTimeout(async () => {
+                try {
+                  connection = await obtenerConexion(); // Obtener una nueva conexión
+                  intentarConsulta(); // Reintentar la consulta
+                } catch (err) {
+                  reject(err); // Si falla obtener la nueva conexión, rechaza la promesa
+                }
+              }, 2000);
+              return;
+            }
+            connection.release(); // Libera la conexión antes de rechazar en caso de otro error
+            reject(err);
+          } else {
+            connection.release(); // Libera la conexión en caso de éxito
+            resolve(results);
           }
-          reject(err);
-        } else {
-          resolve(results);
-        }
-      });
+        });
+      };
+      
+      intentarConsulta(); // Ejecuta la consulta por primera vez
     });
   } catch (err) {
     console.error('Error al obtener conexión:', err);

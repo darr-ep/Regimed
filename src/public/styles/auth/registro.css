@@ -496,115 +496,21 @@ ul {
     transform: scale(0.9);
 }
 
-/*  */
-
-@media only screen and (max-width: 1500px) {
-    .logo img {
-        width: 70px;
-    }
-
-    .logo span {
-        font-size: 40px;
-    }
-
-    .left .wrapper span {
-        font-size: 30px;
-    }
-
-    .left p {
-        font-size: 18px;
-    }
-
-    .formulario input {
-        font-size: 14px;
-    }
-
-    .formulario {
-        width: 500px;
-    }
-
-    .left .wrapper {
-        width: 450px;
-    }
+.checkbox {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px; /* Espacio entre los elementos */
 }
 
-@media only screen and (max-width: 1300px) {
-    .left .wrapper {
-        width: 400px;
-    }
+.checkbox input[type="checkbox"] {
+    margin-right: 10px; /* Espacio entre el checkbox y el texto */
 }
 
-@media only screen and (max-width: 1200px) {
-    .left .wrapper {
-        width: 350px;
-    }
+.checkbox a {
+    color: #007bff; /* Color del enlace */
+    text-decoration: none; /* Eliminar subrayado del enlace */
 }
 
-@media only screen and (max-width: 1100px) {
-    .base {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        width: 100vw;
-        height: 100vh;
-        position: relative;
-
-        background-color: #0000007e;
-    }
-
-    .formulario {
-        color: white;
-        position: absolute;
-        left: 0;
-        right: 0;
-        margin: auto;
-        width: 80%;
-        height: 100%;
-        border-radius: 0;
-        background-color: transparent;
-    }
-
-    .left {
-        display: none;
-    }
-
-    .formulario .login a {
-        color: white;
-    }
-
-    .formulario form p {
-        color: black;
-    }
-
-    .formulario input {
-        background-color: #00000054;
-        border: 2px solid rgb(212, 212, 212);
-    }
-
-    .formulario .submit {
-        background-color: #135518;
-        border-color: #135518;
-    }
-
-    .referencia {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-    }
-
-    .referencia {
-        padding: 50px 80px;
-    }
-}
-
-@media only screen and (max-width: 500px) {
-    .formulario {
-        width: 400px;
-    }
-}
-
-@media only screen and (max-width: 400px) {
-    .formulario {
-        width: 300px;
-    }
+.checkbox a:hover {
+    text-decoration: underline; /* Subrayado al pasar el mouse por el enlace */
 }

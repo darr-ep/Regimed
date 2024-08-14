@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Regimed | Registro</title>
-    <link rel="icon" href="/images/logo/LogoPositive.png" type="image/png">
-    <link rel="stylesheet" href="/styles/auth/registro.css" />
-    <script
-      src="https://kit.fontawesome.com/f5b8feb020.js"
-      crossorigin="anonymous"
-    ></script>
-  </head>
-  <body>
-    <%- include('../includes/nav.ejs') %>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Regimed | Registro</title>
+  <link rel="icon" href="/images/logo/LogoPositive.png" type="image/png">
+  <link rel="stylesheet" href="/styles/auth/registro.css" />
+  <script src="https://kit.fontawesome.com/f5b8feb020.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <%- include('../includes/nav.ejs') %>
     <main class="base">
       <div class="base__izq">
         <div class="base__contenedor--izq">
@@ -63,10 +62,7 @@
           <div class="base__referencia">
             <p>
               Foto de
-              <a
-                href="https://www.pexels.com/es-es/foto/sano-persona-corazon-mano-4386466/"
-                >Karolina Grabowska</a
-              >
+              <a href="https://www.pexels.com/es-es/foto/sano-persona-corazon-mano-4386466/">Karolina Grabowska</a>
             </p>
           </div>
         </div>
@@ -78,99 +74,63 @@
               <p>COMENCEMOS</p>
               <h2>Crea una cuenta</h2>
               <form action="/registro" method="post" id="registro_form">
-                <div
-                  class="input <%= typeof errorField !== 'undefined' && errorField === 'nombre' ? 'error' : '' %>"
-                >
+                <div class="input <%= typeof errorField !== 'undefined' && errorField === 'nombre' ? 'error' : '' %>">
                   <p>Nombre</p>
-                  <input
-                    type="text"
-                    name="nombre"
-                    placeholder="Carlos Alberto"
-                    id="nombre"
-                    value="<%= formData.nombre || '' %>"
-                  />
+                  <input type="text" name="nombre" placeholder="Carlos Alberto" id="nombre"
+                    value="<%= formData.nombre || '' %>" />
                 </div>
 
                 <div
-                  class="input <%= typeof errorField !== 'undefined' && errorField === 'apellido_paterno' ? 'error' : '' %>"
-                >
+                  class="input <%= typeof errorField !== 'undefined' && errorField === 'apellido_paterno' ? 'error' : '' %>">
                   <p>Apellido Paterno</p>
-                  <input
-                    type="text"
-                    name="apellido_paterno"
-                    placeholder="Ramírez"
-                    id="apellido_paterno"
-                    value="<%= formData.apellido_paterno || '' %>"
-                  />
+                  <input type="text" name="apellido_paterno" placeholder="Ramírez" id="apellido_paterno"
+                    value="<%= formData.apellido_paterno || '' %>" />
                 </div>
 
                 <div
-                  class="input <%= typeof errorField !== 'undefined' && errorField === 'apellido_materno' ? 'error' : '' %>"
-                >
+                  class="input <%= typeof errorField !== 'undefined' && errorField === 'apellido_materno' ? 'error' : '' %>">
                   <p>Apellido Materno</p>
-                  <input
-                    type="text"
-                    name="apellido_materno"
-                    placeholder="Rodríguez"
-                    id="apellido_materno"
-                    value="<%= formData.apellido_materno || '' %>"
-                  />
+                  <input type="text" name="apellido_materno" placeholder="Rodríguez" id="apellido_materno"
+                    value="<%= formData.apellido_materno || '' %>" />
                 </div>
 
-                <div
-                  class="input <%= typeof errorField !== 'undefined' && errorField === 'correo' ? 'error' : '' %>"
-                >
+                <div class="input <%= typeof errorField !== 'undefined' && errorField === 'correo' ? 'error' : '' %>">
                   <p>Correo electrónico</p>
-                  <input
-                    type="email"
-                    name="correo"
-                    placeholder="carlosram@nomail.com"
-                    id="email"
-                    value="<%= formData.correo || '' %>"
-                  />
+                  <input type="email" name="correo" placeholder="carlosram@nomail.com" id="email"
+                    value="<%= formData.correo || '' %>" />
                 </div>
 
                 <div
-                  class="input contrasenia <%= typeof errorField !== 'undefined' && (errorField === 'contrasenia' || errorField === 'dif_Contrasenia') ? 'error' : '' %>"
-                >
+                  class="input contrasenia <%= typeof errorField !== 'undefined' && (errorField === 'contrasenia' || errorField === 'dif_Contrasenia') ? 'error' : '' %>">
                   <p>Contraseña</p>
-                  <input
-                    type="password"
-                    name="contrasenia"
-                    placeholder="••••••••"
-                    id="contrasenia"
-                  />
+                  <input type="password" name="contrasenia" placeholder="••••••••" id="contrasenia" />
                   <div class="icono">
                     <i class="fa-solid fa-eye" id="icono1"></i>
                   </div>
                 </div>
 
                 <div
-                  class="input contrasenia <%= typeof errorField !== 'undefined' && (errorField === 'conf_contrasenia' || errorField === 'dif_Contrasenia') ? 'error' : '' %>"
-                >
+                  class="input contrasenia <%= typeof errorField !== 'undefined' && (errorField === 'conf_contrasenia' || errorField === 'dif_Contrasenia') ? 'error' : '' %>">
                   <p>Confirmar contraseña</p>
-                  <input
-                    type="password"
-                    name="conf_contrasenia"
-                    placeholder="••••••••"
-                    id="conf_contrasenia"
-                  />
+                  <input type="password" name="conf_contrasenia" placeholder="••••••••" id="conf_contrasenia" />
                   <div class="icono">
                     <i class="fa-solid fa-eye" id="icono2"></i>
                   </div>
                 </div>
-                <% if (typeof error !== 'undefined') { %>
-                <p class="error_controlador" id="error_controlador">
-                  <%= error %>
-                </p>
-                <% } %>
-                <input
-                    name="btn_registrar"
-                    class="submit"
-                    type="submit"
-                    value="REGISTRAR"
-                    id="btn_registrar"
-                  />
+                <% if (typeof error !=='undefined' ) { %>
+                  <p class="error_controlador" id="error_controlador">
+                    <%= error %>
+                  </p>
+                  <% } %>
+                    <!-- <div class="checkbox">
+                      <input type="checkbox" id="terminos">
+                      <label for="terminos">He leído y acepto los <a href="#">términos y condiciones</a> de uso</label>
+                    </div>
+                    <div class="checkbox">
+                      <input type="checkbox" id="privacidad">
+                      <label for="privacidad">He leído y acepto la <a href="#">política de privacidad</a></label>
+                    </div> -->
+                    <input name="btn_registrar" class="submit" type="submit" value="REGISTRAR" id="btn_registrar" />
               </form>
               <p class="login">
                 ¿Ya tienes una cuenta?&nbsp<a href="./acceso">ENTRA AQUÍ</a>
@@ -182,9 +142,10 @@
     </main>
     <script src="/scripts/auth/contraseñaRegistro.js"></script>
     <script>
-      document.getElementById('btn_registrar').addEventListener('click', function() {
+      document.getElementById('btn_registrar').addEventListener('click', function () {
         document.getElementById('registro_form').submit();
       });
     </script>
-  </body>
+</body>
+
 </html>
