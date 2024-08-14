@@ -371,163 +371,151 @@
                     <% } %>
                 </div>
 
-                <div id="vacunas" class="seccion">
-                    <div class="seccion__titulo">
-                        <h1 class="seccion__titulo--titulo">
-                            <i class="fa-solid fa-syringe"></i> Vacunas
-                        </h1>
+            <div id="vacunas" class="seccion">
+                <div class="seccion__titulo">
+                    <h1 class="seccion__titulo--titulo">
+                        <i class="fa-solid fa-syringe"></i> Vacunas
+                    </h1>
+                    <div class="seccion__titulo--boton">
+                        <button type="button" class="boton-datos" id="abrir__agregarVacuna">
+                            <i class="fa-solid fa-plus"></i> Agregar
+                        </button>
                     </div>
-                    <div class="seccion__vacunas">
-                        <div class="seccion__contenido">
-                            <div class="buscador">
-                                <input class="input" type="text" id="buscar__vacuna" placeholder="Buscar vacuna...">
-    
-                                <select id="ordenarPorVacunas">
-                                    <option value="" selected disabled>Ordenar</option>
-                                    <option value="nombre">Nombre</option>
-                                    <option value="fecha">Fecha</option>
-                                    <option value="profesional">Profesional</option>
-                                </select>
-                                
-                                <select id="mostrarVacunas">
-                                    <option value="" selected disabled>Mostrar</option>
-                                    <option value="cualquiera">Cualquier fecha</option>
-                                    <option value="unDia">Últimas 24 horas</option>
-                                    <option value="unaSemana">Última semana</option>
-                                    <option value="unMes">Último mes</option>
-                                    <option value="unAño">Último año</option>
-                                </select>
-                                
-                            </div>
-                            
-                            <div class="seccion__contenido--vacunas vacunas">
-                                <% vacunas.forEach(vacunas=> { %>
-                                    <div class="vacuna">
-                                        <div class="vacuna--informacion">
-                                            <p class="vacuna__nombre"><%= vacunas.vacuna_aplicada %></p>
-                                            <p>Fabricante: <%= vacunas.fabricante %></p>
-                                            <p>Aplicación: <%= vacunas.fechaAplicacion %></p>
-                                            <p>Dosis: <%= vacunas.dosisAdministrada %></p>
-                                            <p>No. Lote: <%= vacunas.numeroLote %></p>
-                                            <p>No. Serie: <%= vacunas.numeroSerie %></p>
-                                            <p>Lugar de administración: <%= vacunas.lugarAdministracion %></p>
-                                            <p>Profesional: <%= vacunas.nombre %></p>
-                                            <p>Cédula del profesional: <%= vacunas.cedula %></p>
-                                            <% if (vacunas.siguienteDosis && vacunas.siguienteDosis !== '0000-00-00 00:00:00' && vacunas.siguienteDosis !== 'NaN-NaN-NaN') { %>
-                                                <p class="siguiente-dosis">Siguiente dosis: <%= vacunas.siguienteDosis %></p>
-                                            <% } %>
+                </div>
+
+                <div class="seccion__vacunas">
+                    <div class="seccion__contenido">
+                        <div class="buscador__vacunas">
+                            <input class="input" type="text" id="buscar__vacuna" placeholder="Buscar vacuna...">
+
+                            <select class="input" id="ordenarPor">
+                                <option value="nombre" selected>Nombre</option>
+                                <option value="fecha">Fecha</option>
+                                <option value="profesional">Profesional</option>
+                                <option value="fabricante">Fabricante</option>
+                                <option value="lote">Número de Lote</option>
+                                <option value="serie">Número de Serie</option>
+                                <option value="dosis">Dosis Administrada</option>
+                                <option value="lugar">Lugar de Administración</option>
+                            </select>
+                        </div>
+                        
+                        <div class="seccion__contenido--vacunas vacunas">
+                            <% if (vacunas.length==0) {%>
+                                <p>Ups... no hay registros existentes todavía</p>
+                                <%} else {%>
+                                    <% vacunas.forEach(vacunas=> { %>
+                                        <div class="vacuna">
+                                            <div class="vacuna--informacion">
+                                                <p class="vacuna__nombre">
+                                                    <%= vacunas.vacuna_aplicada %>
+                                                </p>
+                                                <p>Fabricante: <%= vacunas.fabricante %>
+                                                </p>
+                                                <p>Aplicación: <%= vacunas.fechaAplicacion %>
+                                                </p>
+                                                <p>No. Lote: <%= vacunas.numeroLote %>
+                                                </p>
+                                                <p>No. Serie: <%= vacunas.numeroSerie %>
+                                                </p>
+                                                <p>Dosis: <%= vacunas.dosisAdministrada %>
+                                                </p>
+                                                <p>Lugar de administración: <%= vacunas.lugarAdministracion %>
+                                                </p>
+                                                <p>Profesional: <%= vacunas.nombre %>
+                                                </p>
+                                                <p>Cédula del profesional: <%= vacunas.cedula %>
+                                                </p>
+                                                <% if (vacunas.siguienteDosis && vacunas.siguienteDosis !== '0000-00-00 00:00:00' && vacunas.siguienteDosis !== 'NaN-NaN-NaN') { %>
+                                                    <p class="siguiente-dosis">Siguiente dosis: <%= vacunas.siguienteDosis %></p>
+                                                <% } %>
+                                            </div>
                                         </div>
-                                    </div>
-                                <%})%>
-                            </div>
+                                        <% })} %>
                         </div>
                     </div>
                 </div>
-                <div id="consultas" class="seccion">
-                    <div class="seccion__titulo">
-                        <h1 class="seccion__titulo--titulo">
-                            <i class="fa-solid fa-notes-medical"></i> Consultas
-                        </h1>
-                    </div>
-                    <div class="seccion__consultas">
-                        <div class="seccion__contenido seccion__consultas--contenedor">
-                            <div class="modal__subtitulo">
-                                <h2>Consultas</h2>
-                            </div>
-                            <div class="buscador" id="buscador--consultas">
-                                <input class="input" type="text" id="buscar__consulta" placeholder="Buscar consulta...">
-    
-                                <select id="ordenarPorConsultas">
-                                    <option value="" selected disabled>Ordenar</option>
-                                    <option value="nombre">Nombre</option>
-                                    <option value="fecha">Fecha</option>
-                                    <option value="profesional">Profesional</option>
-                                </select>
-                                
-                                <select id="mostrarConsultas">
-                                    <option value="" selected disabled>Mostrar</option>
-                                    <option value="cualquiera">Cualquier fecha</option>
-                                    <option value="unDia">Últimas 24 horas</option>
-                                    <option value="unaSemana">Última semana</option>
-                                    <option value="unMes">Último mes</option>
-                                    <option value="unAño">Último año</option>
-                                </select>
-                            </div>
-                            <div class="seccion__contenido--consultas">
-                                <% consultas.forEach(consultas=> { %>
-                                    <div class="consulta">
-                                        <div class="consulta--informacion">
-                                            <p class="observaciones">
-                                                <%= consultas.observaciones %>
-                                            </p>
-                                            <p>Profesional: <%= consultas.nombre %>
-                                            </p>
-                                            <p>Cédula del profesional: <%= consultas.cedula %>
-                                            </p>
-                                            <p>Fecha: <%= consultas.fechaConsulta %>
-                                            </p>
-                                        </div>
-                                        <div class="consulta__boton">
-                                            <button class="boton-datos abrir__consulta"
-                                                data-consulta-id="<%= consultas.consulta_id %>">
-                                                Ver Consulta
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <% }) %>
-                            </div>
+            </div>
+
+            <div id="consultas" class="seccion">
+                <div id="consultas" class="seccion__titulo">
+                    <h1 class="seccion__titulo--titulo">
+                        <i class="fa-solid fa-notes-medical"></i> Consultas
+                    </h1>
+                </div>
+                <div class="seccion__consultas">
+                    <div class="seccion__contenido seccion__consultas--contenedor">
+                        <div class="modal__subtitulo">
+                            <h2>Consultas</h2>
+                            <button type="button" class="boton-datos" id="abrir__agregarConsulta">
+                                <i class="fa-solid fa-plus"></i> Agregar
+                            </button>
                         </div>
-                        <div class="seccion__contenido seccion__consultas--contenedor">
-                            <div class="modal__subtitulo">
-                                <h2>Estudios</h2>
-                            </div>
-                            <div class="buscador" id="buscador--estudios">
-                                <input class="input" type="text" id="buscar__estudio" placeholder="Buscar estudio...">
-    
-                                <select id="ordenarPorEstudios">
-                                    <option value="" selected disabled>Ordenar</option>
-                                    <option value="nombre">Nombre</option>
-                                    <option value="fecha">Fecha</option>
-                                    <option value="profesional">Profesional</option>
-                                </select>
-                                
-                                <select id="mostrarEstudios">
-                                    <option value="" selected disabled>Mostrar</option>
-                                    <option value="cualquiera">Cualquier fecha</option>
-                                    <option value="unDia">Últimas 24 horas</option>
-                                    <option value="unaSemana">Última semana</option>
-                                    <option value="unMes">Último mes</option>
-                                    <option value="unAño">Último año</option>
-                                </select>
-                            </div>
-                            <div class="seccion__contenido--estudios">
-                                <% estudios.forEach(estudios=> { %>
-                                    <div class="estudio">
-                                        <div class="estudio--informacion">
-                                            <p class="estudio__nombre">
-                                                <%= estudios.tipoEstudio %>
-                                            </p>
-                                            <p>Motivo: <%= estudios.motivoEstudio %>
-                                            </p>
-                                            <p>Profesional: <%= estudios.nombre %>
-                                            </p>
-                                            <p>Cédula del profesional: <%= estudios.cedula %>
-                                            </p>
-                                            <p>Fecha: <%= estudios.fechaEstudio %>
-                                            </p>
-                                        </div>
-                                        <div class="estudio__boton">
-                                            <button class="boton-datos abrir__estudio"
-                                                data-estudio-id="<%= estudios.estudio_id %>">
-                                                Ver Estudio
-                                            </button>
-                                        </div>
+                        <div class="buscador__consultas">
+                            <input class="input" type="text" id="buscar__consulta" placeholder="Buscar consulta...">
+                        </div>
+                        <div class="seccion__contenido--consultas">
+                            <% consultas.forEach(consultas=> { %>
+                                <div class="consulta">
+                                    <div class="consulta--informacion">
+                                        <p class="observaciones">
+                                            <%= consultas.observaciones %>
+                                        </p>
+                                        <p>Profesional: <%= consultas.nombre %>
+                                        </p>
+                                        <p>Cédula del profesional: <%= consultas.cedula %>
+                                        </p>
+                                        <p>Fecha: <%= consultas.fechaConsulta %>
+                                        </p>
                                     </div>
-                                    <% }) %>
-                            </div>
+                                    <div class="consulta__boton">
+                                        <button class="boton-datos abrir__consulta"
+                                            data-consulta-id="<%= consultas.consulta_id %>">
+                                            Ver Consulta
+                                        </button>
+                                    </div>
+                                </div>
+                                <% }) %>
+                        </div>
+                    </div>
+                    <div class="seccion__contenido seccion__consultas--contenedor">
+                        <div class="modal__subtitulo">
+                            <h2>Estudios</h2>
+                            <button type="button" class="boton-datos" id="abrir__agregarEstudio">
+                                <i class="fa-solid fa-plus"></i> Agregar
+                            </button>
+                        </div>
+                        <div class="buscador__estudios">
+                            <input class="input" type="text" id="buscar__estudio" placeholder="Buscar estudio...">
+                        </div>
+                        <div class="seccion__contenido--consultas">
+                            <% estudios.forEach(estudios=> { %>
+                                <div class="estudio">
+                                    <div class="consulta--informacion">
+                                        <p class="vacuna__nombre">
+                                            <%= estudios.tipoEstudio %>
+                                        </p>
+                                        <p>Motivo: <%= estudios.motivoEstudio %>
+                                        </p>
+                                        <p>Profesional: <%= estudios.nombre %>
+                                        </p>
+                                        <p>Cédula del profesional: <%= estudios.cedula %>
+                                        </p>
+                                        <p>Fecha: <%= estudios.fechaEstudio %>
+                                        </p>
+                                    </div>
+                                    <div class="estudio__boton">
+                                        <button class="boton-datos abrir__estudio"
+                                            data-estudio-id="<%= estudios.estudio_id %>">
+                                            Ver Estudio
+                                        </button>
+                                    </div>
+                                </div>
+                                <% }) %>
                         </div>
                     </div>
                 </div>
+            </div>
         </main>
     </div>
 
