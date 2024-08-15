@@ -41,6 +41,11 @@ h2 {
   color: var(--color-terciary);
 }
 
+h2.advertencia {
+  color: black;
+  font-size: 22px;
+}
+
 span {
   font-size: 16px;
   font-weight: 700;
@@ -754,6 +759,11 @@ td {
 
 .siguiente-dosis {
   font-weight: 800;
+}
+
+.tarjetaPerdida__contenido {
+  display: flex;
+  flex-direction: column;
 }
 
 /* @media (max-width: 1300px) {

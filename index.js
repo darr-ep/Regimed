@@ -17,6 +17,7 @@ const qr = require("qrcode");
 const twilio = require("twilio");
 const bodyParser = require("body-parser");
 const sharp = require("sharp");
+const cloudinary = require('cloudinary').v2;
 
 const userService = require("./services/user-service");
 const doctorService = require("./services/doctor-service");
@@ -54,6 +55,12 @@ app.use(express.static(path.join(__dirname, "src", "public")));
 app.listen(process.env.PORT, function () {
   console.log("Servidor activo: " + process.env.PORT);
 });
+
+cloudinary.config({
+  cloud_name: 'dcmaesavo',
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+})
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -505,16 +512,29 @@ app.get("/perfil", async (req, res) => {
       patientService.consultarHistorial(req.session.idUsuario),
     ]);
 
-    console.log(vacunas)
-
     const telefonoVerificado = await sharedService.consultarVerificado(
       datosUsuario.telefono
     );
 
+    const url = cloudinary.url(datosUsuario.imagen, {
+      transformation: [
+        {
+          quality: 'auto',
+          fetch_format: 'auto'
+        },
+        {
+          crop: 'auto',
+          gravity: 'auto',
+          width: 500,
+          height: 500,
+      }
+      ]
+    })
+
     res.render("perfil/perfil", {
       nombre_comp: datosUsuario.nombre_comp,
       curp: datosUsuario.curp,
-      imagenAMostrar: datosUsuario.imagen,
+      imagenAMostrar: url,
       telefono: datosUsuario.telefono,
       nacimiento: datosUsuario.nacimiento,
       peso: datosUsuario.peso,
@@ -564,11 +584,26 @@ app.get("/paciente/:curp", async (req, res) => {
 
     req.session.idPaciente = datosUsuario.usuario_id;
 
+    const url = cloudinary.url(datosUsuario.imagen, {
+      transformation: [
+        {
+          quality: 'auto',
+          fetch_format: 'auto'
+        },
+        {
+          crop: 'auto',
+          gravity: 'auto',
+          width: 500,
+          height: 500,
+      }
+      ]
+    })
+
     res.render("paciente/paciente", {
       idPaciente: datosUsuario.usuario_id,
       nombre_comp: datosUsuario.nombre_comp,
       curp: req.params.curp,
-      imagenAMostrar: datosUsuario.imagen,
+      imagenAMostrar: url,
       telefono: datosUsuario.telefono,
       nacimiento: datosUsuario.nacimiento,
       peso: datosUsuario.peso,
@@ -589,23 +624,39 @@ app.get("/paciente/:curp", async (req, res) => {
 
 app.get("/usuario/:usuario_id", async (req, res) => {
   try {
-    if (!req.session.correo) {
-      req.session.correo = "";
+    const datosUsuario = await userService.consultarUsuario(req.params.usuario_id);
+
+    if (!datosUsuario) {
+      return res.send("Lo siento! Usuario no encontrado");
+
     }
 
-    const [datosUsuario, vacunas, consultas, estudios, historial] = await Promise.all([
-      userService.consultarUsuario(req.params.usuario_id),
+    const [vacunas, consultas, estudios, historial] = await Promise.all([
       patientService.consultarVacunas(req.params.usuario_id),
       patientService.consultarConsultas(req.params.usuario_id),
       patientService.consultarEstudios(req.params.usuario_id),
       patientService.consultarHistorial(req.params.usuario_id),
     ]);
 
+    const url = cloudinary.url(datosUsuario.imagen, {
+      transformation: [
+        {
+          quality: 'auto',
+          fetch_format: 'auto'
+        },
+        {
+          crop: 'auto',
+          gravity: 'auto',
+          width: 500,
+          height: 500,
+      }
+      ]
+    })
+
     res.render("visor/visor", {
-      sesion: req.session.correo,
       nombre_comp: datosUsuario.nombre_comp,
       curp: datosUsuario.curp,
-      imagenAMostrar: datosUsuario.imagen,
+      imagenAMostrar: url,
       telefono: datosUsuario.telefono,
       nacimiento: datosUsuario.nacimiento,
       peso: datosUsuario.peso,
@@ -656,10 +707,25 @@ app.get("/doctor", async (req, res) => {
       datosUsuario.telefono
     );
 
+    const url = cloudinary.url(datosUsuario.imagen, {
+      transformation: [
+        {
+          quality: 'auto',
+          fetch_format: 'auto'
+        },
+        {
+          crop: 'auto',
+          gravity: 'auto',
+          width: 500,
+          height: 500,
+      }
+      ]
+    })
+
     res.render("doctor/doctor", {
       nombre_comp: datosUsuario.nombre_comp,
       curp: datosUsuario.curp,
-      imagenAMostrar: datosUsuario.imagen,
+      imagenAMostrar: url,
       telefono: datosUsuario.telefono,
       nacimiento: datosUsuario.nacimiento,
       peso: datosUsuario.peso,
@@ -788,9 +854,6 @@ async function generarNumeroAleatorioUnico(req, res) {
 
     const numeroAleatorio = consultaCodigo[0].codigo;
 
-    console.log("numeroAleatorio: " + numeroAleatorio);
-    console.log("tiempoRestante: " + tiempoRestante);
-
     const token =
       process.env.URL_AGREGAR_REGISTRO +
       generarToken3m({
@@ -803,8 +866,6 @@ async function generarNumeroAleatorioUnico(req, res) {
     const codigoExistente = await sharedService.consultarCodigoExistente(
       numeroAleatorio
     );
-
-    console.log("Existe 2: " + codigoExistente.length);
 
     if (codigoExistente.length === 0) {
       await sharedService.registrarCodigo(
@@ -831,39 +892,12 @@ async function generarNumeroAleatorioUnico(req, res) {
   }
 }
 
-// app.get("/agregarRegistro", (req, res) => {
-//   const token = req.query.token;
-
-//   jwt.verify(token, "secreto", function (err, decoded) {
-//     if (err) {
-//       console.log("Token inválido");
-//       res.send("Token inválido");
-//     } else {
-//       const consulta = `SELECT * FROM codigos_temporales WHERE usuario_id = '${decoded.usuarioId}' AND codigo = '${decoded.numero}'`;
-
-//       conexion.query(consulta, (err, row) => {
-//         if (err) {
-//           throw err;
-//         } else if (row.length === 0) {
-//           res.send("Token inválido");
-//         } else {
-//           console.log(
-//             "Aqui tienes que guardar los registros para que tengan relacion"
-//           );
-//         }
-//       });
-//     }
-//   });
-// });
-
 app.get("/tarjeta", async (req, res) => {
   if (!req.session.idUsuario) {
     return res.redirect("/");
   }
 
   const usuarioId = req.query.usuarioId;
-
-  console.log(usuarioId)
 
   try {
     const datosUsuario = await userService.consultarUsuario(usuarioId);
@@ -902,19 +936,46 @@ app.get("/tarjeta", async (req, res) => {
       height: qrHeight,
     });
 
-    await agregarImagen(
-      page,
-      path.join(
-        __dirname,
-        "src",
-        "public",
-        "images",
-        "users",
-        datosUsuario.imagen
-      ),
-      0,
-      pdfDoc
-    );
+    // Descargar la imagen desde Cloudinary con las transformaciones aplicadas
+    const cloudinaryImageUrl = cloudinary.url(datosUsuario.imagen, {
+      transformation: [
+        {
+          quality: 'auto',
+          fetch_format: 'auto'
+        },
+        {
+          crop: 'auto',
+          gravity: 'auto',
+          width: 500,
+          height: 500,
+        }
+      ]
+    });
+
+    const response = await fetch(cloudinaryImageUrl);
+    const imageBuffer = await response.buffer();
+    
+    // Determinar el tipo de imagen y embederla en el PDF
+    let image;
+    const imageExtension = datosUsuario.imagen.split('.').pop().toLowerCase();
+
+    if (imageExtension === 'png') {
+      image = await pdfDoc.embedPng(imageBuffer);
+    } else if (imageExtension === 'jpg' || imageExtension === 'jpeg') {
+      image = await pdfDoc.embedJpg(imageBuffer);
+    } else {
+      throw new Error('Formato de imagen no soportado');
+    }
+
+    const size = page.getWidth() / 2;
+    const y = page.getHeight() - size;
+
+    page.drawImage(image, {
+      x: 0,
+      y: y,
+      width: size,
+      height: size,
+    });
 
     const hel = await cargarFuente("Helvetica", pdfDoc);
     const helBold = await cargarFuente("Helvetica-Bold", pdfDoc);
@@ -974,45 +1035,6 @@ function agregarTexto(page, text, fontSize, font, y, xValue) {
     color: rgb(4 / 255, 68 / 255, 115 / 255),
     weight: "600",
   });
-}
-
-async function recortarImagen(imagePath, outputImagePath, size) {
-  try {
-    await sharp(imagePath).resize(size, size).toFile(outputImagePath);
-  } catch (error) {
-    console.error("Error al recortar la imagen:", error);
-    throw error;
-  }
-}
-
-async function agregarImagen(page, imagePath, x, pdfDoc) {
-  try {
-    const size = page.getWidth() / 2;
-    const y = page.getHeight() - size;
-
-    const recortadaImagePath = path.join(
-      __dirname,
-      "src",
-      "public",
-      "temp",
-      "recortada.png"
-    );
-
-    await recortarImagen(imagePath, recortadaImagePath, size);
-
-    const imageBytes = fs.readFileSync(recortadaImagePath);
-    const pdfImage = await pdfDoc.embedPng(imageBytes);
-
-    page.drawImage(pdfImage, {
-      x,
-      y,
-      width: size,
-      height: size,
-    });
-  } catch (error) {
-    console.error("Error al leer o cargar la imagen:", error);
-    throw error;
-  }
 }
 
 // * -------------------------- POSTS -------------------------- * //
@@ -1342,16 +1364,12 @@ app.post("/registro", async (req, res) => {
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "src", "public", "images", "users"));
+    cb(null, path.join(__dirname, "src", "public", "temp"));
   },
 
   filename: function (req, file, cb) {
-    // Obtener la extensión del archivo original
     const extension = file.originalname.split(".").pop();
-    // Generar un nuevo nombre para el archivo que incluya la extensión
-    const nuevoNombre = `${req.session.idUsuario.slice(
-      -5
-    )}_${Date.now()}.${extension}`;
+    const nuevoNombre = `${req.session.idUsuario.slice(-5)}_${Date.now()}.${extension}`;
     cb(null, nuevoNombre);
   },
 });
@@ -1373,17 +1391,32 @@ app.post("/datosUsuario", upload.single("imagen"), async (req, res) => {
   let imagen = req.file ? req.file.filename : datos.imagen;
   const imagenGuardada = datos.imagenGuardada;
 
-  if (imagenGuardada !== imagen && imagenGuardada !== "usuario.png") {
-    fs.unlink(
-      path.join(__dirname, "src", "public", "images", "users", imagenGuardada),
-      (err) => {
-        if (err) {
-          console.error("Error al eliminar el archivo:", err);
-        } else {
-          console.log("Archivo eliminado exitosamente");
-        }
+  if (req.file) {
+    try {
+      // Si la imagen guardada no es "usuario" y es diferente a la nueva imagen, eliminarla de Cloudinary
+      if (imagenGuardada !== "usuario" && imagenGuardada !== imagen) {
+        await cloudinary.uploader.destroy(imagenGuardada.split(".")[0]);
       }
-    );
+
+      // Subir la nueva imagen a Cloudinary
+      await cloudinary.uploader.upload(req.file.path, {
+        public_id: imagen.split(".")[0]
+      });
+
+      fs.unlink(
+        path.join(__dirname, "src", "public", "temp", req.file.filename),
+        (err) => {
+          if (err) {
+            console.error("Error al eliminar el archivo local:", err);
+          } else {
+            console.log("Archivo local eliminado exitosamente");
+          }
+        }
+      );
+    } catch (error) {
+      console.error("Error al subir la imagen a Cloudinary:", error);
+      return res.status(500).json({ mensaje: "Error al subir la imagen" });
+    }
   }
 
   if (telefono !== req.session.telefono) {
@@ -1474,7 +1507,6 @@ app.post("/verificarNumeroTelefonico", async (req, res) => {
 
   let telefono = datosUsuario.telefono.replace(/\s/g, "");
 
-  console.log(telefono);
   try {
     const verificationCheck = await client.verify.v2
       .services(process.env.TWILIO_SERVICE)
@@ -1536,18 +1568,11 @@ app.post("/verificarRegistro/:codigo/:captcha", async (req, res) => {
       req.params.codigo
     );
 
-    console.log(consultaCodigo[0]);
-    console.log(consultaCodigo[0].usuario_id);
-    console.log(consultaCodigo[0].codigo);
-
     if (consultaCodigo.length === 0) {
       res.json({ usuario: "Inexistente" });
     } else if (consultaCodigo[0].usuario_id === req.session.idUsuario) {
       res.json({ usuario: "Mismo" });
     } else {
-      console.log("Usuario: " + req.session.idUsuario);
-      console.log("Doctor : " + consultaCodigo[0].usuario_id);
-
       const consultarRegistros =
         await sharedService.consultarCompartidoExistente(
           req.session.idUsuario,
@@ -1608,8 +1633,6 @@ app.post("/agregarVacuna", async (req, res) => {
 });
 
 app.post("/agregarConsulta", async (req, res) => {
-  console.log(req.body);
-
   const { datosConsulta, medicamentos } = req.body;
 
   try {
@@ -1639,8 +1662,6 @@ app.post("/agregarConsulta", async (req, res) => {
 });
 
 app.post("/agregarEstudio", async (req, res) => {
-  console.log(req.body);
-
   const datos = req.body;
 
   const tipoEstudio = datos.tipoEstudio;
@@ -1759,3 +1780,21 @@ app.post("/editarHistorial", async (req, res) => {
     res.status(500).json({ mensaje: "Error al actualizar el historial médico" });
   }
 });
+
+app.post("/tarjetaPerdida", async (req, res) => {
+  const uuidGen = uuid.v4();
+  const hashUUID = crypto.createHash("sha256");
+  hashUUID.update(uuidGen);
+  const uuidHash = hashUUID.digest("hex");
+
+  try {
+    await sharedService.actualizarId(
+      uuidHash,
+      req.session.idUsuario
+    );
+    res.status(200).json({ mensaje: "Id del usuario actualizada correctamente" });
+  } catch (error) {
+    console.error("Error al actualizar la id del usuario:", error);
+    res.status(500).json({ mensaje: "Error al actualizar la id del usuario" });
+  }
+})

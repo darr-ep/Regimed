@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("Ho.a")
     document.querySelectorAll(".abrir__estudio").forEach((button) => {
         button.addEventListener("click", async (event) => {
             const estudioId = event.target.getAttribute("data-estudio-id");

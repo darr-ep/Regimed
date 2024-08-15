@@ -56,6 +56,13 @@ async function consultarVerificado(telefono) {
   }
 }
 
+async function actualizarId(nuevaUsuarioId, usuarioId) {
+  const query = `UPDATE datos_usuario
+                 SET usuario_id = ?
+                 WHERE usuario_id = ?;`;
+  await ejecutarConsulta(query, [nuevaUsuarioId, usuarioId]);
+}
+
 async function registrarVerificacion(idUsuario, telefono) {
   const telefonoLimpio = telefono.replace(/\s/g, "");
   const query = `INSERT INTO verificados (usuario_id, telefono) VALUES (?, ?) ON DUPLICATE KEY UPDATE telefono = VALUES(telefono);`;
@@ -76,6 +83,7 @@ module.exports = {
   consultarCompartidos,
   consultarCompartidoExistente,
   consultarVerificado,
+  actualizarId,
   eliminarCodigo,
   eliminarVerificacion,
 };

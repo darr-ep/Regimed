@@ -19,6 +19,7 @@
     <script defer src="/scripts/common/tarjetaDatos.js"></script>
     <script defer src="/scripts/common/interfazUsuario.js"></script>
     <script defer src="/scripts/common/buscador.js"></script>
+    <script defer src="/scripts/common/tarjetaPerdida.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
         integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA=="
@@ -87,6 +88,12 @@
                         Descargar Tarjeta
                     </a>
                 </li>
+                <li>
+                    <a id="abrir__tarjetaPerdida" data-usuario-id="<%= sesion %>">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        ¿Perdiste tu tarjeta?
+                    </a>
+                </li>
             </ul>
         </aside>
         <main id="informacion">
@@ -103,7 +110,7 @@
                 </div>
                 <div class="seccion__contenido informacion__general">
                     <div class="informacion__general--informacion informacion__primero">
-                        <img src="/images/users/<%= imagenAMostrar %>" alt="" id="imagenGuardada">
+                        <img src="<%= imagenAMostrar %>" alt="" id="imagenGuardada">
                         <% if (typeof nombre_comp !=='undefined' && nombre_comp !==null && nombre_comp !=='' ) { %>
                         <p> <%= nombre_comp %> </p>
                         <% } else { %>
@@ -589,7 +596,7 @@
             <form class="modal__contenido" enctype="multipart/form-data" id="formularioDatosPersonales">
                 <div class="informacion__general--informacion informacion__primero">
                     <div class="informacion__imagen">
-                        <img src="/images/users/<%= imagenAMostrar %>" id="imagenPrevisualizada">
+                        <img src="<%= imagenAMostrar %>" id="imagenPrevisualizada">
                         <div class="editar-imagen">
                             <i class="fa-solid fa-camera"></i>
                             <input type="file" name="imagen_usuario" id="imagenUsuario" accept="image/*">
@@ -789,7 +796,7 @@
         </div>
     </div>
     
-    <div id="fondo__registroDoctor" class="fondo__modal">
+    <!-- <div id="fondo__registroDoctor" class="fondo__modal">
         <div id="ventana__registroDoctor" class="modal">
             <div class="modal__titulo">
                 <h2>Registro de doctor</h2>
@@ -811,7 +818,7 @@
                 <button id="cerrar__registroDoctor" class="boton-datos cerrarVentana">Cancelar</button>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <div id="fondo__consulta" class="fondo__modal">
         <div id="ventana__consulta" class="modal">
@@ -832,7 +839,7 @@
                 </div>
             </div>
             <div class="modal__botones">
-                <button id="cerrar__consulta" class="boton-datos">Cerrar</button>
+                <button id="cerrar__consulta" class="boton-datos boton-cancelar">Cerrar</button>
             </div>
         </div>
     </div>
@@ -848,7 +855,27 @@
                 </div>
             </div>
             <div class="modal__botones">
-                <button id="cerrar__estudio" class="boton-datos">Cerrar</button>
+                <button id="cerrar__estudio" class="boton-datos boton-cancelar">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="fondo__tarjetaPerdida" class="fondo__modal">
+        <div id="modal__tarjetaPerdida" class="modal">
+            <h1 class="modal__titulo">
+                <i class="fa-solid fa-triangle-exclamation"></i> Tarjeta perdida
+            </h1>
+            <div class="modal__contenido tarjetaPerdida__contenido">
+                <h2 class="modal__subtitulo advertencia">
+                    ¡Tus datos son importantes!
+                </h2>
+                Si has perdido tu tarjeta, puedes generar una nueva. <br>
+                Al hacerlo, tu tarjeta anterior quedará inactiva y se cerrará tu sesión. ¿Deseas continuar?
+                
+            </div>
+            <div class="modal__botones">
+                <button id="cerrar__tarjetaPerdida" class="boton-datos"><i class="fa-solid fa-x"></i> Cancelar</button>
+                <button id="generar__tarjetaPerdida" class="boton-datos boton-cancelar"><i class="fa-solid fa-address-card"></i> Generar nueva tarjeta</button>
             </div>
         </div>
     </div>

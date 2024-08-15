@@ -25,6 +25,11 @@ async function registrarUsuario(
 async function consultarUsuario(idUsuario) {
   const query = `SELECT * FROM datos_usuario WHERE usuario_id = ?`;
   const rows = await ejecutarConsulta(query, [idUsuario]);
+
+  if (rows.length === 0) {
+    return null;
+  }
+
   const row = rows[0];
   return {
     nombre_comp: row.nombre_comp,
