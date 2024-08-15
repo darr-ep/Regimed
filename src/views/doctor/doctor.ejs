@@ -98,7 +98,7 @@
                 </div>
                 <div class="seccion__contenido informacion__general">
                     <div class="informacion__general--informacion informacion__primero">
-                        <img src="/images/users/<%= imagenAMostrar %>" alt="" id="imagenGuardada">
+                        <img src="<%= imagenAMostrar %>" alt="" id="imagenGuardada">
                         <% if (typeof nombre_comp !=='undefined' && nombre_comp !==null && nombre_comp !=='' ) { %>
                             <p>
                                 <%= nombre_comp %>
@@ -599,7 +599,7 @@
             <form class="modal__contenido" enctype="multipart/form-data" id="formularioDatosPersonales">
                 <div class="informacion__general--informacion informacion__primero">
                     <div class="informacion__imagen">
-                        <img src="/images/users/<%= imagenAMostrar %>" id="imagenPrevisualizada">
+                        <img src="<%= imagenAMostrar %>" id="imagenPrevisualizada">
                         <div class="editar-imagen">
                             <i class="fa-solid fa-camera"></i>
                             <input type="file" name="imagen_usuario" id="imagenUsuario" accept="image/*">
