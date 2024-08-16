@@ -572,18 +572,23 @@
                     <h1><i class="fa-solid fa-user-group"></i>Registros Familiares</h1>
                 </div>
                 <div class="seccion__contenido seccion__registros">
-                    <% registros.forEach(registro=> { %>
-                        <button class="registro" id="botonUsuario_<%= registro.usuario_id %>">
-                            <img src="https://res.cloudinary.com/dcmaesavo/image/upload/f_auto,q_auto/c_auto,g_auto,h_500,w_500/<%= registro.imagen %>?_a=BAMAGSTE0" alt="">
-                            <div class="registro__nombre">
-                                <%= registro.nombre %>
-                            </div>
-                        </button>
-                        <% }) %>
-                            <button class="boton-datos nuevo__registro" id="abrir__registro">
-                                <i class="fa-solid fa-plus"></i>
-                                <span>Agregar Registro</span>
+                    <% registros.forEach(registro => { %>
+                        <div class="registro">
+                            <button class="borrar__registroCompartido" data-borrarRegistro-id="<%= registro.usuario_id %>">
+                                <i class="fa-regular fa-trash-can"></i>
                             </button>
+                            <button class="botonRegistro" data-registro-id="<%= registro.usuario_id %>">
+                                <img src="https://res.cloudinary.com/dcmaesavo/image/upload/f_auto,q_auto/c_auto,g_auto,h_500,w_500/<%= registro.imagen %>?_a=BAMAGSTE0" alt="">
+                                <div class="registro__nombre">
+                                    <%= registro.nombre %>
+                                </div>
+                            </button>
+                        </div>
+                    <% }) %>
+                        <button class="boton-datos nuevo__registro" id="abrir__registro">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Agregar Registro</span>
+                        </button>
                 </div>
             </div>
         </main>

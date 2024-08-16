@@ -69,6 +69,13 @@ async function registrarVerificacion(idUsuario, telefono) {
   await ejecutarConsulta(query, [idUsuario, telefonoLimpio]);
 }
 
+async function eliminarCompartido(idUsuario, idUsuarioCompartido) {
+  let query = `DELETE FROM registros_compartidos WHERE usuario_id = ? AND usuarioCompartido_id = ?`;
+  await ejecutarConsulta(query, [idUsuario, idUsuarioCompartido]);
+  query = `DELETE FROM registros_compartidos WHERE usuario_id = ? AND usuarioCompartido_id = ?`;
+  await ejecutarConsulta(query, [idUsuarioCompartido, idUsuario]);
+}
+
 async function eliminarVerificacion(idUsuario) {
   const query = `DELETE FROM verificados WHERE usuario_id = ?;`;
   await ejecutarConsulta(query, [idUsuario]);
@@ -85,5 +92,6 @@ module.exports = {
   consultarVerificado,
   actualizarId,
   eliminarCodigo,
+  eliminarCompartido,
   eliminarVerificacion,
 };

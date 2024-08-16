@@ -14,6 +14,7 @@
     <script defer src="/scripts/common/datosPersonales.js"></script>
     <script defer src="/scripts/common/tarjetaDatos.js"></script>
     <script defer src="/scripts/common/buscador.js"></script>
+    <script defer src="/scripts/common/tarjetaPerdida.js"></script>
     <script defer src="/scripts/common/agregarRegistro.js"></script>
     <script defer src="/scripts/common/interfazUsuario.js"></script>
     <script defer src="/scripts/common/verificacionTelefono.js"></script>
@@ -81,6 +82,12 @@
                     <a id="abrir__tarjetaDatos" data-usuario-id="<%= sesion %>">
                         <i class="fa-solid fa-id-badge"></i>
                         Descargar Tarjeta
+                    </a>
+                </li>
+                <li>
+                    <a id="abrir__tarjetaPerdida" data-usuario-id="<%= sesion %>">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        ¿Perdiste tu tarjeta?
                     </a>
                 </li>
             </ul>
@@ -573,14 +580,19 @@
                     <h1><i class="fa-solid fa-user-group"></i>Registros Familiares</h1>
                 </div>
                 <div class="seccion__contenido seccion__registros">
-                    <% registros.forEach(registro=> { %>
-                        <button class="registro" id="botonUsuario_<%= registro.usuario_id %>">
-                            <img src="https://res.cloudinary.com/dcmaesavo/image/upload/f_auto,q_auto/c_auto,g_auto,h_500,w_500/<%= registro.imagen %>?_a=BAMAGSTE0" alt="">
-                            <div class="registro__nombre">
-                                <%= registro.nombre %>
-                            </div>
-                        </button>
-                        <% }) %>
+                    <% registros.forEach(registro => { %>
+                        <div class="registro">
+                            <button class="borrar__registroCompartido" data-borrarRegistro-id="<%= registro.usuario_id %>">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                            <button class="botonRegistro" data-registro-id="<%= registro.usuario_id %>">
+                                <img src="https://res.cloudinary.com/dcmaesavo/image/upload/f_auto,q_auto/c_auto,g_auto,h_500,w_500/<%= registro.imagen %>?_a=BAMAGSTE0" alt="">
+                                <div class="registro__nombre">
+                                    <%= registro.nombre %>
+                                </div>
+                            </button>
+                        </div>
+                    <% }) %>
                             <button class="boton-datos nuevo__registro" id="abrir__registro">
                                 <i class="fa-solid fa-plus"></i>
                                 <span>Agregar Registro</span>
@@ -854,6 +866,26 @@
             </div>
             <div class="modal__botones">
                 <button id="cerrar__estudio" class="boton-datos">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="fondo__tarjetaPerdida" class="fondo__modal">
+        <div id="modal__tarjetaPerdida" class="modal">
+            <h1 class="modal__titulo">
+                <i class="fa-solid fa-triangle-exclamation"></i> Tarjeta perdida
+            </h1>
+            <div class="modal__contenido tarjetaPerdida__contenido">
+                <h2 class="modal__subtitulo advertencia">
+                    ¡Tus datos son importantes!
+                </h2>
+                Si has perdido tu tarjeta, puedes generar una nueva. <br>
+                Al hacerlo, tu tarjeta anterior quedará inactiva y se cerrará tu sesión. ¿Deseas continuar?
+                
+            </div>
+            <div class="modal__botones">
+                <button id="cerrar__tarjetaPerdida" class="boton-datos"><i class="fa-solid fa-x"></i> Cancelar</button>
+                <button id="generar__tarjetaPerdida" class="boton-datos boton-cancelar"><i class="fa-solid fa-address-card"></i> Generar nueva tarjeta</button>
             </div>
         </div>
     </div>

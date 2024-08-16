@@ -16,7 +16,6 @@ const { PDFDocument, rgb } = require("pdf-lib");
 const qr = require("qrcode");
 const twilio = require("twilio");
 const bodyParser = require("body-parser");
-const sharp = require("sharp");
 const cloudinary = require('cloudinary').v2;
 
 const userService = require("./services/user-service");
@@ -1800,3 +1799,20 @@ app.post("/tarjetaPerdida", async (req, res) => {
     res.status(500).json({ mensaje: "Error al actualizar la id del usuario" });
   }
 })
+
+app.post("/eliminarRegistro/:usuarioId", async (req, res) => {
+  try {
+    await sharedService.eliminarCompartido(req.session.idUsuario, req.params.usuarioId);
+
+    res.json({
+      codigo: "Valido",
+      mensaje: "El registro ha sido eliminado exitosamente."
+    });
+  } catch (error) {
+    console.error("Error eliminando el registro:", error);
+    res.json({
+      codigo: "Erroneo",
+      mensaje: "Hubo un problema al intentar eliminar el registro. Inténtalo de nuevo."
+    });
+  }
+});
