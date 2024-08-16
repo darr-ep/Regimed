@@ -98,6 +98,16 @@ body {
   display: flex;
   justify-content: center;
   scroll-behavior: smooth;
+  position: relative;
+}
+
+.fondo__icono {
+  position: fixed;
+  height: 70vh;
+  margin-top: 15vh;
+  margin-bottom: 15vh;
+  transform: rotate(10deg);
+  left: 0;
 }
 
 nav {

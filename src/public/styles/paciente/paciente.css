@@ -97,6 +97,15 @@ body {
   scroll-behavior: smooth;
 }
 
+.fondo__icono {
+  position: fixed;
+  height: 70vh;
+  margin-top: 15vh;
+  margin-bottom: 15vh;
+  transform: rotate(-10deg);
+  left: 0;
+}
+
 nav {
   grid-area: nav;
   position: sticky;

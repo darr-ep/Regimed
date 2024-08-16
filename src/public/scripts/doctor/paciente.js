@@ -29,7 +29,23 @@ abrirPaciente.addEventListener("click", () => {
     });
     return;
   }
+  
+  const curpDoctor = document.getElementById("curp_doctor").innerHTML.trim();
 
+  console.log(curpPaciente)
+  console.log(curpDoctor)
+
+  if (curpPaciente === curpDoctor) {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "No puedes ingresar tu mismo curp.",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+    return;
+  }
+  
   contenedorPaciente.classList.add("mostrar-ventana");
   ventanaPaciente.classList.add("agrandar-ventana");
 

@@ -513,9 +513,10 @@ app.get("/perfil", async (req, res) => {
     ]);
 
     const telefonoVerificado = await sharedService.consultarVerificado(
+      req.session.idUsuario,
       datosUsuario.telefono
     );
-
+    
     const url = cloudinary.url(datosUsuario.imagen, {
       transformation: [
         {
@@ -704,6 +705,7 @@ app.get("/doctor", async (req, res) => {
     ]);
 
     const telefonoVerificado = await sharedService.consultarVerificado(
+      req.session.idUsuario,
       datosUsuario.telefono
     );
 

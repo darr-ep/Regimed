@@ -11,22 +11,26 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
+function manejarErrorConexion(err, reject, reintentar) {
+  if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+    console.error('La conexión con la base de datos se cerró.');
+  } else if (err.code === 'ER_CON_COUNT_ERROR') {
+    console.error('La base de datos tiene demasiadas conexiones.');
+  } else if (err.code === 'ECONNREFUSED') {
+    console.error('La conexión a la base de datos fue rechazada.');
+  } else if (err.code === 'ECONNRESET' || err.code === 'ETIMEDOUT' || err.code === 'ENOTFOUND') {
+    console.error(`Error de conexión (${err.code}). Reintentando...`);
+    setTimeout(reintentar, 2000);
+    return;
+  }
+  reject(err);
+}
+
 function obtenerConexion() {
   return new Promise((resolve, reject) => {
     pool.getConnection((err, connection) => {
       if (err) {
-        if (err.code === 'PROTOCOL_CONNECTION_LOST') {
-          console.error('La conexión con la base de datos se cerró.');
-        } else if (err.code === 'ER_CON_COUNT_ERROR') {
-          console.error('La base de datos tiene demasiadas conexiones.');
-        } else if (err.code === 'ECONNREFUSED') {
-          console.error('La conexión a la base de datos fue rechazada.');
-        } else if (err.code === 'ECONNRESET') {
-          console.error('La conexión fue reiniciada. Reintentando...');
-          setTimeout(() => obtenerConexion().then(resolve).catch(reject), 2000);
-          return;
-        }
-        reject(err);
+        manejarErrorConexion(err, reject, () => obtenerConexion().then(resolve).catch(reject));
       } else {
         resolve(connection);
       }
@@ -34,37 +38,24 @@ function obtenerConexion() {
   });
 }
 
-
 async function ejecutarConsulta(query, params) {
   try {
     let connection = await obtenerConexion();
-    
     return new Promise((resolve, reject) => {
       const intentarConsulta = () => {
         connection.query(query, params, (err, results) => {
           if (err) {
-            if (err.code === 'ECONNRESET') {
-              console.error('La conexión fue reiniciada. Reintentando...');
-              setTimeout(async () => {
-                try {
-                  connection = await obtenerConexion(); // Obtener una nueva conexión
-                  intentarConsulta(); // Reintentar la consulta
-                } catch (err) {
-                  reject(err); // Si falla obtener la nueva conexión, rechaza la promesa
-                }
-              }, 2000);
-              return;
-            }
-            connection.release(); // Libera la conexión antes de rechazar en caso de otro error
-            reject(err);
+            manejarErrorConexion(err, reject, async () => {
+              connection = await obtenerConexion();
+              intentarConsulta();
+            });
           } else {
-            connection.release(); // Libera la conexión en caso de éxito
+            connection.release();
             resolve(results);
           }
         });
       };
-      
-      intentarConsulta(); // Ejecuta la consulta por primera vez
+      intentarConsulta();
     });
   } catch (err) {
     console.error('Error al obtener conexión:', err);
@@ -74,11 +65,14 @@ async function ejecutarConsulta(query, params) {
 
 setInterval(() => {
   pool.query('SELECT 1', (err) => {
-    if (err) console.error('Error manteniendo la conexión activa:', err);
+    if (err) {
+      console.error('Error manteniendo la conexión activa:', err);
+    } else {
+      console.log('Conexión activa');
+    }
   });
 }, 5000);
 
 module.exports = {
-  ejecutarConsulta,
-  pool
+  ejecutarConsulta
 };

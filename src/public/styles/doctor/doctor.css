@@ -95,6 +95,15 @@ body {
   scroll-behavior: smooth;
 }
 
+.fondo__icono {
+  position: fixed;
+  height: 70vh;
+  margin-top: 15vh;
+  margin-bottom: 15vh;
+  transform: rotate(10deg);
+  left: 0;
+}
+
 nav {
   grid-area: nav;
   position: sticky;
@@ -476,6 +485,7 @@ button.nuevo__registro:hover {
 }
 
 .modal {
+  max-width: 1000px;
   gap: 30px;
   display: flex;
   flex-direction: column;
@@ -718,3 +728,4 @@ td {
 .siguiente-dosis {
   font-weight: 800;
 }
+

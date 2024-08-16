@@ -22,6 +22,7 @@
     <script defer src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
+    <img src="/images/background/stethoscope-solid.svg" class="fondo__icono">
     <div class="contenido">
         <nav>
             <a href="/">
@@ -78,7 +79,7 @@
             <ul>
                 <li>
                     <a id="abrir__tarjetaDatos" data-usuario-id="<%= sesion %>">
-                        <i class="fa-solid fa-address-card"></i>
+                        <i class="fa-solid fa-id-badge"></i>
                         Descargar Tarjeta
                     </a>
                 </li>
@@ -110,9 +111,7 @@
                                         <li>
                                             <span>CURP</span>
                                             <% if (typeof curp !=='undefined' && curp !==null && curp !=='' ) { %>
-                                                <p>
-                                                    <%= curp %>
-                                                </p>
+                                                <p id="curp_doctor"><%= curp %></p>
                                                 <% } else { %>
                                                     <p class="vacio">Vacío</p>
                                                     <% } %>

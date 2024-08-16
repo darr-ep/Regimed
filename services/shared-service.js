@@ -45,11 +45,11 @@ async function consultarCompartidoExistente(idUsuario, idUsuarioCompartido) {
   ]);
 }
 
-async function consultarVerificado(telefono) {
+async function consultarVerificado(usuarioId, telefono) {
   if (telefono) {
     const telefonoLimpio = telefono.replace(/\s/g, "");
-    const query = `SELECT * FROM verificados WHERE telefono = ?`;
-    const verificaciones = await ejecutarConsulta(query, [telefonoLimpio]);
+    const query = `SELECT * FROM verificados WHERE usuario_id = ? AND telefono = ?`;
+    const verificaciones = await ejecutarConsulta(query, [usuarioId, telefonoLimpio]);
     return verificaciones.length > 0 ? "V" : "N";
   } else {
     return "";
