@@ -1394,15 +1394,13 @@ app.post("/datosUsuario", upload.single("imagen"), async (req, res) => {
 
   if (req.file) {
     try {
-      // Si la imagen guardada no es "usuario" y es diferente a la nueva imagen, eliminarla de Cloudinary
       if (imagenGuardada !== "usuario" && imagenGuardada !== imagen) {
         await cloudinary.uploader.destroy(imagenGuardada.split(".")[0]);
-      }
 
-      // Subir la nueva imagen a Cloudinary
-      await cloudinary.uploader.upload(req.file.path, {
-        public_id: imagen.split(".")[0]
-      });
+        await cloudinary.uploader.upload(req.file.path, {
+          public_id: imagen.split(".")[0]
+        });
+      }
 
       fs.unlink(
         path.join(__dirname, "src", "public", "temp", req.file.filename),
