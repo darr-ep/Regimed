@@ -67,8 +67,6 @@ setInterval(() => {
   pool.query('SELECT 1', (err) => {
     if (err) {
       console.error('Error manteniendo la conexión activa:', err);
-    } else {
-      console.log('Conexión activa');
     }
   });
 }, 5000);
