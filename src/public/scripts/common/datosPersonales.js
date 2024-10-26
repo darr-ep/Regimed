@@ -26,7 +26,7 @@ inputImagenUsuario.addEventListener("change", (e) => {
   }
 });
 
-function formatoTelefono(input) { 
+function formatoTelefono(input) {
   var formatted = input.value.replace(/\D/g, "");
 
   formatted = "+" + formatted;
@@ -90,7 +90,8 @@ document
     const formData = new FormData();
     formData.append("nombre", document.getElementById("nombreUsuario").value);
     formData.append("curp", document.getElementById("curpUsuario").value);
-    formData.append("telefono",
+    formData.append(
+      "telefono",
       document.getElementById("telefonoUsuario").value
     );
     formData.append(
@@ -116,12 +117,15 @@ document
       formData.append("imagen", inputImagenUsuario.files[0]);
     } else {
       const nombreImagen = imagenGuardada.src;
+
       var nombreDeLaImagen = obtenerNombreDeImagen(nombreImagen);
+
       formData.append("imagen", nombreDeLaImagen);
     }
 
     const nombreImagen = imagenGuardada.src;
     var nombreDeLaImagen = obtenerNombreDeImagen(nombreImagen);
+
     formData.append("imagenGuardada", nombreDeLaImagen);
 
     function obtenerNombreDeImagen(src) {
@@ -129,7 +133,7 @@ document
       var nombreDelArchivo = partesDeLaUrl[partesDeLaUrl.length - 1];
       var partesDelNombre = nombreDelArchivo.split(".");
       var nombre = partesDelNombre[0];
-      var extension = partesDelNombre[partesDelNombre.length - 1];
+      var extension = partesDelNombre[partesDelNombre.length - 1].split("?")[0];
       return nombre + "." + extension;
     }
 
@@ -141,14 +145,16 @@ document
         if (response.ok) {
           contenedorDatosPersonales.classList.remove("mostrar-ventana");
           ventanaDatosPersonales.classList.remove("agrandar-ventana");
-          document.getElementById("fondo__loader").classList.remove("mostrar-ventana");
+          document
+            .getElementById("fondo__loader")
+            .classList.remove("mostrar-ventana");
           Swal.fire({
             title: "Los datos han sido guardados",
             icon: "success",
             showConfirmButton: false,
             timer: 1500,
           });
-          
+
           setTimeout(function () {
             location.reload();
           }, 1500);
@@ -162,7 +168,9 @@ document
         console.error("Error al enviar el formulario:", error);
         contenedorDatosPersonales.classList.remove("mostrar-ventana");
         ventanaDatosPersonales.classList.remove("agrandar-ventana");
-        document.getElementById("fondo__loader").classList.remove("mostrar-ventana");
+        document
+          .getElementById("fondo__loader")
+          .classList.remove("mostrar-ventana");
         Swal.fire({
           icon: "error",
           title: "Error",

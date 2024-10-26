@@ -16,7 +16,7 @@ const { PDFDocument, rgb } = require("pdf-lib");
 const qr = require("qrcode");
 const twilio = require("twilio");
 const bodyParser = require("body-parser");
-const cloudinary = require('cloudinary').v2;
+const cloudinary = require("cloudinary").v2;
 
 const userService = require("./services/user-service");
 const doctorService = require("./services/doctor-service");
@@ -56,10 +56,10 @@ app.listen(process.env.PORT, function () {
 });
 
 cloudinary.config({
-  cloud_name: 'dcmaesavo',
+  cloud_name: "dcmaesavo",
   api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
-})
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -502,7 +502,14 @@ app.get("/perfil", async (req, res) => {
       return res.redirect("/");
     }
 
-    const [datosUsuario, registrosCompartidos, vacunas, consultas, estudios, historial] = await Promise.all([
+    const [
+      datosUsuario,
+      registrosCompartidos,
+      vacunas,
+      consultas,
+      estudios,
+      historial,
+    ] = await Promise.all([
       userService.consultarUsuario(req.session.idUsuario),
       sharedService.consultarCompartidos(req.session.idUsuario),
       patientService.consultarVacunas(req.session.idUsuario),
@@ -515,21 +522,25 @@ app.get("/perfil", async (req, res) => {
       req.session.idUsuario,
       datosUsuario.telefono
     );
-    
+
     const url = cloudinary.url(datosUsuario.imagen, {
       transformation: [
         {
-          quality: 'auto',
-          fetch_format: 'auto'
+          quality: "auto",
+          fetch_format: "auto",
         },
         {
-          crop: 'auto',
-          gravity: 'auto',
+          crop: "auto",
+          gravity: "auto",
+        },
+        {
           width: 500,
           height: 500,
-      }
-      ]
-    })
+        },
+      ],
+    });
+
+    console.log(url);
 
     res.render("perfil/perfil", {
       nombre_comp: datosUsuario.nombre_comp,
@@ -587,17 +598,19 @@ app.get("/paciente/:curp", async (req, res) => {
     const url = cloudinary.url(datosUsuario.imagen, {
       transformation: [
         {
-          quality: 'auto',
-          fetch_format: 'auto'
+          quality: "auto",
+          fetch_format: "auto",
         },
         {
-          crop: 'auto',
-          gravity: 'auto',
+          crop: "auto",
+          gravity: "auto",
+        },
+        {
           width: 500,
           height: 500,
-      }
-      ]
-    })
+        },
+      ],
+    });
 
     res.render("paciente/paciente", {
       idPaciente: datosUsuario.usuario_id,
@@ -614,7 +627,7 @@ app.get("/paciente/:curp", async (req, res) => {
       vacunas: vacunas,
       consultas: consultas,
       estudios: estudios,
-      historial: historial[0]
+      historial: historial[0],
     });
   } catch (error) {
     console.error("Error al obtener datos:", error);
@@ -624,11 +637,12 @@ app.get("/paciente/:curp", async (req, res) => {
 
 app.get("/usuario/:usuario_id", async (req, res) => {
   try {
-    const datosUsuario = await userService.consultarUsuario(req.params.usuario_id);
+    const datosUsuario = await userService.consultarUsuario(
+      req.params.usuario_id
+    );
 
     if (!datosUsuario) {
       return res.send("Lo siento! Usuario no encontrado");
-
     }
 
     const [vacunas, consultas, estudios, historial] = await Promise.all([
@@ -641,17 +655,19 @@ app.get("/usuario/:usuario_id", async (req, res) => {
     const url = cloudinary.url(datosUsuario.imagen, {
       transformation: [
         {
-          quality: 'auto',
-          fetch_format: 'auto'
+          quality: "auto",
+          fetch_format: "auto",
         },
         {
-          crop: 'auto',
-          gravity: 'auto',
+          crop: "auto",
+          gravity: "auto",
+        },
+        {
           width: 500,
           height: 500,
-      }
-      ]
-    })
+        },
+      ],
+    });
 
     res.render("visor/visor", {
       nombre_comp: datosUsuario.nombre_comp,
@@ -667,7 +683,7 @@ app.get("/usuario/:usuario_id", async (req, res) => {
       vacunas: vacunas,
       consultas: consultas,
       estudios: estudios,
-      historial: historial[0]
+      historial: historial[0],
     });
   } catch (error) {
     console.error("Error al obtener datos del usuario:", error);
@@ -694,7 +710,14 @@ app.get("/doctor", async (req, res) => {
       return res.redirect("/");
     }
 
-    const [datosUsuario, registrosCompartidos, vacunas, consultas, estudios, historial] = await Promise.all([
+    const [
+      datosUsuario,
+      registrosCompartidos,
+      vacunas,
+      consultas,
+      estudios,
+      historial,
+    ] = await Promise.all([
       userService.consultarUsuario(req.session.idUsuario),
       sharedService.consultarCompartidos(req.session.idUsuario),
       patientService.consultarVacunas(req.session.idUsuario),
@@ -711,17 +734,19 @@ app.get("/doctor", async (req, res) => {
     const url = cloudinary.url(datosUsuario.imagen, {
       transformation: [
         {
-          quality: 'auto',
-          fetch_format: 'auto'
+          quality: "auto",
+          fetch_format: "auto",
         },
         {
-          crop: 'auto',
-          gravity: 'auto',
+          crop: "auto",
+          gravity: "auto",
+        },
+        {
           width: 500,
           height: 500,
-      }
-      ]
-    })
+        },
+      ],
+    });
 
     res.render("doctor/doctor", {
       nombre_comp: datosUsuario.nombre_comp,
@@ -941,31 +966,33 @@ app.get("/tarjeta", async (req, res) => {
     const cloudinaryImageUrl = cloudinary.url(datosUsuario.imagen, {
       transformation: [
         {
-          quality: 'auto',
-          fetch_format: 'auto'
+          quality: "auto",
+          fetch_format: "auto",
         },
         {
-          crop: 'auto',
-          gravity: 'auto',
+          crop: "auto",
+          gravity: "auto",
+        },
+        {
           width: 500,
           height: 500,
-        }
-      ]
+        },
+      ],
     });
 
     const response = await fetch(cloudinaryImageUrl);
     const imageBuffer = await response.buffer();
-    
+
     // Determinar el tipo de imagen y embederla en el PDF
     let image;
-    const imageExtension = datosUsuario.imagen.split('.').pop().toLowerCase();
+    const imageExtension = datosUsuario.imagen.split(".").pop().toLowerCase();
 
-    if (imageExtension === 'png') {
+    if (imageExtension === "png") {
       image = await pdfDoc.embedPng(imageBuffer);
-    } else if (imageExtension === 'jpg' || imageExtension === 'jpeg') {
+    } else if (imageExtension === "jpg" || imageExtension === "jpeg") {
       image = await pdfDoc.embedJpg(imageBuffer);
     } else {
-      throw new Error('Formato de imagen no soportado');
+      throw new Error("Formato de imagen no soportado");
     }
 
     const size = page.getWidth() / 2;
@@ -1370,7 +1397,9 @@ const storage = multer.diskStorage({
 
   filename: function (req, file, cb) {
     const extension = file.originalname.split(".").pop();
-    const nuevoNombre = `${req.session.idUsuario.slice(-5)}_${Date.now()}.${extension}`;
+    const nuevoNombre = `${req.session.idUsuario.slice(
+      -5
+    )}_${Date.now()}.${extension}`;
     cb(null, nuevoNombre);
   },
 });
@@ -1394,15 +1423,13 @@ app.post("/datosUsuario", upload.single("imagen"), async (req, res) => {
 
   if (req.file) {
     try {
-      // Si la imagen guardada no es "usuario" y es diferente a la nueva imagen, eliminarla de Cloudinary
       if (imagenGuardada !== "usuario" && imagenGuardada !== imagen) {
         await cloudinary.uploader.destroy(imagenGuardada.split(".")[0]);
-      }
 
-      // Subir la nueva imagen a Cloudinary
-      await cloudinary.uploader.upload(req.file.path, {
-        public_id: imagen.split(".")[0]
-      });
+        await cloudinary.uploader.upload(req.file.path, {
+          public_id: imagen.split(".")[0]
+        });
+      }
 
       fs.unlink(
         path.join(__dirname, "src", "public", "temp", req.file.filename),
@@ -1707,7 +1734,7 @@ app.get("/estudio/:estudioId", async (req, res) => {
   const idEstudio = req.params.estudioId;
 
   try {
-    const estudio = await patientService.consultarEstudiosConIdEstudio (
+    const estudio = await patientService.consultarEstudiosConIdEstudio(
       idEstudio
     );
 
@@ -1766,7 +1793,7 @@ app.post("/editarHistorial", async (req, res) => {
     heredoOtrosAbuelos: datos.heredoOtrosAbuelos || "",
     heredoOtrosPadre: datos.heredoOtrosPadre || "",
     heredoOtrosMadre: datos.heredoOtrosMadre || "",
-    heredoOtrosHermanos: datos.heredoOtrosHermanos || ""
+    heredoOtrosHermanos: datos.heredoOtrosHermanos || "",
   };
 
   try {
@@ -1775,10 +1802,14 @@ app.post("/editarHistorial", async (req, res) => {
       req.session.idDoctor,
       historialMedico
     );
-    res.status(200).json({ mensaje: "Historial médico actualizado correctamente" });
+    res
+      .status(200)
+      .json({ mensaje: "Historial médico actualizado correctamente" });
   } catch (error) {
     console.error("Error al actualizar el historial médico:", error);
-    res.status(500).json({ mensaje: "Error al actualizar el historial médico" });
+    res
+      .status(500)
+      .json({ mensaje: "Error al actualizar el historial médico" });
   }
 });
 
@@ -1789,30 +1820,33 @@ app.post("/tarjetaPerdida", async (req, res) => {
   const uuidHash = hashUUID.digest("hex");
 
   try {
-    await sharedService.actualizarId(
-      uuidHash,
-      req.session.idUsuario
-    );
-    res.status(200).json({ mensaje: "Id del usuario actualizada correctamente" });
+    await sharedService.actualizarId(uuidHash, req.session.idUsuario);
+    res
+      .status(200)
+      .json({ mensaje: "Id del usuario actualizada correctamente" });
   } catch (error) {
     console.error("Error al actualizar la id del usuario:", error);
     res.status(500).json({ mensaje: "Error al actualizar la id del usuario" });
   }
-})
+});
 
 app.post("/eliminarRegistro/:usuarioId", async (req, res) => {
   try {
-    await sharedService.eliminarCompartido(req.session.idUsuario, req.params.usuarioId);
+    await sharedService.eliminarCompartido(
+      req.session.idUsuario,
+      req.params.usuarioId
+    );
 
     res.json({
       codigo: "Valido",
-      mensaje: "El registro ha sido eliminado exitosamente."
+      mensaje: "El registro ha sido eliminado exitosamente.",
     });
   } catch (error) {
     console.error("Error eliminando el registro:", error);
     res.json({
       codigo: "Erroneo",
-      mensaje: "Hubo un problema al intentar eliminar el registro. Inténtalo de nuevo."
+      mensaje:
+        "Hubo un problema al intentar eliminar el registro. Inténtalo de nuevo.",
     });
   }
 });
