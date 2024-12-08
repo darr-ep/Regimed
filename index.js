@@ -1397,7 +1397,10 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 app.post("/datosUsuario", upload.single("imagen"), async (req, res) => {
+  console.log("a")
   const datos = req.body;
+  console.log("b")
+  console.log(datos)
 
   const nombre = datos.nombre;
   const curp = datos.curp;
