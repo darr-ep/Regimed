@@ -137,6 +137,8 @@ document
       return nombre + "." + extension;
     }
 
+    console.log(formData)
+
     fetch("/datosUsuario", {
       method: "POST",
       body: formData,

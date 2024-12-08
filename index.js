@@ -530,12 +530,10 @@ app.get("/perfil", async (req, res) => {
           fetch_format: "auto",
         },
         {
-          crop: "auto",
-          gravity: "auto",
-        },
-        {
           width: 500,
           height: 500,
+          crop: "auto",
+          gravity: "auto",
         },
       ],
     });
@@ -602,12 +600,10 @@ app.get("/paciente/:curp", async (req, res) => {
           fetch_format: "auto",
         },
         {
-          crop: "auto",
-          gravity: "auto",
-        },
-        {
           width: 500,
           height: 500,
+          crop: "auto",
+          gravity: "auto",
         },
       ],
     });
@@ -659,12 +655,10 @@ app.get("/usuario/:usuario_id", async (req, res) => {
           fetch_format: "auto",
         },
         {
-          crop: "auto",
-          gravity: "auto",
-        },
-        {
           width: 500,
           height: 500,
+          crop: "auto",
+          gravity: "auto",
         },
       ],
     });
@@ -738,12 +732,10 @@ app.get("/doctor", async (req, res) => {
           fetch_format: "auto",
         },
         {
-          crop: "auto",
-          gravity: "auto",
-        },
-        {
           width: 500,
           height: 500,
+          crop: "auto",
+          gravity: "auto",
         },
       ],
     });
@@ -970,12 +962,10 @@ app.get("/tarjeta", async (req, res) => {
           fetch_format: "auto",
         },
         {
-          crop: "auto",
-          gravity: "auto",
-        },
-        {
           width: 500,
           height: 500,
+          crop: "auto",
+          gravity: "auto",
         },
       ],
     });
@@ -1409,6 +1399,8 @@ const upload = multer({ storage: storage });
 app.post("/datosUsuario", upload.single("imagen"), async (req, res) => {
   const datos = req.body;
 
+  console.log(datos);
+
   const nombre = datos.nombre;
   const curp = datos.curp;
   const telefono = datos.telefono;
@@ -1427,7 +1419,7 @@ app.post("/datosUsuario", upload.single("imagen"), async (req, res) => {
         await cloudinary.uploader.destroy(imagenGuardada.split(".")[0]);
 
         await cloudinary.uploader.upload(req.file.path, {
-          public_id: imagen.split(".")[0]
+          public_id: imagen.split(".")[0],
         });
       }
 
