@@ -604,6 +604,8 @@ app.get("/paciente/:curp", async (req, res) => {
         {
           crop: "auto",
           gravity: "auto",
+        },
+        {
           width: 500,
           height: 500,
         },
@@ -659,6 +661,8 @@ app.get("/usuario/:usuario_id", async (req, res) => {
         {
           crop: "auto",
           gravity: "auto",
+        },
+        {
           width: 500,
           height: 500,
         },
@@ -736,6 +740,8 @@ app.get("/doctor", async (req, res) => {
         {
           crop: "auto",
           gravity: "auto",
+        },
+        {
           width: 500,
           height: 500,
         },
@@ -966,6 +972,8 @@ app.get("/tarjeta", async (req, res) => {
         {
           crop: "auto",
           gravity: "auto",
+        },
+        {
           width: 500,
           height: 500,
         },
@@ -1419,7 +1427,11 @@ app.post("/datosUsuario", upload.single("imagen"), async (req, res) => {
         await cloudinary.uploader.destroy(imagenGuardada.split(".")[0]);
 
         await cloudinary.uploader.upload(req.file.path, {
+<<<<<<< HEAD
           public_id: imagen.split(".")[0],
+=======
+          public_id: imagen.split(".")[0]
+>>>>>>> 840eaca49c273166a1340a7409b4629b751c70c4
         });
       }
 
