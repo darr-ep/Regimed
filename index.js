@@ -530,12 +530,10 @@ app.get("/perfil", async (req, res) => {
           fetch_format: "auto",
         },
         {
-          crop: "auto",
-          gravity: "auto",
-        },
-        {
           width: 500,
           height: 500,
+          crop: "auto",
+          gravity: "auto",
         },
       ],
     });
@@ -602,12 +600,10 @@ app.get("/paciente/:curp", async (req, res) => {
           fetch_format: "auto",
         },
         {
-          crop: "auto",
-          gravity: "auto",
-        },
-        {
           width: 500,
           height: 500,
+          crop: "auto",
+          gravity: "auto",
         },
       ],
     });
@@ -659,12 +655,10 @@ app.get("/usuario/:usuario_id", async (req, res) => {
           fetch_format: "auto",
         },
         {
-          crop: "auto",
-          gravity: "auto",
-        },
-        {
           width: 500,
           height: 500,
+          crop: "auto",
+          gravity: "auto",
         },
       ],
     });
@@ -738,12 +732,10 @@ app.get("/doctor", async (req, res) => {
           fetch_format: "auto",
         },
         {
-          crop: "auto",
-          gravity: "auto",
-        },
-        {
           width: 500,
           height: 500,
+          crop: "auto",
+          gravity: "auto",
         },
       ],
     });
@@ -970,12 +962,10 @@ app.get("/tarjeta", async (req, res) => {
           fetch_format: "auto",
         },
         {
-          crop: "auto",
-          gravity: "auto",
-        },
-        {
           width: 500,
           height: 500,
+          crop: "auto",
+          gravity: "auto",
         },
       ],
     });
