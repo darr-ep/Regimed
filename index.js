@@ -1399,8 +1399,6 @@ const upload = multer({ storage: storage });
 app.post("/datosUsuario", upload.single("imagen"), async (req, res) => {
   const datos = req.body;
 
-  console.log(datos);
-
   const nombre = datos.nombre;
   const curp = datos.curp;
   const telefono = datos.telefono;

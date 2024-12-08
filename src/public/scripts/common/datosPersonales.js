@@ -137,7 +137,10 @@ document
       return nombre + "." + extension;
     }
 
-    console.log(formData)
+    console.log("Contenido del FormData:");
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}:`, value instanceof File ? value.name : value);
+    }
 
     fetch("/datosUsuario", {
       method: "POST",
