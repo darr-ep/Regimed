@@ -352,7 +352,7 @@ img {
                         </v:roundrect>
                     <![endif]-->
 <a href="${
-      process.env.URL_TOKEN + token
+      process.env.URL + "verificar_correo?token=" + token
     }" style="white-space:nowrap;background-color:#00a3ff; display:inline-block;text-align:center;color:#ffffff;font-weight:700;font-family:Inter,Arial,sans-serif;font-size:14px;line-height:45px;width:147px; -webkit-text-size-adjust:none;mso-hide:all;box-shadow: 0px 2px 0px 0px rgba(0, 0, 0, 0.0430000014603138);">Verificar email</a>
 </div>
 </td>
@@ -495,6 +495,8 @@ app.get("/registro", (req, res) => {
 });
 
 app.get("/perfil", async (req, res) => {
+
+  req.session.idUsuario = "3fcf27311377fd4ee32cb2ff0ab24af6c371f3d6bf4371a57d52380d75feebd3"
   try {
     if (req.session.idDoctor) {
       return res.redirect("/doctor");
@@ -873,7 +875,8 @@ async function generarNumeroAleatorioUnico(req, res) {
     const numeroAleatorio = consultaCodigo[0].codigo;
 
     const token =
-      process.env.URL_AGREGAR_REGISTRO +
+      process.env.URL +
+      "agregarRegistro?token=" +
       generarToken3m({
         usuarioId: consultaCodigo[0].usuario_id,
         numero: consultaCodigo[0].codigo,
@@ -892,7 +895,8 @@ async function generarNumeroAleatorioUnico(req, res) {
       );
 
       const token =
-        process.env.URL_AGREGAR_REGISTRO +
+        process.env.URL +
+        "agregarRegistro?token=" +
         generarToken3m({
           usuarioId: req.session.idUsuario,
           numero: numeroAleatorio,
@@ -926,7 +930,7 @@ app.get("/tarjeta", async (req, res) => {
     const pdfDoc = await PDFDocument.load(existingPdfBytes);
     const page = pdfDoc.getPages()[0];
 
-    const qrData = process.env.URL_QRTARJETA + req.session.idUsuario;
+    const qrData = process.env.URL + "usuario/" + req.session.idUsuario;
     const qrWidth = 130;
     const qrHeight = 130;
     const qrOptions = {
@@ -1204,6 +1208,8 @@ app.post("/registroDoctor/:cedula/:especialidad/:captcha", async (req, res) => {
 app.post("/registro", async (req, res) => {
   const datos = req.body;
 
+  console.log(datos);
+
   const nombre = datos.nombre.trim();
   const apellido_paterno = datos.apellido_paterno.trim();
   const apellido_materno = datos.apellido_materno.trim();
@@ -1397,10 +1403,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 app.post("/datosUsuario", upload.single("imagen"), async (req, res) => {
-  console.log("a")
   const datos = req.body;
-  console.log("b")
-  console.log(datos)
 
   const nombre = datos.nombre;
   const curp = datos.curp;

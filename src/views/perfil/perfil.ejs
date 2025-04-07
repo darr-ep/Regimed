@@ -31,9 +31,14 @@
     <img src="/images/background/star-of-life-solid.svg" class="fondo__icono">
     <div class="contenido">
         <nav>
-            <a href="/">
-                <img class="logo" src="/images/logo/LogoCompPositive.png" href="">
-            </a>
+            <div class="nav__logo">
+                <a onclick="abrirAside()" class="abrir__aside">
+                    <i class="fa-solid fa-bars"></i>
+                </a>
+                <a href="/">
+                    <img class="logo" src="/images/logo/LogoCompPositive.png" href="">
+                </a>
+            </div>
             <ul>
                 <li>
                     <a href="/perfil">Perfil</a>
@@ -43,8 +48,12 @@
                 </li>
             </ul>
         </nav>
-        <aside>
+        <div id="dark_background" class="dark_background"></div>
+        <aside id="aside">
             <ul>
+                <a onclick="cerrarAside()" class="cerrar__aside">
+                    <i class="fa-solid fa-xmark"></i>
+                </a>
                 <li>
                     <a href="#informacion" class="seleccionado">
                         <i class="fa-solid fa-user"></i>
