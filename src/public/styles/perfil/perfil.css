@@ -561,7 +561,9 @@ button.nuevo__registro:hover {
 }
 
 .modal {
+  scale: 0.8;
   max-width: 1000px;
+  overflow-y: auto;
   gap: 30px;
   display: flex;
   flex-direction: column;
@@ -569,7 +571,7 @@ button.nuevo__registro:hover {
   padding: 30px;
   border-radius: 20px;
   filter: drop-shadow(rgba(0, 0, 0, 0.15) 0px 6px 4px);
-  animation-duration: 0.4s;
+  transition: 0.4s ease;
 }
 
 .modal__contenido {
@@ -589,7 +591,7 @@ button.nuevo__registro:hover {
   border-radius: 0.5rem;
   padding: 0 1rem;
   border: 2px solid transparent;
-  font-size: 20px;
+  font-size: var(--font-size-base);
   transition: border-color 0.3s cubic-bezier(0.25, 0.01, 0.25, 1) 0s,
     color 0.3s cubic-bezier(0.25, 0.01, 0.25, 1) 0s,
     background 0.2s cubic-bezier(0.25, 0.01, 0.25, 1) 0s;
@@ -704,30 +706,13 @@ i.fa-circle-xmark {
   color: var(--color-danger);
 }
 
-@keyframes bounceIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.1);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05);
-  }
-  80% {
-    transform: scale(0.95);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
 .mostrar-ventana {
   opacity: 1;
   pointer-events: auto;
 }
 
 .agrandar-ventana {
-  animation-name: bounceIn;
+  scale: 1;
 }
 
 .consulta__contenido {
@@ -765,6 +750,7 @@ i.fa-circle-xmark {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  overflow: auto;
 }
 
 .consulta__medicamento {
@@ -905,16 +891,11 @@ td {
     width: 250px;
     left: -250px;
     z-index: 2;
-    grid-area: aside;
     position: fixed;
     top: 0;
-    background-color: var(--color-primary);
-    color: white;
-    display: flex;
     height: 100vh;
-    flex-direction: column;
-    justify-content: space-between;
     transition: left 0.4s ease;
+    padding-bottom: 50px;
   }
 
   nav {
@@ -961,6 +942,25 @@ td {
     padding: 5px;
     cursor: pointer;
     margin: 0;
+  }
+
+  .seccion__vacunas--contenedor,
+  .seccion__consultas--contenedor {
+    max-height: 500px;
+  }
+}
+
+@media (max-width: 1050px) {
+  .informacion__primero > ul {
+    flex-direction: column;
+  }
+
+  .input-group input {
+    width: 350px;
+  }
+
+  .informacion__lateral--editar_perfil {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1024,7 +1024,7 @@ td {
   .logo {
     height: 30px;
   }
-  
+
   main {
     padding: 0 20px 20px;
   }
@@ -1047,6 +1047,16 @@ td {
     height: 200px;
   }
 
+  .editar-imagen {
+    width: 200px;
+    height: 200px;
+  }
+
+  .editar-imagen input {
+    width: 200px;
+    height: 200px;
+  }
+
   nav ul {
     display: flex;
     gap: 30px;
@@ -1054,6 +1064,30 @@ td {
 
   .seccion__titulo--boton p {
     display: none;
+  }
+
+  #formularioDatosPersonales {
+    flex-direction: column;
+  }
+
+  .modal {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .input-group input {
+    width: 100%;
+  }
+
+  .modal .lateral {
+    width: 100%;
+  }
+
+  .modal__titulo {
+    justify-content: center;
+    text-align: center;
   }
 }
 
@@ -1073,14 +1107,17 @@ td {
     gap: 20px;
   }
 
-  .seccion__titulo--titulo i {
+  .seccion__titulo--titulo i,
+  .modal__titulo i {
     display: none;
   }
-}
 
-@media (max-width: 460px) {
-  /* .seccion__titulo {
-    flex-direction: column;
-    gap: 10px;
-  } */
+  #ordenarPorVacunas,
+  #ordenarPorConsultas,
+  #mostrarVacunas,
+  #mostrarConsultas,
+  #ordenarPorEstudios,
+  #mostrarEstudios {
+    width: 100%;
+  }
 }

@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const medicamentosTemplate = `
         <tr>
             <td><span>Nombre</span></td>
-            <td><span>Vía Administración</span></td>
+            <td><span>Administración</span></td>
             <td><span>Dosis</span></td>
             <td><span>Frecuencia</span></td>
             <td><span>Duración</span></td>
