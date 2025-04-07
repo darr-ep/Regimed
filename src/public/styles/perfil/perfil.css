@@ -13,6 +13,10 @@
   --font-size-base: 20px;
   --font-size-small: 16px;
   --font-size-large: 32px;
+  --font-size-h1: 40px;
+  --font-size-h2: 28px;
+  --font-size-icon-h1: 28px;
+  --font-size-icon-h2: 20px;
 }
 
 /* ---------------------- Reset y Estilos Globales ---------------------- */
@@ -46,7 +50,8 @@ p {
 }
 
 /* ---------------------- Tipografía ---------------------- */
-h1, h2 {
+h1,
+h2 {
   font-family: var(--font-secondary);
   color: var(--color-tertiary);
 }
@@ -60,12 +65,12 @@ h1 {
 }
 
 h1 i {
-  font-size: 28px;
+  font-size: var(--font-size-icon-h1);
 }
 
 h2.advertencia {
   color: black;
-  font-size: 22px;
+  font-size: var(--font-size-h2);
 }
 
 span {
@@ -74,19 +79,28 @@ span {
 }
 
 .swal2-icon {
-  font-size: 16px;
+  font-size: var(--font-size-small);
 }
 
 .seccion {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  /* gap: 10px; */
 }
 
 .seccion__titulo {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
   margin: 30px 0 20px 0;
+  gap: 20px;
+  text-align: center;
+}
+
+.primera__seccion {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 
 .seccion__contenido {
@@ -125,6 +139,7 @@ span {
 
 /* ---------------------- Navegación ---------------------- */
 nav {
+  gap: 30px;
   grid-area: nav;
   position: sticky;
   top: 0;
@@ -141,6 +156,7 @@ nav {
 nav ul {
   display: flex;
   gap: 50px;
+  align-items: center;
 }
 
 nav a {
@@ -170,6 +186,12 @@ a.cerrar__aside {
 
 a.abrir__aside {
   display: none;
+}
+
+.cerrar__verificacion-telefono {
+  position: absolute;
+  top: 30px;
+  right: 30px;
 }
 
 aside i::before {
@@ -348,12 +370,27 @@ button.boton-cancelar:hover {
   align-items: center;
 }
 
+.informacion__primero > p {
+  font-weight: 600;
+  font-size: var(--font-size-base);
+}
+
 .informacion__lateral {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   justify-content: space-between;
+  width: 40%;
+}
+
+.informacion__lateral--editar_perfil {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-content: space-between;
+  align-content: space-between;
 }
 
 .vacuna p {
-  font-size: 16px;
+  font-size: val(--font-size-small);
 }
 
 .vacuna button.boton-datos,
@@ -397,18 +434,14 @@ button.boton-cancelar:hover {
 
 .consulta p,
 .estudio p {
-  font-size: 16px;
+  font-size: var(--font-size-small);
 }
 
-p.vacuna__nombre,
-p.estudio__nombre {
+.vacuna__nombre,
+.estudio__nombre,
+.observaciones {
   font-weight: 700;
-  font-size: 22px;
-}
-
-p.observaciones {
-  font-weight: 700;
-  font-size: 18px;
+  font-size: var(--font-size-base);
 }
 
 .seccion__consultas {
@@ -507,8 +540,10 @@ button.nuevo__registro:hover {
 
 .seccion__registros {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-rows: repeat(auto-fit, minmax(200px, 1fr));
+  justify-items: center;
 }
 
 .fondo__modal {
@@ -571,7 +606,7 @@ button.nuevo__registro:hover {
 .label {
   display: block;
   margin-bottom: 0.3rem;
-  font-size: 0.9rem;
+  font-size: var(--font-size-small);
   font-weight: bold;
   color: #05060f99;
   transition: color 0.3s cubic-bezier(0.25, 0.01, 0.25, 1) 0s;
@@ -635,8 +670,9 @@ button.nuevo__registro:hover {
 }
 
 .emergente {
-  width: 400px;
-  padding: 40px;
+  max-width: 400px;
+  padding: 30px;
+  margin-left: 20px;
   position: fixed;
   bottom: 20px;
   right: 20px;
@@ -763,10 +799,6 @@ i.fa-circle-xmark {
   max-width: 1200px;
 }
 
-#modal__agregarConsulta {
-  width: 1200px;
-}
-
 .modal__contenido--historial,
 .seccion__contenido--historial {
   display: flex;
@@ -845,7 +877,7 @@ td {
 .borrar__registroCompartido:active {
   transform: scale(0.9);
 }
-  
+
 .dark_background {
   opacity: 0;
   pointer-events: none;
@@ -905,7 +937,7 @@ td {
     justify-content: end;
   }
 
-  a.cerrar__aside i{
+  a.cerrar__aside i {
     font-size: 30px;
     margin: 20px 20px 10px;
     padding: 5px;
@@ -918,17 +950,137 @@ td {
     align-items: center;
   }
 
-  a.abrir__aside{
+  a.abrir__aside {
     display: block;
     padding-right: 20px;
-    
   }
 
-  a.abrir__aside i{
+  a.abrir__aside i {
     font-size: 30px;
     margin: 20px 20px 10px;
     padding: 5px;
     cursor: pointer;
     margin: 0;
   }
+}
+
+@media (max-width: 870px) {
+  .informacion__general {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    justify-content: space-between;
+  }
+
+  .informacion__lateral {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    width: 100%;
+  }
+
+  .seccion__contenido--vacunas {
+    grid-template-columns: 1fr;
+  }
+
+  .seccion__consultas {
+    flex-direction: column;
+  }
+
+  .nuevo__registro i {
+    font-size: 75px;
+  }
+}
+
+@media (max-width: 660px) {
+  nav {
+    padding: 10px 10px;
+  }
+
+  .informacion__general {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    justify-content: space-between;
+  }
+
+  .informacion__lateral {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+
+  a.cerrar__aside i {
+    font-size: 20px;
+  }
+
+  a.abrir__aside {
+    padding-right: 10px;
+  }
+
+  a.abrir__aside i {
+    font-size: 20px;
+  }
+
+  .logo {
+    height: 30px;
+  }
+  
+  main {
+    padding: 0 20px 20px;
+  }
+
+  .informacion__general {
+    border-radius: 10px;
+  }
+
+  .informacion__primero ul {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .informacion__primero p {
+    width: 100%;
+  }
+
+  .informacion__general--informacion img {
+    width: 200px;
+    height: 200px;
+  }
+
+  nav ul {
+    display: flex;
+    gap: 30px;
+  }
+
+  .seccion__titulo--boton p {
+    display: none;
+  }
+}
+
+@media (max-width: 540px) {
+  :root {
+    --font-size-base: calc(20px * 0.8);
+    --font-size-small: calc(16px * 0.8);
+    --font-size-large: calc(32px * 0.8);
+    --font-size-h1: calc(40px * 0.8);
+    --font-size-h2: calc(28px * 0.8);
+    --font-size-icon-h1: calc(28px * 0.8);
+    --font-size-icon-h2: calc(20px * 0.8);
+  }
+
+  nav ul {
+    display: flex;
+    gap: 20px;
+  }
+
+  .seccion__titulo--titulo i {
+    display: none;
+  }
+}
+
+@media (max-width: 460px) {
+  /* .seccion__titulo {
+    flex-direction: column;
+    gap: 10px;
+  } */
 }

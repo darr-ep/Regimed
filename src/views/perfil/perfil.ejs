@@ -48,7 +48,7 @@
                 </li>
             </ul>
         </nav>
-        <div id="dark_background" class="dark_background"></div>
+        <div id="dark_background" class="dark_background" onclick="cerrarAside()"></div>
         <aside id="aside">
             <ul>
                 <a onclick="cerrarAside()" class="cerrar__aside">
@@ -108,13 +108,13 @@
         </aside>
         <main id="informacion">
             <div class="seccion">
-                <div class="seccion__titulo">
+                <div class="seccion__titulo primera__seccion">
                     <h1 class="seccion__titulo--titulo">
                         <i class="fa-solid fa-user"></i> Información General
                     </h1>
                     <div class="seccion__titulo--boton">
                         <button type="button" name="botonDatosPersonales" class="boton-datos" id="abrir__informacion">
-                            <i class='fa-solid fa-pen-to-square'></i> Editar
+                            <i class='fa-solid fa-pen-to-square'></i> <p>Editar</p>
                         </button>
                     </div>
                 </div>
@@ -199,8 +199,6 @@
                                     <p class="vacio">Vacío</p>
                                     <% } %>
                         </li>
-                    </ul>
-                    <ul class="informacion__general--informacion informacion__lateral">
                         <li>
                             <span>Estatura</span>
                             <% if (typeof estatura !=='undefined' && estatura !==null && estatura !=='' && estatura
@@ -250,6 +248,8 @@
                                         <% } %>
                         </li>
                     </ul>
+                    <!-- <ul class="informacion__general--informacion informacion__lateral">
+                    </ul> -->
                 </div>
             </div>
 
@@ -451,7 +451,7 @@
                             <% vacunas.forEach(vacunas=> { %>
                                 <div class="vacuna">
                                     <div class="vacuna--informacion">
-                                        <p class="vacuna__nombre"><%= vacunas.vacuna_aplicada %></p>
+                                        <span class="vacuna__nombre"><%= vacunas.vacuna_aplicada %></span>
                                         <p>Fabricante: <%= vacunas.fabricante %></p>
                                         <p>Aplicación: <%= vacunas.fechaAplicacion %></p>
                                         <p>Dosis: <%= vacunas.dosisAdministrada %></p>
@@ -504,9 +504,9 @@
                             <% consultas.forEach(consultas=> { %>
                                 <div class="consulta">
                                     <div class="consulta--informacion">
-                                        <p class="observaciones">
+                                        <span class="observaciones">
                                             <%= consultas.observaciones %>
-                                        </p>
+                                        </span>
                                         <p>Profesional: <%= consultas.nombre %>
                                         </p>
                                         <p>Cédula del profesional: <%= consultas.cedula %>
@@ -551,9 +551,9 @@
                             <% estudios.forEach(estudios=> { %>
                                 <div class="estudio">
                                     <div class="estudio--informacion">
-                                        <p class="estudio__nombre">
+                                        <span class="estudio__nombre">
                                             <%= estudios.tipoEstudio %>
-                                        </p>
+                                        </span>
                                         <p>Motivo: <%= estudios.motivoEstudio %>
                                         </p>
                                         <p>Profesional: <%= estudios.nombre %>
@@ -654,7 +654,7 @@
                         </li>
                     </ul>
                 </div>
-                <ul class="informacion__general--informacion informacion__lateral">
+                <ul class="informacion__general--informacion informacion__lateral--editar_perfil">
                     <li>
                         <div class="input-group">
                             <label class="label">Peso (Kg)</label>
@@ -689,8 +689,6 @@
                                     <% } %>
                         </div>
                     </li>
-                </ul>
-                <ul class="informacion__general--informacion informacion__lateral">
                     <li>
                         <div class="input-group">
                             <label class="label">Estatura (cm)</label>
@@ -897,6 +895,9 @@
 
     <%if (typeof telefono !=='undefined' && telefono !==null && telefono !=='' && telefonoVerificado==="N" ) {%>
         <div class="emergente">
+            <a onclick="cerrarVerificacion()" class="cerrar__verificacion-telefono">
+                <i class="fa-solid fa-xmark"></i>
+            </a>
             <i class="fa-solid fa-triangle-exclamation"></i><strong>Verificación restante</strong>Requieres verificar tu
             número celular para obtener atención médica.
             <button id="enviarSMS" class="boton-datos verificar">

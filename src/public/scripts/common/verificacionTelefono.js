@@ -74,3 +74,7 @@ verificarTelefono.addEventListener("click", () => {
       }
     });
 });
+
+const cerrarVerificacion = () => {
+  document.querySelector("emergente").style.display = "none";
+}

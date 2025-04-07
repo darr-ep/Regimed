@@ -52,7 +52,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "src", "public")));
 
 app.listen(process.env.PORT, function () {
-  console.log("Servidor activo: " + process.env.PORT);
+  console.log("Servidor activo: http://localhost:" + process.env.PORT);
 });
 
 cloudinary.config({
@@ -495,8 +495,6 @@ app.get("/registro", (req, res) => {
 });
 
 app.get("/perfil", async (req, res) => {
-
-  req.session.idUsuario = "3fcf27311377fd4ee32cb2ff0ab24af6c371f3d6bf4371a57d52380d75feebd3"
   try {
     if (req.session.idDoctor) {
       return res.redirect("/doctor");
