@@ -192,6 +192,7 @@ a.abrir__aside {
   position: absolute;
   top: 30px;
   right: 30px;
+  cursor: pointer;
 }
 
 aside i::before {
