@@ -811,6 +811,9 @@ i.fa-circle-xmark {
 .contenedor__antecedentesHeredofamiliares {
   overflow-x: auto;
   width: 100%;
+}
+
+.modal .contenedor__antecedentesHeredofamiliares {
   min-height: 430px;
 }
 

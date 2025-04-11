@@ -812,7 +812,6 @@ i.fa-circle-xmark {
 .contenedor__antecedentesHeredofamiliares {
   overflow-x: auto;
   width: 100%;
-  min-height: 415px;
 }
 
 td:not(:last-child) {
