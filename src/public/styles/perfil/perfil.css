@@ -40,11 +40,6 @@ li {
   list-style: none;
 }
 
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
 p {
   font-size: var(--font-size-base);
 }
@@ -73,7 +68,9 @@ h2.advertencia {
   font-size: var(--font-size-h2);
 }
 
-span {
+span,
+.contenedor__antecedentesHeredofamiliares td,
+.contenedor__antecedentesHeredofamiliares th {
   font-size: var(--font-size-small);
   font-weight: 700;
 }
@@ -85,22 +82,15 @@ span {
 .seccion {
   display: flex;
   flex-direction: column;
-  /* gap: 10px; */
 }
 
 .seccion__titulo {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  margin: 30px 0 20px 0;
+  margin: 30px 0 20px;
   gap: 20px;
   text-align: center;
-}
-
-.primera__seccion {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
 }
 
 .seccion__contenido {
@@ -139,6 +129,7 @@ span {
 
 /* ---------------------- Navegación ---------------------- */
 nav {
+  height: 67px;
   gap: 30px;
   grid-area: nav;
   position: sticky;
@@ -150,7 +141,6 @@ nav {
   justify-content: space-between;
   padding: 10px 20px;
   color: white;
-  border-bottom: 2px solid var(--color-light-gray);
 }
 
 nav ul {
@@ -161,6 +151,8 @@ nav ul {
 
 nav a {
   color: white;
+  text-decoration: none;
+  color: inherit;
 }
 
 .logo {
@@ -178,6 +170,7 @@ aside {
   height: calc(100vh - 67px);
   flex-direction: column;
   justify-content: space-between;
+  border-top: 2px solid white;
 }
 
 a.cerrar__aside {
@@ -260,6 +253,7 @@ button {
 }
 
 button.boton-datos {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 5px;
@@ -292,7 +286,7 @@ button.boton-cancelar:hover {
 .informacion__general {
   display: flex;
   gap: 50px;
-  justify-content: space-between;
+  justify-content: space-evenly;
 }
 
 .informacion__general--informacion {
@@ -564,6 +558,8 @@ button.nuevo__registro:hover {
 .modal {
   scale: 0.8;
   max-width: 1000px;
+  min-width: 600px;
+  max-height: calc(100vh - 40px);
   overflow-y: auto;
   gap: 30px;
   display: flex;
@@ -645,9 +641,7 @@ button.nuevo__registro:hover {
 }
 
 .modal__codigos {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 30px;
+  display: flex;
 }
 
 .modal__codigo {
@@ -658,12 +652,25 @@ button.nuevo__registro:hover {
   gap: 10px;
 }
 
+.modal__codigo--input {
+  width: 100%;
+}
+
 .modal__codigo span {
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 28px;
   height: 100%;
+}
+
+.modal__codigo:first-child {
+  padding-right: 30px;
+  border-right: 1px solid #ececec;
+}
+
+.modal__codigo:last-child {
+  padding-left: 30px;
 }
 
 .modal__codigos > p {
@@ -781,11 +788,6 @@ i.fa-circle-xmark {
   gap: 10px;
 }
 
-#modal__editarHistorial {
-  height: 90vh;
-  max-width: 1200px;
-}
-
 .modal__contenido--historial,
 .seccion__contenido--historial {
   display: flex;
@@ -802,21 +804,15 @@ i.fa-circle-xmark {
   gap: 20px;
 }
 
-.contenido__antecedentesHeredofamiliares {
-  display: grid;
-  grid-template-columns: auto 1fr 1fr 1fr 1fr;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
+.tabla__antecedentesHeredofamiliares input {
+  min-width: 150px;
+  width: 100%;
 }
 
-.contenido__antecedentesHeredofamiliares .familiares {
-  text-align: center;
-}
-
-.contenido__historial {
-  padding-bottom: 20px;
-  border-bottom: 1px solid #bebebe;
+.contenedor__antecedentesHeredofamiliares {
+  overflow-x: auto;
+  width: 100%;
+  min-height: 415px;
 }
 
 td:not(:last-child) {
@@ -876,7 +872,11 @@ td {
   transition: opacity 0.4s ease;
 }
 
-@media (max-width: 1300px) {
+@media (max-width: 1250px) {
+  .seccion__contenido--historial {
+    width: calc(100vw - 60px);
+  }
+
   .contenido {
     width: 100%;
     display: grid;
@@ -897,21 +897,7 @@ td {
     height: 100vh;
     transition: left 0.4s ease;
     padding-bottom: 50px;
-  }
-
-  nav {
-    height: 67px;
-    grid-area: nav;
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    background-color: var(--color-primary);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 20px;
-    color: white;
-    border-bottom: 2px solid var(--color-light-gray);
+    border: none;
   }
 
   a.cerrar__aside {
@@ -947,13 +933,18 @@ td {
 
   .seccion__vacunas--contenedor,
   .seccion__consultas--contenedor {
-    max-height: 500px;
+    max-height: 600px;
+  }
+
+  .contenedor__antecedentesHeredofamiliares {
+    width: 100%;
   }
 }
 
 @media (max-width: 1050px) {
   .informacion__primero > ul {
     flex-direction: column;
+    gap: 20px;
   }
 
   .input-group input {
@@ -963,13 +954,17 @@ td {
   .informacion__lateral--editar_perfil {
     grid-template-columns: 1fr;
   }
+
+  .modal {
+    max-width: calc(100vw - 40px);
+  }
 }
 
 @media (max-width: 870px) {
   .informacion__general {
     display: flex;
     flex-direction: column;
-    gap: 50px;
+    gap: 30px;
     justify-content: space-between;
   }
 
@@ -990,18 +985,61 @@ td {
   .nuevo__registro i {
     font-size: 75px;
   }
+
+  .informacion__primero ul {
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+@media (max-width: 770px) {
+  .modal__codigos {
+    flex-direction: column;
+  }
+
+  .modal__contenido--registro {
+    flex-direction: column;
+  }
+
+  .modal__contenido--registro .input-group {
+    display: flex;
+    justify-content: center;
+  }
+
+  .modal__codigo:first-child {
+    padding: 0;
+    border: none;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #ececec;
+  }
+
+  .modal__codigo:last-child {
+    padding: 0;
+    border: none;
+    padding-top: 20px;
+  }
+
+  .contenido__personalesPatologicos,
+  .contenido__personalesNoPatologicos {
+    grid-template-columns: 1fr;
+    gap: 10px 20px;
+  }
 }
 
 @media (max-width: 660px) {
-  nav {
-    padding: 10px 10px;
+  .seccion__contenido--historial {
+    width: calc(100vw - 40px);
+    gap: 20px;
   }
 
-  .informacion__general {
-    display: flex;
-    flex-direction: column;
-    gap: 50px;
-    justify-content: space-between;
+  .seccion__contenido--historial {
+    width: calc(100vw - 40px);
+    gap: 20px;
+  }
+
+  nav {
+    padding: 10px 10px;
   }
 
   .informacion__lateral {
@@ -1037,6 +1075,7 @@ td {
   .informacion__primero ul {
     flex-direction: column;
     width: 100%;
+    gap: 15px;
   }
 
   .informacion__primero p {
@@ -1076,6 +1115,9 @@ td {
     height: 100vh;
     margin: 0;
     border-radius: 0;
+    min-width: initial;
+    max-width: initial;
+    max-height: initial;
   }
 
   .input-group input {
@@ -1089,6 +1131,10 @@ td {
   .modal__titulo {
     justify-content: center;
     text-align: center;
+  }
+
+  .modal__codigo {
+    gap: 20px;
   }
 }
 

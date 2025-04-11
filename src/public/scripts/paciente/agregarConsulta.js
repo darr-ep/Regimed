@@ -30,15 +30,15 @@ document
           </div>
           <div class="medicamento__datos">
               <label class="label">Vía administración <span class="asterisk">*</span></label>
-              <label class="label">Dosis <span class="asterisk">*</span></label>
-              <label class="label">Frecuencia <span class="asterisk">*</span></label>
-              <label class="label">Duración <span class="asterisk">*</span></label>
               <input name="medicamento__viaAdministracion" type="text" class="input">
+              <label class="label">Dosis <span class="asterisk">*</span></label>
               <input name="medicamento__dosis" type="text" class="input">
+              <label class="label">Frecuencia <span class="asterisk">*</span></label>
               <div class="medicamento__extra">
                   <input name="medicamento__frecuencia" type="text" class="input">
                   <p>hrs.</p>
               </div>
+              <label class="label">Duración <span class="asterisk">*</span></label>
               <div class="medicamento__extra">
                   <input name="medicamento__duracion" type="text" class="input">
                   <p>día(s)</p>

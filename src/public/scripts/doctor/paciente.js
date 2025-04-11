@@ -19,6 +19,17 @@ const consultarPaciente = document.getElementById("consultar__paciente");
 abrirPaciente.addEventListener("click", () => {
   const curpPaciente = document.getElementById("curpPaciente").value;
 
+  if (curpPaciente.length === 0) {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Ingresa un curp.",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+    return;
+  }
+
   if (curpPaciente.length !== 18) {
     Swal.fire({
       icon: "error",
@@ -31,6 +42,17 @@ abrirPaciente.addEventListener("click", () => {
   }
   
   const curpDoctor = document.getElementById("curp_doctor").innerHTML.trim();
+
+  if (curpDoctor.length < 18) {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "No se ha podido cargar el curp del doctor.",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+    return;
+  }
 
   console.log(curpPaciente)
   console.log(curpDoctor)

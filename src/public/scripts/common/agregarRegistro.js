@@ -40,37 +40,13 @@ function iniciarTemporizador(tiempoRestante) {
       document.getElementById("texto__codigo").style.opacity = 1;
       document.getElementById("contenedorCodigo").style.opacity = 1;
       document.getElementById("temporizadorCodigo").style.display = "initial";
-      // tokenRegistroPendiente = data.token;
       tiempoRestante =
         data.tiempoRestante !== undefined ? data.tiempoRestante : 180;
 
       mostrarTiempo(tiempoRestante);
-      // // Eliminar el código QR anterior si existe
-      // if (contenedorQR.firstChild) {
-      //   contenedorQR.removeChild(contenedorQR.firstChild);
-      //   contenedorCodigo.removeChild(contenedorCodigo.firstChild);
-      // }
-
-      // let nuevoContenedorQR = document.createElement("div");
-      // nuevoContenedorQR.id = "contenedorQR";
-
-      // // Agregar el nuevo código QR al contenedor
-      // contenedorQR.appendChild(nuevoContenedorQR);
 
       contenedorCodigo.textContent = data.numeroAleatorio;
-
-      // // Generar el nuevo código QR
-      // new QRCode(nuevoContenedorQR, {
-      //   text: `${tokenRegistroPendiente}`,
-      //   width: 200,
-      //   height: 200,
-      //   colorDark: "#000000",
-      //   colorLight: "#f0f0f0",
-      //   correctLevel: QRCode.CorrectLevel.H,
-      // });
     });
-
-  // contenedorQR.style.filter = "blur(0)";
 
   intervalo = setInterval(function () {
     tiempoRestante--;

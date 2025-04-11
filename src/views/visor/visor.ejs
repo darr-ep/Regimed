@@ -22,15 +22,40 @@
 <body>
     <img src="/images/background/heart-pulse-solid.svg" class="fondo__icono">
     <div class="contenido">
-        <aside>
-            <ul>
+        <nav>
+            <div class="nav__logo">
+                <a onclick="abrirAside()" class="abrir__aside">
+                    <i class="fa-solid fa-bars"></i>
+                </a>
                 <a href="/">
                     <img class="logo" src="/images/logo/LogoCompPositive.png" href="">
+                </a>
+            </div>
+            <ul>
+                <li>
+                    <a href="/perfil">Perfil</a>
+                </li>
+                <li>
+                    <a href="/cerrarSesion">Cerrar Sesión</a>
+                </li>
+            </ul>
+        </nav>
+        <div id="dark_background" class="dark_background" onclick="cerrarAside()"></div>
+        <aside id="aside">
+            <ul>
+                <a onclick="cerrarAside()" class="cerrar__aside">
+                    <i class="fa-solid fa-xmark"></i>
                 </a>
                 <li>
                     <a href="#informacion" class="seleccionado">
                         <i class="fa-solid fa-user"></i>
                         Información
+                    </a>
+                </li>
+                <li>
+                    <a href="#historial">
+                        <i class="fa-solid fa-file-medical"></i>
+                        Historial médico
                     </a>
                 </li>
                 <li>
@@ -138,8 +163,6 @@
                                     <p class="vacio">Vacío</p>
                                     <% } %>
                         </li>
-                    </ul>
-                    <ul class="informacion__general--informacion informacion__lateral">
                         <li>
                             <span>Estatura</span>
                             <% if (typeof estatura !=='undefined' && estatura !==null && estatura !=='' && estatura
@@ -283,68 +306,89 @@
                     
                     <% if (historial.ah && Object.values(historial.ah).some(value => value)) { %>
                     <h2>Antecedentes Heredofamiliares</h2>
-                    <div class="contenido__antecedentesHeredofamiliares">
-                        <span></span>
-                        <span class="familiares">Abuelos</span>
-                        <span class="familiares">Padre</span>
-                        <span class="familiares">Madre</span>
-                        <span class="familiares">Hermanos</span>
-                    
-                        <% if (historial.ah.diabetesAbuelos || historial.ah.diabetesPadre || historial.ah.diabetesMadre || historial.ah.diabetesHermanos) { %>
-                        <span>Diabetes:</span>
-                        <input name="diabetesAbuelos" type="text" class="input" value="<%= historial.ah.diabetesAbuelos %>" disabled>
-                        <input name="diabetesPadre" type="text" class="input" value="<%= historial.ah.diabetesPadre %>" disabled>
-                        <input name="diabetesMadre" type="text" class="input" value="<%= historial.ah.diabetesMadre %>" disabled>
-                        <input name="diabetesHermanos" type="text" class="input" value="<%= historial.ah.diabetesHermanos %>" disabled>
-                        <% } %>
-                    
-                        <% if (historial.ah.nefropatiasAbuelos || historial.ah.nefropatiasPadre || historial.ah.nefropatiasMadre || historial.ah.nefropatiasHermanos) { %>
-                        <span>Nefropatías:</span>
-                        <input name="nefropatiasAbuelos" type="text" class="input" value="<%= historial.ah.nefropatiasAbuelos %>" disabled>
-                        <input name="nefropatiasPadre" type="text" class="input" value="<%= historial.ah.nefropatiasPadre %>" disabled>
-                        <input name="nefropatiasMadre" type="text" class="input" value="<%= historial.ah.nefropatiasMadre %>" disabled>
-                        <input name="nefropatiasHermanos" type="text" class="input" value="<%= historial.ah.nefropatiasHermanos %>" disabled>
-                        <% } %>
-                    
-                        <% if (historial.ah.mentalesAbuelos || historial.ah.mentalesPadre || historial.ah.mentalesMadre || historial.ah.mentalesHermanos) { %>
-                        <span>Enfermedades Mentales:</span>
-                        <input name="mentalesAbuelos" type="text" class="input" value="<%= historial.ah.mentalesAbuelos %>" disabled>
-                        <input name="mentalesPadre" type="text" class="input" value="<%= historial.ah.mentalesPadre %>" disabled>
-                        <input name="mentalesMadre" type="text" class="input" value="<%= historial.ah.mentalesMadre %>" disabled>
-                        <input name="mentalesHermanos" type="text" class="input" value="<%= historial.ah.mentalesHermanos %>" disabled>
-                        <% } %>
-                    
-                        <% if (historial.ah.hipertensionAbuelos || historial.ah.hipertensionPadre || historial.ah.hipertensionMadre || historial.ah.hipertensionHermanos) { %>
-                        <span>Hipertensión Arterial:</span>
-                        <input name="hipertensionAbuelos" type="text" class="input" value="<%= historial.ah.hipertensionAbuelos %>" disabled>
-                        <input name="hipertensionPadre" type="text" class="input" value="<%= historial.ah.hipertensionPadre %>" disabled>
-                        <input name="hipertensionMadre" type="text" class="input" value="<%= historial.ah.hipertensionMadre %>" disabled>
-                        <input name="hipertensionHermanos" type="text" class="input" value="<%= historial.ah.hipertensionHermanos %>" disabled>
-                        <% } %>
-                    
-                        <% if (historial.ah.oncologicosAbuelos || historial.ah.oncologicosPadre || historial.ah.oncologicosMadre || historial.ah.oncologicosHermanos) { %>
-                        <span>Oncológicos:</span>
-                        <input name="oncologicosAbuelos" type="text" class="input" value="<%= historial.ah.oncologicosAbuelos %>" disabled>
-                        <input name="oncologicosPadre" type="text" class="input" value="<%= historial.ah.oncologicosPadre %>" disabled>
-                        <input name="oncologicosMadre" type="text" class="input" value="<%= historial.ah.oncologicosMadre %>" disabled>
-                        <input name="oncologicosHermanos" type="text" class="input" value="<%= historial.ah.oncologicosHermanos %>" disabled>
-                        <% } %>
-                    
-                        <% if (historial.ah.hepatopatiasAbuelos || historial.ah.hepatopatiasPadre || historial.ah.hepatopatiasMadre || historial.ah.hepatopatiasHermanos) { %>
-                        <span>Hepatopatías:</span>
-                        <input name="hepatopatiasAbuelos" type="text" class="input" value="<%= historial.ah.hepatopatiasAbuelos %>" disabled>
-                        <input name="hepatopatiasPadre" type="text" class="input" value="<%= historial.ah.hepatopatiasPadre %>" disabled>
-                        <input name="hepatopatiasMadre" type="text" class="input" value="<%= historial.ah.hepatopatiasMadre %>" disabled>
-                        <input name="hepatopatiasHermanos" type="text" class="input" value="<%= historial.ah.hepatopatiasHermanos %>" disabled>
-                        <% } %>
-                    
-                        <% if (historial.ah.heredoOtrosAbuelos || historial.ah.heredoOtrosPadre || historial.ah.heredoOtrosMadre || historial.ah.heredoOtrosHermanos) { %>
-                        <span>Otros:</span>
-                        <input name="heredoOtrosAbuelos" type="text" class="input" value="<%= historial.ah.heredoOtrosAbuelos %>" disabled>
-                        <input name="heredoOtrosPadre" type="text" class="input" value="<%= historial.ah.heredoOtrosPadre %>" disabled>
-                        <input name="heredoOtrosMadre" type="text" class="input" value="<%= historial.ah.heredoOtrosMadre %>" disabled>
-                        <input name="heredoOtrosHermanos" type="text" class="input" value="<%= historial.ah.heredoOtrosHermanos %>" disabled>
-                        <% } %>
+                    <div class="contenedor__antecedentesHeredofamiliares">
+                        <table class="tabla__antecedentesHeredofamiliares">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th class="familiares familiar__abuelos">Abuelos</th>
+                                    <th class="familiares familiar__padre">Padre</th>
+                                    <th class="familiares familiar__madre">Madre</th>
+                                    <th class="familiares familiar__hermanos">Hermanos</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (historial.ah.diabetesAbuelos || historial.ah.diabetesPadre || historial.ah.diabetesMadre || historial.ah.diabetesHermanos) { %>
+                                <tr>
+                                    <td>Diabetes</td>
+                                    <td><input name="diabetesAbuelos" type="text" class="input input__diabetes--abuelos" value="<%= historial.ah.diabetesAbuelos %>" disabled></td>
+                                    <td><input name="diabetesPadre" type="text" class="input input__diabetes--padre" value="<%= historial.ah.diabetesPadre %>" disabled></td>
+                                    <td><input name="diabetesMadre" type="text" class="input input__diabetes--madre" value="<%= historial.ah.diabetesMadre %>" disabled></td>
+                                    <td><input name="diabetesHermanos" type="text" class="input input__diabetes--hermanos" value="<%= historial.ah.diabetesHermanos %>" disabled></td>
+                                </tr>
+                                <% } %>
+
+                                <% if (historial.ah.nefropatiasAbuelos || historial.ah.nefropatiasPadre || historial.ah.nefropatiasMadre || historial.ah.nefropatiasHermanos) { %>
+                                <tr>
+                                    <td>Nefropatías</td>
+                                    <td><input name="nefropatiasAbuelos" type="text" class="input" value="<%= historial.ah.nefropatiasAbuelos %>" disabled></td>
+                                    <td><input name="nefropatiasPadre" type="text" class="input" value="<%= historial.ah.nefropatiasPadre %>" disabled></td>
+                                    <td><input name="nefropatiasMadre" type="text" class="input" value="<%= historial.ah.nefropatiasMadre %>" disabled></td>
+                                    <td><input name="nefropatiasHermanos" type="text" class="input" value="<%= historial.ah.nefropatiasHermanos %>" disabled></td>
+                                </tr>
+                                <% } %>
+
+                                <% if (historial.ah.mentalesAbuelos || historial.ah.mentalesPadre || historial.ah.mentalesMadre || historial.ah.mentalesHermanos) { %>
+                                <tr>
+                                    <td>Enfermedades Mentales</td>
+                                    <td><input name="mentalesAbuelos" type="text" class="input" value="<%= historial.ah.mentalesAbuelos %>" disabled></td>
+                                    <td><input name="mentalesPadre" type="text" class="input" value="<%= historial.ah.mentalesPadre %>" disabled></td>
+                                    <td><input name="mentalesMadre" type="text" class="input" value="<%= historial.ah.mentalesMadre %>" disabled></td>
+                                    <td><input name="mentalesHermanos" type="text" class="input" value="<%= historial.ah.mentalesHermanos %>" disabled></td>
+                                </tr>
+                                <% } %>
+
+                                <% if (historial.ah.hipertensionAbuelos || historial.ah.hipertensionPadre || historial.ah.hipertensionMadre || historial.ah.hipertensionHermanos) { %>
+                                <tr>
+                                    <td>Hipertensión Arterial</td>
+                                    <td><input name="hipertensionAbuelos" type="text" class="input" value="<%= historial.ah.hipertensionAbuelos %>" disabled></td>
+                                    <td><input name="hipertensionPadre" type="text" class="input" value="<%= historial.ah.hipertensionPadre %>" disabled></td>
+                                    <td><input name="hipertensionMadre" type="text" class="input" value="<%= historial.ah.hipertensionMadre %>" disabled></td>
+                                    <td><input name="hipertensionHermanos" type="text" class="input" value="<%= historial.ah.hipertensionHermanos %>" disabled></td>
+                                </tr>
+                                <% } %>
+
+                                <% if (historial.ah.oncologicosAbuelos || historial.ah.oncologicosPadre || historial.ah.oncologicosMadre || historial.ah.oncologicosHermanos) { %>
+                                <tr>
+                                    <td>Oncológicos</td>
+                                    <td><input name="oncologicosAbuelos" type="text" class="input" value="<%= historial.ah.oncologicosAbuelos %>" disabled></td>
+                                    <td><input name="oncologicosPadre" type="text" class="input" value="<%= historial.ah.oncologicosPadre %>" disabled></td>
+                                    <td><input name="oncologicosMadre" type="text" class="input" value="<%= historial.ah.oncologicosMadre %>" disabled></td>
+                                    <td><input name="oncologicosHermanos" type="text" class="input" value="<%= historial.ah.oncologicosHermanos %>" disabled></td>
+                                </tr>
+                                <% } %>
+
+                                <% if (historial.ah.hepatopatiasAbuelos || historial.ah.hepatopatiasPadre || historial.ah.hepatopatiasMadre || historial.ah.hepatopatiasHermanos) { %>
+                                <tr>
+                                    <td>Hepatopatías</td>
+                                    <td><input name="hepatopatiasAbuelos" type="text" class="input" value="<%= historial.ah.hepatopatiasAbuelos %>" disabled></td>
+                                    <td><input name="hepatopatiasPadre" type="text" class="input" value="<%= historial.ah.hepatopatiasPadre %>" disabled></td>
+                                    <td><input name="hepatopatiasMadre" type="text" class="input" value="<%= historial.ah.hepatopatiasMadre %>" disabled></td>
+                                    <td><input name="hepatopatiasHermanos" type="text" class="input" value="<%= historial.ah.hepatopatiasHermanos %>" disabled></td>
+                                </tr>
+                                <% } %>
+
+                                <% if (historial.ah.heredoOtrosAbuelos || historial.ah.heredoOtrosPadre || historial.ah.heredoOtrosMadre || historial.ah.heredoOtrosHermanos) { %>
+                                <tr>
+                                    <td>Otros</td>
+                                    <td><input name="heredoOtrosAbuelos" type="text" class="input" value="<%= historial.ah.heredoOtrosAbuelos %>" disabled></td>
+                                    <td><input name="heredoOtrosPadre" type="text" class="input" value="<%= historial.ah.heredoOtrosPadre %>" disabled></td>
+                                    <td><input name="heredoOtrosMadre" type="text" class="input" value="<%= historial.ah.heredoOtrosMadre %>" disabled></td>
+                                    <td><input name="heredoOtrosHermanos" type="text" class="input" value="<%= historial.ah.heredoOtrosHermanos %>" disabled></td>
+                                </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
                     </div>
                     <% } %>
                     <span>Última modificación: <%= historial.ultimaModificacion %> <br>
@@ -364,7 +408,7 @@
                         </h1>
                     </div>
                     <div class="seccion__vacunas">
-                        <div class="seccion__contenido">
+                        <div class="seccion__contenido seccion__vacunas--contenedor">
                             <div class="buscador">
                                 <input class="input" type="text" id="buscar__vacuna" placeholder="Buscar vacuna...">
     

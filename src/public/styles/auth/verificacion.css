@@ -1,96 +1,134 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
 
+:root {
+  --font-size-h1: 72px;
+  --font-size-p: 1.2rem;
+  --font-size-p-inf: 1rem;
+}
+
 * {
-    margin: 0;
-    box-sizing: border-box;
-    font-family: 'Roboto', 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: "Roboto", "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
+    sans-serif;
 }
 
 body {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
 }
 
 h1 {
-    font-size: 72px;
-    margin-bottom: 20px;
+  font-size: var(--font-size-h1);
+  margin-bottom: 20px;
 }
 
 nav {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    justify-content: space-between;
-    position: absolute;
-    padding: 30px 100px 0 100px;
-    top: 0;
-    z-index: 1;
+  gap: 30px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+  position: absolute;
+  padding: 20px 40px;
+  top: 0;
+  z-index: 2;
 }
 
 ul {
-    list-style: none;
+  list-style: none;
 }
 
 .nav__logo {
-    height: 50px;
+  height: 40px;
 }
 
 .nav__enlaces {
-    display: flex;
-    gap: 50px;
-    font-size: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 50px;
+  font-size: var(--font-size-p);
 }
 
 .nav__enlace {
-    display: block;
-    text-decoration: none;
-    color: white;
-    padding: 10px;
+  display: block;
+  text-decoration: none;
+  color: white;
 }
 
 main {
-    background: linear-gradient(#ffa60070, #34003f70), url(/images/background/David\ Bartus.jpg);
-    background-position: center;
-    background-size: cover;
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    align-items: center;
+  background: linear-gradient(#ffa60070, #34003f70),
+    url(/images/background/David\ Bartus.jpg);
+  background-position: center;
+  background-size: cover;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
 }
 
 .patron {
-    position: absolute;
-    /* background-image: url("data:image/svg+xml,<svg id='patternId' width='100%' height='100%' xmlns='http://www.w3.org/2000/svg'><defs><pattern id='a' patternUnits='userSpaceOnUse' width='20' height='20' patternTransform='scale(1) rotate(65)'><rect x='0' y='0' width='100%' height='100%' fill='hsla(0, 0%, 100%, 0)'/><path d='M3.25 10h13.5M10 3.25v13.5'  stroke-linecap='square' stroke-width='1.5' stroke='hsla(0, 0%, 100%, 1)' fill='none'/></pattern></defs><rect width='800%' height='800%' transform='translate(-40,-40)' fill='url(%23a)'/></svg>"); */
-    width: 100%;
-    height: 100vh;
-    opacity: 40%;
+  position: absolute;
+  width: 100%;
+  height: 100vh;
+  opacity: 40%;
 }
 
 .contenido {
-    margin-left: 300px;
-    width: 700px;
-    border-radius: 30px;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    color: white;
-}
-
-.contenido__texto {    
-    width: 500px;
+  margin-left: 10vw;
+  width: 500px;
+  border-radius: 30px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  color: white;
 }
 
 .contenido__superior {
-    border-bottom: 2px solid rgb(255, 255, 255);
-    padding-bottom: 20px;
-    font-size: 20px;
+  border-bottom: 2px solid rgb(255, 255, 255);
+  padding-bottom: 20px;
+  font-size: var(--font-size-p);
 }
 
 .contenido__inferior {
-    display: flex;
-    flex-direction: column;
-    padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  padding-top: 20px;
+  gap: 20px;
+  font-size: var(--font-size-p-inf);
+}
+
+@media (max-width: 1200px) {
+  :root {
+    --font-size-h1: calc(72px * 0.8);
+    --font-size-p: calc(1.2rem * 0.8);
+    --font-size-p-inf: calc(1rem * 0.8);
+  }
+
+  .contenido {
+    width: 400px;
+  }
+}
+
+@media (max-width: 700px) {
+  nav {
+    padding: 10px 20px;
+  }
+
+  .nav__logo {
+    height: 30px;
+  }
+
+  .nav__enlaces {
     gap: 20px;
+  }
+  .contenido {
+    text-align: center;
+    width: 100%;
+    margin: 10vw;
+  }
 }

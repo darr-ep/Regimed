@@ -17,12 +17,25 @@ const inputImagenUsuario = document.getElementById("imagenUsuario");
 const imagenPrevisualizada = document.getElementById("imagenPrevisualizada");
 
 inputImagenUsuario.addEventListener("change", (e) => {
-  if (e.target.files[0]) {
+  const file = e.target.files[0];
+  if (file) {
+    const validExtensions = ["image/png", "image/jpg", "image/jpeg"];
+    if (!validExtensions.includes(file.type)) {
+      Swal.fire({
+        icon: "error",
+        title: "Formato no válido",
+        text: "Por favor, selecciona una imagen en formato PNG, JPG o JPEG.",
+        showConfirmButton: true,
+      });
+      inputImagenUsuario.value = "";
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = function (e) {
       imagenPrevisualizada.src = e.target.result;
     };
-    reader.readAsDataURL(e.target.files[0]);
+    reader.readAsDataURL(file);
   }
 });
 

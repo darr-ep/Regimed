@@ -858,29 +858,26 @@ app.get("/generarTokenRegistro", (req, res) => {
 
 async function generarNumeroAleatorioUnico(req, res) {
   const numeroAleatorio = random(100000, 999999);
-  const tiempoActual = new Date();
+  const tiempoActual = Math.floor(new Date().getTime() / 1000);
+
+  console.log(tiempoActual);
 
   const consultaCodigo = await sharedService.consultarCodigo(
     req.session.idUsuario
   );
 
   if (consultaCodigo.length !== 0) {
-    const tiempoAnterior = new Date(consultaCodigo[0].hora_registro);
-    const tiempoRestante = Math.round(
-      (Math.round(tiempoAnterior) - (Math.round(tiempoActual) - 180000)) / 1000
-    );
+    const tiempoAnterior = consultaCodigo[0].hora_registro;
+
+    console.log(tiempoAnterior);
+
+    const tiempoRestante = tiempoAnterior + 180 - tiempoActual;
+
+    console.log(tiempoRestante);
 
     const numeroAleatorio = consultaCodigo[0].codigo;
 
-    const token =
-      process.env.URL +
-      "agregarRegistro?token=" +
-      generarToken3m({
-        usuarioId: consultaCodigo[0].usuario_id,
-        numero: consultaCodigo[0].codigo,
-      });
-
-    res.json({ token, numeroAleatorio, tiempoRestante });
+    res.json({ numeroAleatorio, tiempoRestante });
   } else {
     const codigoExistente = await sharedService.consultarCodigoExistente(
       numeroAleatorio
@@ -889,7 +886,8 @@ async function generarNumeroAleatorioUnico(req, res) {
     if (codigoExistente.length === 0) {
       await sharedService.registrarCodigo(
         req.session.idUsuario,
-        numeroAleatorio
+        numeroAleatorio,
+        tiempoActual
       );
 
       const token =
@@ -956,12 +954,11 @@ app.get("/tarjeta", async (req, res) => {
       height: qrHeight,
     });
 
-    // Descargar la imagen desde Cloudinary con las transformaciones aplicadas
     const cloudinaryImageUrl = cloudinary.url(datosUsuario.imagen, {
       transformation: [
         {
           quality: "auto",
-          fetch_format: "auto",
+          fetch_format: "png",
         },
         {
           width: 500,
@@ -974,18 +971,7 @@ app.get("/tarjeta", async (req, res) => {
 
     const response = await fetch(cloudinaryImageUrl);
     const imageBuffer = await response.buffer();
-
-    // Determinar el tipo de imagen y embederla en el PDF
-    let image;
-    const imageExtension = datosUsuario.imagen.split(".").pop().toLowerCase();
-
-    if (imageExtension === "png") {
-      image = await pdfDoc.embedPng(imageBuffer);
-    } else if (imageExtension === "jpg" || imageExtension === "jpeg") {
-      image = await pdfDoc.embedJpg(imageBuffer);
-    } else {
-      throw new Error("Formato de imagen no soportado");
-    }
+    const image = await pdfDoc.embedPng(imageBuffer);
 
     const size = page.getWidth() / 2;
     const y = page.getHeight() - size;

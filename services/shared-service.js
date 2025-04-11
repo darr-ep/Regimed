@@ -1,8 +1,8 @@
 const { ejecutarConsulta } = require("../config/database");
 
-async function registrarCodigo(idUsuario, codigo) {
-  const query = `INSERT INTO codigos_temporales (usuario_id, codigo, hora_registro) VALUES (?, ?, NOW())`;
-  await ejecutarConsulta(query, [idUsuario, codigo]);
+async function registrarCodigo(idUsuario, codigo, tiempoActual) {
+  const query = `INSERT INTO codigos_temporales (usuario_id, codigo, hora_registro) VALUES (?, ?, ?)`;
+  await ejecutarConsulta(query, [idUsuario, codigo, tiempoActual]);
 }
 
 async function consultarCodigo(idUsuario) {

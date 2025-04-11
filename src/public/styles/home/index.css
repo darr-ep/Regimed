@@ -1,223 +1,396 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+
+:root {
+  --font-size-h1: 72px;
+  --font-size-h2: 48px;
+  --font-size-i: 1.5rem;
+  --font-size-p: 1.2rem;
+}
 
 * {
-    padding: 0;
-    margin: 0;
-    font-family: 'Roboto', 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  font-family: "Roboto", "Franklin Gothic Medium", "Arial Narrow", Arial,
+    sans-serif;
+  box-sizing: border-box;
 }
 
 h1 {
-    font-size: 96px;
-    display: inline;
+  font-size: var(--font-size-h1);
+  display: inline;
 }
 
 h2 {
-    font-size: 48px;
-    display: inline;
+  font-size: var(--font-size-h2);
+  display: inline;
 }
 
 i {
-    font-size: 28px;
+  font-size: var(--font-size-i);
 }
 
 p {
-    font-size: 1.5rem;
+  font-size: var(--font-size-p);
 }
 
 body {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
 }
 
 nav {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    justify-content: space-between;
-    position: absolute;
-    padding: 30px 100px 0 100px;
-    top: 0;
-    z-index: 1;
+  gap: 30px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+  position: absolute;
+  padding: 20px 40px;
+  top: 0;
+  z-index: 2;
 }
 
 ul {
-    list-style: none;
+  list-style: none;
 }
 
 .nav__logo {
-    height: 50px;
+  height: 40px;
 }
 
 .nav__enlaces {
-    display: flex;
-    gap: 50px;
-    font-size: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 50px;
+  font-size: var(--font-size-p);
 }
 
 .nav__enlace {
-    display: block;
-    text-decoration: none;
-    color: white;
-    padding: 10px;
+  display: block;
+  text-decoration: none;
+  color: white;
 }
 
 /* * ----------------- Inicio ----------------- */
 
 main {
-    width: 100%;
+  width: 100%;
 }
 
 .inicio {
-    height: 100vh;
-    background: url(/images/background/David-Alberto-Carmona-Coto.jpg);
-    background-size: cover;
-    background-position: center;
+  height: 100vh;
+  background: url(/images/background/David-Alberto-Carmona-Coto.jpg);
+  background-size: cover;
+  background-position: center;
+  position: relative;
 }
 
 .inicio__contenedor {
-    display: grid;
-    height: 100vh;
-    display: flex;
-    align-items: center;
+  display: grid;
+  height: 100vh;
+  display: flex;
+  align-items: center;
 }
 
 .inicio__contenido {
-    display: flex;
-    flex-direction: column;
-    color: white;
-    width: 40%;
-    margin-left: 200px;
-    gap: 20px;
+  width: 485px;
+  display: flex;
+  flex-direction: column;
+  color: white;
+  margin-left: 10vw;
+  gap: 20px;
 }
 
-.inicio__contenido p{
-    font-weight: 300;
+.inicio__contenido p {
+  font-weight: 300;
 }
 
 .inicio__contenido cite {
-    display: block;
-    position: absolute;
-    bottom: 30px;
+  font-size: var(--font-size-p);
+  display: block;
+  position: absolute;
+  bottom: 30px;
 }
 
-.inicio__contenido a {
-    color: white;
-    font-weight: 600;
+.inicio__contenido a,
+.informacion a {
+  color: white;
+  font-weight: 600;
 }
 
-.inicio__boton a{
-    border-radius: 10px;
-    display: inline-block;
-    background-color: #227ED3;
-    padding: 10px 20px;
-    text-decoration: none;
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
-    -ms-border-radius: 10px;
-    -o-border-radius: 10px;
+.inicio__boton a {
+  border-radius: 10px;
+  font-size: var(--font-size-p);
+  display: inline-block;
+  background-color: #227ed3;
+  padding: 10px 20px;
+  text-decoration: none;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
 }
 
-.informacion {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+.informacion__contenedor {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }
 
 .informacion__izquierda {
-    display: flex;
-    flex-direction: column;
-    margin: 100px 0 100px 200px;
-    gap: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  margin: 100px 0 100px 10vw;
+  gap: 30px;
 }
 
 .informacion__puntos {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .informacion__punto {
-    display: flex;
-    gap: 20px;
+  display: flex;
+  gap: 20px;
 }
 
 .informacion__derecha {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .informacion__derecha cite {
-    background-color: #ffd000;
-    display: inline-block;
-    bottom: 30px;
-    padding: 10px 20px;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
+  font-size: var(--font-size-p);
+  background-color: #ffd000;
+  display: inline-block;
+  bottom: 30px;
+  padding: 10px 20px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.informacion cite {
+  display: none;
 }
 
 .informacion__derecha a {
-    color: rgb(0, 0, 0);
-    font-weight: 600;
+  color: rgb(0, 0, 0);
+  font-weight: 600;
 }
 
 .informacion__imagen {
-    background-image: url(/images/background/Darcy-Lawrey.jpg);
-    width: 500px;
-    height: 500px;
-    background-size: cover;
-    background-position: center;
-    position: relative;
+  background-image: url(/images/background/Darcy-Lawrey.jpg);
+  width: 500px;
+  height: 500px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
 }
 
 .informacion__imagen::before {
-    content: "";
-    position: absolute;
-    top: -20px;
-    left: 20px;
-    width: 496px;
-    height: 496px;
-    border: 2px solid #ffd000;
-    z-index: -1;
+  content: "";
+  position: absolute;
+  top: -20px;
+  left: 20px;
+  width: 500px;
+  height: 500px;
+  border: 2px solid #ffd000;
+  z-index: -1;
 }
 
 .nota {
-    background-color: #ffd000;
-    padding: 150px;
+  background-color: #ffd000;
+  padding: 150px;
 }
 
 .nota__contenido {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
 }
 
 .nota__puntos {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 20px;
 }
 
 footer {
-    display: flex;
-    justify-content: space-between;
-    align-content: center;
-    color: white;
-    background-color: #0f0941;
-    padding: 20px 3%;
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+  color: white;
+  background-color: #0f0941;
+  padding: 20px 3%;
 }
 
 footer img {
-    height: 50px;
+  height: 50px;
 }
 
 .redes {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.redes i {
+  font-size: var(--font-size-i);
+}
+
+@media (max-width: 1200px) {
+  :root {
+    --font-size-h1: calc(72px * 0.8);
+    --font-size-h2: calc(48px * 0.8);
+    --font-size-p: calc(1.2rem * 0.8);
+    --font-size-i: calc(1.5rem * 0.8);
+  }
+
+  .inicio__contenido {
+    width: 385px;
+  }
+
+  .informacion__imagen {
+    width: 350px;
+    height: 350px;
+  }
+
+  .informacion__imagen::before {
+    width: 350px;
+    height: 350px;
+    top: -15px;
+    left: 15px;
+  }
+
+  .nota {
+    padding: 100px;
+  }
+}
+
+@media (max-width: 1000px) {
+  .inicio__contenido {
+    width: 385px;
+  }
+
+  .informacion__contenedor {
+    background-image: url(/images/background/Darcy-Lawrey.jpg);
+    background-position: center;
+    background-size: cover;
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .informacion__contenedor::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #2115005b;
+    z-index: 1;
+  }
+
+  .informacion {
+    position: relative;
+    color: white;
     display: flex;
-    align-items: center;
+  }
+
+  .informacion__derecha {
+    display: none;
+  }
+
+  .informacion__izquierda {
+    z-index: 2;
+    margin: 100px 10vw;
+  }
+
+  h2 {
+    text-align: center;
+  }
+
+  .nota {
+    padding: 80px 10vw;
+  }
+
+  .nota__contenido i {
+    display: none;
+  }
+
+  footer img {
+    height: 40px;
+  }
+
+  .informacion cite {
+    display: block;
+    position: absolute;
+    bottom: 30px;
+    left: 10vw;
+    z-index: 2;
+  }
+}
+
+@media (max-width: 700px) {
+  .inicio::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #04002436;
+    z-index: 1;
+  }
+
+  .inicio__contenedor {
+    position: relative;
+    z-index: 1;
+  }
+
+  .inicio__contenido {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    color: white;
+    margin: 40px;
     gap: 20px;
+    text-align: center;
+  }
+
+  nav {
+    padding: 10px 20px;
+  }
+
+  .nav__logo {
+    height: 30px;
+  }
+
+  .nav__enlaces {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 540px) {
+  :root {
+    --font-size-h1: calc(72px * 0.6);
+  }
+
+  footer img {
+    height: 30px;
+  }
+
+  .informacion__izquierda {
+    margin: 80px 10vw;
+  }
 }

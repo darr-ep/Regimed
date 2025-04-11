@@ -1,65 +1,102 @@
+/* ---------------------- Importaciones ---------------------- */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
 
+/* ---------------------- Variables ---------------------- */
 :root {
-    --color-primary: #9c1010;
-    --color-secundary: #f4c7c7;
-    --color-terciary: #680000;
-    --color-danger: #d1302f;
-  }
+  --color-primary: #9c1010;
+  --color-secondary: #f4c7c7;
+  --color-tertiary: #680000;
+  --color-light-gray: #f7f7f7;
+  --color-danger: #d1302f;
+  --font-primary: "Roboto", sans-serif;
+  --font-secondary: "Poppins", sans-serif;
+  --font-size-base: 20px;
+  --font-size-small: 16px;
+  --font-size-large: 32px;
+  --font-size-h1: 40px;
+  --font-size-h2: 28px;
+  --font-size-icon-h1: 28px;
+  --font-size-icon-h2: 20px;
+}
 
+/* ---------------------- Reset y Estilos Globales ---------------------- */
 * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
-  font-family: Roboto;
-  font-size: 20px;
-} 
+  font-family: var(--font-primary);
+  font-size: var(--font-size-base);
+}
+
+body {
+  background-color: var(--color-secondary);
+  display: flex;
+  justify-content: center;
+  scroll-behavior: smooth;
+  position: relative;
+}
 
 li {
   list-style: none;
 }
 
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
 p {
-  font-size: 20px;
+  font-size: var(--font-size-base);
+}
+
+/* ---------------------- Tipografía ---------------------- */
+h1,
+h2 {
+  font-family: var(--font-secondary);
+  color: var(--color-tertiary);
 }
 
 h1 {
-  font-family: "Poppins";
   font-weight: 600;
-  font-size: 32px;
-  color: var(--color-terciary);
+  font-size: var(--font-size-large);
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
 h1 i {
-  font-size: 28px;
+  font-size: var(--font-size-icon-h1);
 }
 
-h2 {
-  color: var(--color-terciary);
-}
-
-span {
-  font-size: 16px;
+span,
+.contenedor__antecedentesHeredofamiliares td,
+.contenedor__antecedentesHeredofamiliares th {
+  font-size: var(--font-size-small);
   font-weight: 700;
 }
 
 .swal2-icon {
-  font-size: 16px;
+  font-size: var(--font-size-small);
 }
 
 .seccion {
   display: flex;
   flex-direction: column;
-  gap: 10px;
 }
 
 .seccion__titulo {
   display: flex;
-  justify-content: space-between;
-  margin: 30px 0 20px 0;
+  flex-direction: column;
+  align-items: center;
+  margin: 30px 0 20px;
+  gap: 20px;
+  text-align: center;
+}
+
+.primera__seccion {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 
 .seccion__contenido {
@@ -81,16 +118,10 @@ span {
   display: grid;
   grid-template-columns: 250px 1fr;
   grid-template-areas:
+    "nav nav"
     "aside main";
   margin: 0;
   position: relative;
-}
-
-body {
-  background-color: var(--color-secundary);
-  display: flex;
-  justify-content: center;
-  scroll-behavior: smooth;
 }
 
 .fondo__icono {
@@ -102,24 +133,56 @@ body {
   left: 0;
 }
 
+/* ---------------------- Navegación ---------------------- */
+nav {
+  height: 67px;
+  gap: 30px;
+  grid-area: nav;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  color: white;
+}
+
+nav ul {
+  display: flex;
+  gap: 50px;
+  align-items: center;
+}
+
+nav a {
+  color: white;
+}
+
 .logo {
-  padding: 20px;
-  width: 250px;
-  border-bottom: 2px solid white;
+  height: 40px;
 }
 
 /* ---------------------- Aside ---------------------- */
-
 aside {
-  position: sticky;
-  top: 0;
   grid-area: aside;
+  position: sticky;
+  top: 67px;
   background-color: var(--color-primary);
   color: white;
   display: flex;
-  height: 100vh;
+  height: calc(100vh - 67px);
   flex-direction: column;
   justify-content: space-between;
+  border-top: 2px solid white;
+}
+
+a.cerrar__aside {
+  display: none;
+}
+
+a.abrir__aside {
+  display: none;
 }
 
 aside i::before {
@@ -170,31 +233,31 @@ aside li a.seleccionado:not(#abrir__tarjetaDatos) {
 }
 
 /* ---------------------- Main ---------------------- */
-
 main {
   grid-area: main;
   padding: 0 30px 30px 30px;
   display: flex;
   flex-direction: column;
-  background-color: #f7f7f7;
+  background-color: var(--color-light-gray);
+}
+
+/* ---------------------- Botones ---------------------- */
+button {
+  font-size: var(--font-size-small);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: ease-out 0.4s;
 }
 
 button.boton-datos {
   position: relative;
   display: flex;
-  gap: 5px;
   align-items: center;
+  gap: 5px;
   padding: 10px 20px;
-  text-align: center;
-  font-size: 16px;
-  letter-spacing: 1px;
-  text-decoration: none;
   color: white;
   background: var(--color-primary);
-  cursor: pointer;
-  transition: ease-out 0.4s;
   border: 2px solid var(--color-primary);
-  border-radius: 5px;
   box-shadow: inset 0 0 0 0 white;
 }
 
@@ -207,10 +270,20 @@ button.boton-datos:active {
   transform: scale(0.9);
 }
 
+button.boton-cancelar {
+  background: var(--color-danger);
+  border: 2px solid var(--color-danger);
+}
+
+button.boton-cancelar:hover {
+  color: var(--color-danger);
+  box-shadow: inset 0 -80px 0 0 white;
+}
+
 .informacion__general {
   display: flex;
   gap: 50px;
-  justify-content: space-between;
+  justify-content: space-evenly;
 }
 
 .informacion__general--informacion {
@@ -289,57 +362,71 @@ button.boton-datos:active {
   align-items: center;
 }
 
+.informacion__primero > p {
+  font-weight: 600;
+  font-size: var(--font-size-base);
+}
+
 .informacion__lateral {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   justify-content: space-between;
+  width: 40%;
 }
 
 .vacuna p {
-  font-size: 16px;
+  font-size: val(--font-size-small);
 }
 
-.vacuna button.boton-datos, .consulta button.boton-datos, .estudio button.boton-datos {
-  background: var(--color-terciary);
+.vacuna button.boton-datos,
+.consulta button.boton-datos,
+.estudio button.boton-datos {
+  background: var(--color-tertiary);
   cursor: pointer;
   transition: ease-out 0.4s;
-  border: 2px solid var(--color-terciary);
+  border: 2px solid var(--color-tertiary);
   border-radius: 5px;
   box-shadow: inset 0 0 0 0 white;
 }
 
-.vacuna .boton-datos:hover, .consulta .boton-datos:hover, .estudio button.boton-datos:hover {
-  color: var(--color-terciary);
+.vacuna .boton-datos:hover,
+.consulta .boton-datos:hover,
+.estudio button.boton-datos:hover {
+  color: var(--color-tertiary);
   box-shadow: inset 0 -80px 0 0 white;
 }
 
-.consulta--informacion, .vacuna--informacion, .estudio--informacion {
-  color: var(--color-terciary);
+.consulta--informacion,
+.vacuna--informacion,
+.estudio--informacion {
+  color: var(--color-tertiary);
   font-weight: 500;
   display: flex;
   flex-direction: column;
   gap: 5px;
 }
 
-.consulta, .vacuna, .estudio {
+.consulta,
+.vacuna,
+.estudio {
   padding: 20px;
   border-radius: 20px;
   display: flex;
   gap: 10px;
   flex-direction: column;
-  background-color: var(--color-secundary);
+  background-color: var(--color-secondary);
 }
 
-.consulta p, .estudio p {
-  font-size: 16px;
+.consulta p,
+.estudio p {
+  font-size: var(--font-size-small);
 }
 
-p.vacuna__nombre, p.estudio__nombre {
+.vacuna__nombre,
+.estudio__nombre,
+.observaciones {
   font-weight: 700;
-  font-size: 22px;
-}
-
-p.observaciones {
-  font-weight: 700;
-  font-size: 18px;
+  font-size: var(--font-size-base);
 }
 
 .seccion__consultas {
@@ -354,7 +441,8 @@ p.observaciones {
   padding: 30px;
 }
 
-.seccion__contenido--consultas, .seccion__contenido--estudios {
+.seccion__contenido--consultas,
+.seccion__contenido--estudios {
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -368,71 +456,6 @@ p.observaciones {
   gap: 20px;
   max-height: 550px;
   overflow-y: auto;
-}
-
-.registro {
-  width: 200px;
-  height: 200px;
-  position: relative;
-  border: none;
-  background-color: #001d6800;
-  cursor: pointer;
-}
-
-.registro img {
-  width: 200px;
-  height: 200px;
-  border-radius: 10px;
-  object-fit: cover;
-  object-position: center;
-}
-
-.registro__nombre {
-  position: absolute;
-  bottom: 0;
-  padding: 10px 20px;
-  background-color: #000000b6;
-  color: white;
-  width: 100%;
-  display: flex;
-  border-radius: 0px 0px 10px 10px;
-}
-
-.nuevo__registro {
-  width: 200px;
-  height: 200px;
-  display: flex;
-  justify-content: center;
-}
-
-.nuevo__registro i {
-  font-size: 100px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-}
-
-.nuevo__registro span {
-  position: absolute;
-  bottom: 10px;
-}
-
-button.nuevo__registro {
-  border-radius: 10px;
-  cursor: pointer;
-  transition: ease-out 0.4s;
-  box-shadow: inset 0 0 0 0 white;
-}
-
-button.nuevo__registro:hover {
-  box-shadow: inset 0 -250px 0 0 white;
-}
-
-.seccion__registros {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  gap: 20px;
 }
 
 .fondo__modal {
@@ -449,7 +472,14 @@ button.nuevo__registro:hover {
   transition: opacity 0.4s ease;
 }
 
+
+
 .modal {
+  scale: 0.8;
+  max-width: 1000px;
+  min-width: 600px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
   gap: 30px;
   display: flex;
   flex-direction: column;
@@ -457,7 +487,7 @@ button.nuevo__registro:hover {
   padding: 30px;
   border-radius: 20px;
   filter: drop-shadow(rgba(0, 0, 0, 0.15) 0px 6px 4px);
-  animation-duration: 0.4s;
+  transition: 0.4s ease;
 }
 
 .modal__contenido {
@@ -477,7 +507,7 @@ button.nuevo__registro:hover {
   border-radius: 0.5rem;
   padding: 0 1rem;
   border: 2px solid transparent;
-  font-size: 20px;
+  font-size: var(--font-size-base);
   transition: border-color 0.3s cubic-bezier(0.25, 0.01, 0.25, 1) 0s,
     color 0.3s cubic-bezier(0.25, 0.01, 0.25, 1) 0s,
     background 0.2s cubic-bezier(0.25, 0.01, 0.25, 1) 0s;
@@ -494,7 +524,7 @@ button.nuevo__registro:hover {
 .label {
   display: block;
   margin-bottom: 0.3rem;
-  font-size: 0.9rem;
+  font-size: var(--font-size-small);
   font-weight: bold;
   color: #05060f99;
   transition: color 0.3s cubic-bezier(0.25, 0.01, 0.25, 1) 0s;
@@ -511,32 +541,22 @@ button.nuevo__registro:hover {
   color: #05060fc2;
 }
 
-.buscador #ordenarPorVacunas, #ordenarPorConsultas, #ordenarPorEstudios {
+.buscador #ordenarPorVacunas,
+#ordenarPorConsultas,
+#ordenarPorEstudios {
   width: 150px;
   margin-top: 10px;
   background-color: transparent;
   border: transparent;
 }
 
-.buscador #mostrarVacunas, #mostrarConsultas, #mostrarEstudios {
+.buscador #mostrarVacunas,
+#mostrarConsultas,
+#mostrarEstudios {
   width: 150px;
   margin-top: 10px;
   background-color: transparent;
   border: transparent;
-}
-
-button.boton-cancelar {
-  background: var(--color-danger);
-  cursor: pointer;
-  transition: ease-out 0.4s;
-  border: 2px solid var(--color-danger);
-  border-radius: 5px;
-  box-shadow: inset 0 0 0 0 white;
-}
-
-button.boton-cancelar:hover {
-  color: var(--color-danger);
-  box-shadow: inset 0 -80px 0 0 white;
 }
 
 .modal__codigos {
@@ -546,8 +566,10 @@ button.boton-cancelar:hover {
 }
 
 .modal__codigo {
+  position: relative;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 10px;
 }
 
@@ -565,55 +587,8 @@ button.boton-cancelar:hover {
   align-items: center;
 }
 
-.emergente {
-  width: 400px;
-  padding: 40px;
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: #ffffff;
-  border-radius: 20px;
-  color: #000000;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  filter: drop-shadow(rgba(0, 0, 0, 0.15) 0px 6px 4px);
-}
-
-.emergente strong {
-  font-size: 22px;
-}
-
-.emergente > i {
-  color: var(--color-danger);
-  font-size: 50px;
-}
-
-.emergente > i::before {
-  display: flex;
-  justify-content: start;
-  width: 100%;
-}
-
 i.fa-circle-xmark {
   color: var(--color-danger);
-}
-
-@keyframes bounceIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.1);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05);
-  }
-  80% {
-    transform: scale(0.95);
-  }
-  100% {
-    transform: scale(1);
-  }
 }
 
 .mostrar-ventana {
@@ -622,7 +597,7 @@ i.fa-circle-xmark {
 }
 
 .agrandar-ventana {
-  animation-name: bounceIn;
+  scale: 1;
 }
 
 .consulta__contenido {
@@ -636,7 +611,8 @@ i.fa-circle-xmark {
   justify-content: space-between;
 }
 
-.seccion__contenido--consultas, .seccion__contenido--estudios {
+.seccion__contenido--consultas,
+.seccion__contenido--estudios {
   display: flex;
   gap: 30px;
 }
@@ -655,6 +631,7 @@ i.fa-circle-xmark {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  overflow: auto;
 }
 
 .consulta__medicamento {
@@ -664,13 +641,15 @@ i.fa-circle-xmark {
   gap: 0px 30px;
 }
 
-.consulta__datos, .estudio__datos {
+.consulta__datos,
+.estudio__datos {
   display: flex;
   flex-direction: column;
   gap: 30px;
 }
 
-.consulta__dato, .estudio__dato {
+.consulta__dato,
+.estudio__dato {
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -682,6 +661,32 @@ i.fa-circle-xmark {
   gap: 10px;
 }
 
+.modal__contenido--historial,
+.seccion__contenido--historial {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  overflow-y: auto;
+}
+
+.contenido__personalesPatologicos,
+.contenido__personalesNoPatologicos {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 20px;
+}
+
+.tabla__antecedentesHeredofamiliares input {
+  min-width: 150px;
+  width: 100%;
+}
+
+.contenedor__antecedentesHeredofamiliares {
+  overflow-x: auto;
+  width: 100%;
+}
+
 td:not(:last-child) {
   padding-right: 20px;
 }
@@ -690,32 +695,256 @@ td {
   padding-bottom: 10px;
 }
 
-.modal__contenido--historial, .seccion__contenido--historial {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-  overflow-y: auto;
-}
-
-.contenido__personalesPatologicos, .contenido__personalesNoPatologicos {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  gap: 20px;
-}
-
-.contenido__antecedentesHeredofamiliares {
-  display: grid;
-  grid-template-columns: auto 1fr 1fr 1fr 1fr;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-}
-
-.contenido__antecedentesHeredofamiliares .familiares {
-  text-align: center;
-}
-
 .siguiente-dosis {
   font-weight: 800;
+}
+
+.dark_background {
+  opacity: 0;
+  pointer-events: none;
+  position: fixed;
+  z-index: 1;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000000;
+  transition: opacity 0.4s ease;
+}
+
+@media (max-width: 1250px) {
+  .seccion__contenido--historial {
+    width: calc(100vw - 60px);
+  }
+
+  .contenido {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "nav"
+      "main";
+    margin: 0;
+    position: relative;
+  }
+
+  aside {
+    width: 250px;
+    left: -250px;
+    z-index: 2;
+    position: fixed;
+    top: 0;
+    height: 100vh;
+    transition: left 0.4s ease;
+    padding-bottom: 50px;
+    border: none;
+  }
+
+  a.cerrar__aside {
+    display: flex;
+    justify-content: end;
+  }
+
+  a.cerrar__aside i {
+    font-size: 30px;
+    margin: 20px 20px 10px;
+    padding: 5px;
+    cursor: pointer;
+  }
+
+  .nav__logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  a.abrir__aside {
+    display: block;
+    padding-right: 20px;
+  }
+
+  a.abrir__aside i {
+    font-size: 30px;
+    margin: 20px 20px 10px;
+    padding: 5px;
+    cursor: pointer;
+    margin: 0;
+  }
+
+  .seccion__vacunas--contenedor,
+  .seccion__consultas--contenedor {
+    max-height: 600px;
+  }
+}
+
+@media (max-width: 1050px) {
+  .informacion__primero > ul {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .input-group input {
+    width: 350px;
+  }
+
+  .modal {
+    max-width: calc(100vw - 40px);
+  }
+}
+
+@media (max-width: 870px) {
+  .informacion__general {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    justify-content: space-between;
+  }
+
+  .informacion__lateral {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    width: 100%;
+  }
+
+  .seccion__contenido--vacunas {
+    grid-template-columns: 1fr;
+  }
+
+  .seccion__consultas {
+    flex-direction: column;
+  }
+
+  .nuevo__registro i {
+    font-size: 75px;
+  }
+
+  .informacion__primero ul {
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+@media (max-width: 660px) {
+  .seccion__contenido--historial {
+    width: calc(100vw - 40px);
+    gap: 20px;
+  }
+
+  nav {
+    padding: 10px 10px;
+  }
+
+  .informacion__general {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    justify-content: space-between;
+  }
+
+  .informacion__lateral {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+
+  a.cerrar__aside i {
+    font-size: 20px;
+  }
+
+  a.abrir__aside {
+    padding-right: 10px;
+  }
+
+  a.abrir__aside i {
+    font-size: 20px;
+  }
+
+  .logo {
+    height: 30px;
+  }
+
+  main {
+    padding: 0 20px 20px;
+  }
+
+  .informacion__general {
+    border-radius: 10px;
+  }
+
+  .informacion__primero ul {
+    flex-direction: column;
+    width: 100%;
+    gap: 15px;
+  }
+
+  .informacion__primero p {
+    width: 100%;
+  }
+
+  .informacion__general--informacion img {
+    width: 200px;
+    height: 200px;
+  }
+
+  nav ul {
+    display: flex;
+    gap: 30px;
+  }
+
+  .seccion__titulo--boton p {
+    display: none;
+  }
+
+  .modal {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    border-radius: 0;
+    min-width: initial;
+    max-width: initial;
+    max-height: initial;
+  }
+
+  .input-group input {
+    width: 100%;
+  }
+
+  .modal .lateral {
+    width: 100%;
+  }
+
+  .modal__titulo {
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+@media (max-width: 540px) {
+  :root {
+    --font-size-base: calc(20px * 0.8);
+    --font-size-small: calc(16px * 0.8);
+    --font-size-large: calc(32px * 0.8);
+    --font-size-h1: calc(40px * 0.8);
+    --font-size-h2: calc(28px * 0.8);
+    --font-size-icon-h1: calc(28px * 0.8);
+    --font-size-icon-h2: calc(20px * 0.8);
+  }
+
+  nav ul {
+    display: flex;
+    gap: 20px;
+  }
+
+  .seccion__titulo--titulo i,
+  .modal__titulo i {
+    display: none;
+  }
+
+  #ordenarPorVacunas,
+  #ordenarPorConsultas,
+  #mostrarVacunas,
+  #mostrarConsultas,
+  #ordenarPorEstudios,
+  #mostrarEstudios {
+    width: 100%;
+  }
 }

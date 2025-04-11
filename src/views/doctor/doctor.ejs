@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Regimed | Perfil</title>
+    <title>Regimed | Doctor</title>
     <link rel="icon" href="/images/logo/LogoPositive.png" type="image/png">
     <link rel="stylesheet" href="/styles/doctor/doctor.css">
     <script src="https://kit.fontawesome.com/f5b8feb020.js" crossorigin="anonymous"></script>
@@ -19,16 +20,24 @@
     <script defer src="/scripts/common/interfazUsuario.js"></script>
     <script defer src="/scripts/common/verificacionTelefono.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
+        integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script defer src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
+
 <body>
     <img src="/images/background/stethoscope-solid.svg" class="fondo__icono">
     <div class="contenido">
         <nav>
-            <a href="/">
-                <img class="logo" src="/images/logo/LogoCompPositive.png" href="">
-            </a>
+            <div class="nav__logo">
+                <a onclick="abrirAside()" class="abrir__aside">
+                    <i class="fa-solid fa-bars"></i>
+                </a>
+                <a href="/">
+                    <img class="logo" src="/images/logo/LogoCompPositive.png" href="">
+                </a>
+            </div>
             <ul>
                 <li>
                     <a href="/perfil">Perfil</a>
@@ -38,8 +47,12 @@
                 </li>
             </ul>
         </nav>
-        <aside>
+        <div id="dark_background" class="dark_background" onclick="cerrarAside()"></div>
+        <aside id="aside">
             <ul>
+                <a onclick="cerrarAside()" class="cerrar__aside">
+                    <i class="fa-solid fa-xmark"></i>
+                </a>
                 <li>
                     <a href="#informacion" class="seleccionado">
                         <i class="fa-solid fa-user-doctor"></i>
@@ -94,13 +107,14 @@
         </aside>
         <main id="informacion">
             <div class="seccion">
-                <div class="seccion__titulo">
+                <div class="seccion__titulo primera__seccion">
                     <h1 class="seccion__titulo--titulo">
-                        <i class="fa-solid fa-user-doctor"></i> Información General
+                        <i class="fa-solid fa-user"></i> Información General
                     </h1>
                     <div class="seccion__titulo--boton">
                         <button type="button" name="botonDatosPersonales" class="boton-datos" id="abrir__informacion">
-                            <i class='fa-solid fa-pen-to-square'></i> Editar
+                            <i class='fa-solid fa-pen-to-square'></i>
+                            <p>Editar</p>
                         </button>
                     </div>
                 </div>
@@ -118,9 +132,11 @@
                                         <li>
                                             <span>CURP</span>
                                             <% if (typeof curp !=='undefined' && curp !==null && curp !=='' ) { %>
-                                                <p id="curp_doctor"><%= curp %></p>
+                                                <p id="curp_doctor">
+                                                    <%= curp %>
+                                                </p>
                                                 <% } else { %>
-                                                    <p class="vacio">Vacío</p>
+                                                    <p id="curp_doctor" class="vacio">Vacío</p>
                                                     <% } %>
                                         </li>
                                         <li>
@@ -177,14 +193,15 @@
                         </li>
                         <li>
                             <span>Nacimiento</span>
-                            <% if (typeof nacimiento !== 'undefined' && nacimiento !== null && nacimiento !== '' && nacimiento !== '0000-00-00') { %> 
-                                <p> <%= nacimiento %> </p>
-                             <% } else { %> 
-                                <p class="vacio">Vacío</p>
-                             <% } %>
+                            <% if (typeof nacimiento !=='undefined' && nacimiento !==null && nacimiento !=='' &&
+                                nacimiento !=='0000-00-00' ) { %>
+                                <p>
+                                    <%= nacimiento %>
+                                </p>
+                                <% } else { %>
+                                    <p class="vacio">Vacío</p>
+                                    <% } %>
                         </li>
-                    </ul>
-                    <ul class="informacion__general--informacion informacion__lateral">
                         <li>
                             <span>Estatura</span>
                             <% if (typeof estatura !=='undefined' && estatura !==null && estatura !=='' && estatura
@@ -261,338 +278,591 @@
                 </div>
 
                 <div class="seccion__contenido seccion__contenido--historial">
-                <% if (historial && (historial.pp && Object.values(historial.pp).some(value => value) || historial.pnp && Object.values(historial.pnp).some(value => value) || historial.ah && Object.values(historial.ah).some(value => value))) { %>
-                    <% if (historial.pp && Object.values(historial.pp).some(value => value)) { %>
-                    <h2>Personales Patológicos</h2>
-                    <div class="contenido__personalesPatologicos">
-                        <% if (historial.pp.alergias) { %>
-                        <span>Alergias:</span>
-                        <input name="alergias" type="text" class="input" value="<%= historial.pp.alergias %>" disabled>
-                        <% } %>
-                        <% if (historial.pp.tabaco) { %>
-                        <span>Tabaco:</span>
-                        <input name="tabaco" type="text" class="input" value="<%= historial.pp.tabaco %>" disabled>
-                        <% } %>
-                        <% if (historial.pp.alcohol) { %>
-                        <span>Alcohol:</span>
-                        <input name="alcohol" type="text" class="input" value="<%= historial.pp.alcohol %>" disabled>
-                        <% } %>
-                        <% if (historial.pp.drogas) { %>
-                        <span>Drogas:</span>
-                        <input name="drogas" type="text" class="input" value="<%= historial.pp.drogas %>" disabled>
-                        <% } %>
-                        <% if (historial.pp.padecimientos) { %>
-                        <span>Padecimientos:</span>
-                        <input name="padecimientos" type="text" class="input" value="<%= historial.pp.padecimientos %>" disabled>
-                        <% } %>
-                        <% if (historial.pp.medicamentos) { %>
-                        <span>Medicamentos:</span>
-                        <input name="medicamentos" type="text" class="input" value="<%= historial.pp.medicamentos %>" disabled>
-                        <% } %>
-                        <% if (historial.pp.quirurgicos) { %>
-                        <span>Quirúrgicos:</span>
-                        <input name="quirurgicos" type="text" class="input" value="<%= historial.pp.quirurgicos %>" disabled>
-                        <% } %>
-                        <% if (historial.pp.traumatologicos) { %>
-                        <span>Traumatológicos:</span>
-                        <input name="traumatologicos" type="text" class="input" value="<%= historial.pp.traumatologicos %>" disabled>
-                        <% } %>
-                        <% if (historial.pp.transfusionales) { %>
-                        <span>Transfusionales:</span>
-                        <input name="transfusionales" type="text" class="input" value="<%= historial.pp.transfusionales %>" disabled>
-                        <% } %>
-                        <% if (historial.pp.intoleranciaMedicamentos) { %>
-                        <span>Intolerancia a Medicamentos:</span>
-                        <input name="intoleranciaMedicamentos" type="text" class="input" value="<%= historial.pp.intoleranciaMedicamentos %>" disabled>
-                        <% } %>
-                        <% if (historial.pp.otros) { %>
-                        <span>Otros:</span>
-                        <input name="otros" type="text" class="input" value="<%= historial.pp.otros %>" disabled>
-                        <% } %>
-                    </div>
-                    <% } %>
-                    
-                    <% if (historial.pnp && Object.values(historial.pnp).some(value => value)) { %>
-                    <h2>Personales No Patológicos</h2>
-                    <div class="contenido__personalesNoPatologicos">
-                        <% if (historial.pnp.ejercicio) { %>
-                        <span>Ejercicio:</span>
-                        <input name="ejercicio" type="text" class="input" value="<%= historial.pnp.ejercicio %>" disabled>
-                        <% } %>
-                        <% if (historial.pnp.suplementos) { %>
-                        <span>Suplementos:</span>
-                        <input name="suplementos" type="text" class="input" value="<%= historial.pnp.suplementos %>" disabled>
-                        <% } %>
-                        <% if (historial.pnp.viajesRecientes) { %>
-                        <span>Viajes Recientes:</span>
-                        <input name="viajesRecientes" type="text" class="input" value="<%= historial.pnp.viajesRecientes %>" disabled>
-                        <% } %>
-                        <% if (historial.pnp.tatuajes) { %>
-                        <span>Tatuajes:</span>
-                        <input name="tatuajes" type="text" class="input" value="<%= historial.pnp.tatuajes %>" disabled>
-                        <% } %>
-                        <% if (historial.pnp.perforaciones) { %>
-                        <span>Perforaciones:</span>
-                        <input name="perforaciones" type="text" class="input" value="<%= historial.pnp.perforaciones %>" disabled>
-                        <% } %>
-                        <% if (historial.pnp.otros) { %>
-                        <span>Otros:</span>
-                        <input name="otros" type="text" class="input" value="<%= historial.pnp.otros %>" disabled>
-                        <% } %>
-                    </div>
-                    <% } %>
-                    
-                    <% if (historial.ah && Object.values(historial.ah).some(value => value)) { %>
-                    <h2>Antecedentes Heredofamiliares</h2>
-                    <div class="contenido__antecedentesHeredofamiliares">
-                        <span></span>
-                        <span class="familiares">Abuelos</span>
-                        <span class="familiares">Padre</span>
-                        <span class="familiares">Madre</span>
-                        <span class="familiares">Hermanos</span>
-                    
-                        <% if (historial.ah.diabetesAbuelos || historial.ah.diabetesPadre || historial.ah.diabetesMadre || historial.ah.diabetesHermanos) { %>
-                        <span>Diabetes:</span>
-                        <input name="diabetesAbuelos" type="text" class="input" value="<%= historial.ah.diabetesAbuelos %>" disabled>
-                        <input name="diabetesPadre" type="text" class="input" value="<%= historial.ah.diabetesPadre %>" disabled>
-                        <input name="diabetesMadre" type="text" class="input" value="<%= historial.ah.diabetesMadre %>" disabled>
-                        <input name="diabetesHermanos" type="text" class="input" value="<%= historial.ah.diabetesHermanos %>" disabled>
-                        <% } %>
-                    
-                        <% if (historial.ah.nefropatiasAbuelos || historial.ah.nefropatiasPadre || historial.ah.nefropatiasMadre || historial.ah.nefropatiasHermanos) { %>
-                        <span>Nefropatías:</span>
-                        <input name="nefropatiasAbuelos" type="text" class="input" value="<%= historial.ah.nefropatiasAbuelos %>" disabled>
-                        <input name="nefropatiasPadre" type="text" class="input" value="<%= historial.ah.nefropatiasPadre %>" disabled>
-                        <input name="nefropatiasMadre" type="text" class="input" value="<%= historial.ah.nefropatiasMadre %>" disabled>
-                        <input name="nefropatiasHermanos" type="text" class="input" value="<%= historial.ah.nefropatiasHermanos %>" disabled>
-                        <% } %>
-                    
-                        <% if (historial.ah.mentalesAbuelos || historial.ah.mentalesPadre || historial.ah.mentalesMadre || historial.ah.mentalesHermanos) { %>
-                        <span>Enfermedades Mentales:</span>
-                        <input name="mentalesAbuelos" type="text" class="input" value="<%= historial.ah.mentalesAbuelos %>" disabled>
-                        <input name="mentalesPadre" type="text" class="input" value="<%= historial.ah.mentalesPadre %>" disabled>
-                        <input name="mentalesMadre" type="text" class="input" value="<%= historial.ah.mentalesMadre %>" disabled>
-                        <input name="mentalesHermanos" type="text" class="input" value="<%= historial.ah.mentalesHermanos %>" disabled>
-                        <% } %>
-                    
-                        <% if (historial.ah.hipertensionAbuelos || historial.ah.hipertensionPadre || historial.ah.hipertensionMadre || historial.ah.hipertensionHermanos) { %>
-                        <span>Hipertensión Arterial:</span>
-                        <input name="hipertensionAbuelos" type="text" class="input" value="<%= historial.ah.hipertensionAbuelos %>" disabled>
-                        <input name="hipertensionPadre" type="text" class="input" value="<%= historial.ah.hipertensionPadre %>" disabled>
-                        <input name="hipertensionMadre" type="text" class="input" value="<%= historial.ah.hipertensionMadre %>" disabled>
-                        <input name="hipertensionHermanos" type="text" class="input" value="<%= historial.ah.hipertensionHermanos %>" disabled>
-                        <% } %>
-                    
-                        <% if (historial.ah.oncologicosAbuelos || historial.ah.oncologicosPadre || historial.ah.oncologicosMadre || historial.ah.oncologicosHermanos) { %>
-                        <span>Oncológicos:</span>
-                        <input name="oncologicosAbuelos" type="text" class="input" value="<%= historial.ah.oncologicosAbuelos %>" disabled>
-                        <input name="oncologicosPadre" type="text" class="input" value="<%= historial.ah.oncologicosPadre %>" disabled>
-                        <input name="oncologicosMadre" type="text" class="input" value="<%= historial.ah.oncologicosMadre %>" disabled>
-                        <input name="oncologicosHermanos" type="text" class="input" value="<%= historial.ah.oncologicosHermanos %>" disabled>
-                        <% } %>
-                    
-                        <% if (historial.ah.hepatopatiasAbuelos || historial.ah.hepatopatiasPadre || historial.ah.hepatopatiasMadre || historial.ah.hepatopatiasHermanos) { %>
-                        <span>Hepatopatías:</span>
-                        <input name="hepatopatiasAbuelos" type="text" class="input" value="<%= historial.ah.hepatopatiasAbuelos %>" disabled>
-                        <input name="hepatopatiasPadre" type="text" class="input" value="<%= historial.ah.hepatopatiasPadre %>" disabled>
-                        <input name="hepatopatiasMadre" type="text" class="input" value="<%= historial.ah.hepatopatiasMadre %>" disabled>
-                        <input name="hepatopatiasHermanos" type="text" class="input" value="<%= historial.ah.hepatopatiasHermanos %>" disabled>
-                        <% } %>
-                    
-                        <% if (historial.ah.heredoOtrosAbuelos || historial.ah.heredoOtrosPadre || historial.ah.heredoOtrosMadre || historial.ah.heredoOtrosHermanos) { %>
-                        <span>Otros:</span>
-                        <input name="heredoOtrosAbuelos" type="text" class="input" value="<%= historial.ah.heredoOtrosAbuelos %>" disabled>
-                        <input name="heredoOtrosPadre" type="text" class="input" value="<%= historial.ah.heredoOtrosPadre %>" disabled>
-                        <input name="heredoOtrosMadre" type="text" class="input" value="<%= historial.ah.heredoOtrosMadre %>" disabled>
-                        <input name="heredoOtrosHermanos" type="text" class="input" value="<%= historial.ah.heredoOtrosHermanos %>" disabled>
-                        <% } %>
-                    </div>
-                    <% } %>
-                    <span>Última modificación: <%= historial.ultimaModificacion %> <br>
-                        por el médico <%= historial.doctor.nombre %> <br>
-                        de cédula <%= historial.doctor.cedula %></span>
-                        
-                    </div>
-                    <% } else { %>
-                        <p>No hay datos en el historial.</p>
-                    <% } %>
-                </div>
-
-                <div id="vacunas" class="seccion">
-                    <div class="seccion__titulo">
-                        <h1 class="seccion__titulo--titulo">
-                            <i class="fa-solid fa-syringe"></i> Vacunas
-                        </h1>
-                    </div>
-                    <div class="seccion__vacunas">
-                        <div class="seccion__contenido">
-                            <div class="buscador">
-                                <input class="input" type="text" id="buscar__vacuna" placeholder="Buscar vacuna...">
-    
-                                <select id="ordenarPorVacunas">
-                                    <option value="" selected disabled>Ordenar</option>
-                                    <option value="nombre">Nombre</option>
-                                    <option value="fecha">Fecha</option>
-                                    <option value="profesional">Profesional</option>
-                                </select>
-                                
-                                <select id="mostrarVacunas">
-                                    <option value="" selected disabled>Mostrar</option>
-                                    <option value="cualquiera">Cualquier fecha</option>
-                                    <option value="unDia">Últimas 24 horas</option>
-                                    <option value="unaSemana">Última semana</option>
-                                    <option value="unMes">Último mes</option>
-                                    <option value="unAño">Último año</option>
-                                </select>
-                                
-                            </div>
-                            
-                            <div class="seccion__contenido--vacunas vacunas">
-                                <% vacunas.forEach(vacunas=> { %>
-                                    <div class="vacuna">
-                                        <div class="vacuna--informacion">
-                                            <p class="vacuna__nombre"><%= vacunas.vacuna_aplicada %></p>
-                                            <p>Fabricante: <%= vacunas.fabricante %></p>
-                                            <p>Aplicación: <%= vacunas.fechaAplicacion %></p>
-                                            <p>Dosis: <%= vacunas.dosisAdministrada %></p>
-                                            <p>No. Lote: <%= vacunas.numeroLote %></p>
-                                            <p>No. Serie: <%= vacunas.numeroSerie %></p>
-                                            <p>Lugar de administración: <%= vacunas.lugarAdministracion %></p>
-                                            <p>Profesional: <%= vacunas.nombre %></p>
-                                            <p>Cédula del profesional: <%= vacunas.cedula %></p>
-                                            <% if (vacunas.siguienteDosis && vacunas.siguienteDosis !== '0000-00-00 00:00:00' && vacunas.siguienteDosis !== 'NaN-NaN-NaN') { %>
-                                                <p class="siguiente-dosis">Siguiente dosis: <%= vacunas.siguienteDosis %></p>
+                    <% if (historial && (historial.pp && Object.values(historial.pp).some(value=> value) ||
+                        historial.pnp && Object.values(historial.pnp).some(value => value) || historial.ah &&
+                        Object.values(historial.ah).some(value => value))) { %>
+                        <% if (historial.pp && Object.values(historial.pp).some(value=> value)) { %>
+                            <h2>Personales Patológicos</h2>
+                            <div class="contenido__personalesPatologicos">
+                                <% if (historial.pp.alergias) { %>
+                                    <span>Alergias:</span>
+                                    <input name="alergias" type="text" class="input"
+                                        value="<%= historial.pp.alergias %>" disabled>
+                                    <% } %>
+                                        <% if (historial.pp.tabaco) { %>
+                                            <span>Tabaco:</span>
+                                            <input name="tabaco" type="text" class="input"
+                                                value="<%= historial.pp.tabaco %>" disabled>
                                             <% } %>
-                                        </div>
+                                                <% if (historial.pp.alcohol) { %>
+                                                    <span>Alcohol:</span>
+                                                    <input name="alcohol" type="text" class="input"
+                                                        value="<%= historial.pp.alcohol %>" disabled>
+                                                    <% } %>
+                                                        <% if (historial.pp.drogas) { %>
+                                                            <span>Drogas:</span>
+                                                            <input name="drogas" type="text" class="input"
+                                                                value="<%= historial.pp.drogas %>" disabled>
+                                                            <% } %>
+                                                                <% if (historial.pp.padecimientos) { %>
+                                                                    <span>Padecimientos:</span>
+                                                                    <input name="padecimientos" type="text"
+                                                                        class="input"
+                                                                        value="<%= historial.pp.padecimientos %>"
+                                                                        disabled>
+                                                                    <% } %>
+                                                                        <% if (historial.pp.medicamentos) { %>
+                                                                            <span>Medicamentos:</span>
+                                                                            <input name="medicamentos" type="text"
+                                                                                class="input"
+                                                                                value="<%= historial.pp.medicamentos %>"
+                                                                                disabled>
+                                                                            <% } %>
+                                                                                <% if (historial.pp.quirurgicos) { %>
+                                                                                    <span>Quirúrgicos:</span>
+                                                                                    <input name="quirurgicos"
+                                                                                        type="text" class="input"
+                                                                                        value="<%= historial.pp.quirurgicos %>"
+                                                                                        disabled>
+                                                                                    <% } %>
+                                                                                        <% if
+                                                                                            (historial.pp.traumatologicos)
+                                                                                            { %>
+                                                                                            <span>Traumatológicos:</span>
+                                                                                            <input
+                                                                                                name="traumatologicos"
+                                                                                                type="text"
+                                                                                                class="input"
+                                                                                                value="<%= historial.pp.traumatologicos %>"
+                                                                                                disabled>
+                                                                                            <% } %>
+                                                                                                <% if
+                                                                                                    (historial.pp.transfusionales)
+                                                                                                    { %>
+                                                                                                    <span>Transfusionales:</span>
+                                                                                                    <input
+                                                                                                        name="transfusionales"
+                                                                                                        type="text"
+                                                                                                        class="input"
+                                                                                                        value="<%= historial.pp.transfusionales %>"
+                                                                                                        disabled>
+                                                                                                    <% } %>
+                                                                                                        <% if
+                                                                                                            (historial.pp.intoleranciaMedicamentos)
+                                                                                                            { %>
+                                                                                                            <span>Intolerancia
+                                                                                                                a
+                                                                                                                Medicamentos:</span>
+                                                                                                            <input
+                                                                                                                name="intoleranciaMedicamentos"
+                                                                                                                type="text"
+                                                                                                                class="input"
+                                                                                                                value="<%= historial.pp.intoleranciaMedicamentos %>"
+                                                                                                                disabled>
+                                                                                                            <% } %>
+                                                                                                                <% if
+                                                                                                                    (historial.pp.otros)
+                                                                                                                    { %>
+                                                                                                                    <span>Otros:</span>
+                                                                                                                    <input
+                                                                                                                        name="otros"
+                                                                                                                        type="text"
+                                                                                                                        class="input"
+                                                                                                                        value="<%= historial.pp.otros %>"
+                                                                                                                        disabled>
+                                                                                                                    <% }
+                                                                                                                        %>
+                            </div>
+                            <% } %>
+
+                                <% if (historial.pnp && Object.values(historial.pnp).some(value=> value)) { %>
+                                    <h2>Personales No Patológicos</h2>
+                                    <div class="contenido__personalesNoPatologicos">
+                                        <% if (historial.pnp.ejercicio) { %>
+                                            <span>Ejercicio:</span>
+                                            <input name="ejercicio" type="text" class="input"
+                                                value="<%= historial.pnp.ejercicio %>" disabled>
+                                            <% } %>
+                                                <% if (historial.pnp.suplementos) { %>
+                                                    <span>Suplementos:</span>
+                                                    <input name="suplementos" type="text" class="input"
+                                                        value="<%= historial.pnp.suplementos %>" disabled>
+                                                    <% } %>
+                                                        <% if (historial.pnp.viajesRecientes) { %>
+                                                            <span>Viajes Recientes:</span>
+                                                            <input name="viajesRecientes" type="text" class="input"
+                                                                value="<%= historial.pnp.viajesRecientes %>" disabled>
+                                                            <% } %>
+                                                                <% if (historial.pnp.tatuajes) { %>
+                                                                    <span>Tatuajes:</span>
+                                                                    <input name="tatuajes" type="text" class="input"
+                                                                        value="<%= historial.pnp.tatuajes %>" disabled>
+                                                                    <% } %>
+                                                                        <% if (historial.pnp.perforaciones) { %>
+                                                                            <span>Perforaciones:</span>
+                                                                            <input name="perforaciones" type="text"
+                                                                                class="input"
+                                                                                value="<%= historial.pnp.perforaciones %>"
+                                                                                disabled>
+                                                                            <% } %>
+                                                                                <% if (historial.pnp.otros) { %>
+                                                                                    <span>Otros:</span>
+                                                                                    <input name="otros" type="text"
+                                                                                        class="input"
+                                                                                        value="<%= historial.pnp.otros %>"
+                                                                                        disabled>
+                                                                                    <% } %>
                                     </div>
+                                    <% } %>
+
+                                        <% if (historial.ah && Object.values(historial.ah).some(value=> value)) { %>
+                                            <h2>Antecedentes Heredofamiliares</h2>
+                                            <div class="contenedor__antecedentesHeredofamiliares">
+                                                <table class="tabla__antecedentesHeredofamiliares">
+                                                    <thead>
+                                                        <tr>
+                                                            <th></th>
+                                                            <th class="familiares familiar__abuelos">Abuelos</th>
+                                                            <th class="familiares familiar__padre">Padre</th>
+                                                            <th class="familiares familiar__madre">Madre</th>
+                                                            <th class="familiares familiar__hermanos">Hermanos</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <% if (historial.ah.diabetesAbuelos ||
+                                                            historial.ah.diabetesPadre || historial.ah.diabetesMadre ||
+                                                            historial.ah.diabetesHermanos) { %>
+                                                            <tr>
+                                                                <td>Diabetes</td>
+                                                                <td><input name="diabetesAbuelos" type="text"
+                                                                        class="input input__diabetes--abuelos"
+                                                                        value="<%= historial.ah.diabetesAbuelos %>"
+                                                                        disabled></td>
+                                                                <td><input name="diabetesPadre" type="text"
+                                                                        class="input input__diabetes--padre"
+                                                                        value="<%= historial.ah.diabetesPadre %>"
+                                                                        disabled></td>
+                                                                <td><input name="diabetesMadre" type="text"
+                                                                        class="input input__diabetes--madre"
+                                                                        value="<%= historial.ah.diabetesMadre %>"
+                                                                        disabled></td>
+                                                                <td><input name="diabetesHermanos" type="text"
+                                                                        class="input input__diabetes--hermanos"
+                                                                        value="<%= historial.ah.diabetesHermanos %>"
+                                                                        disabled></td>
+                                                            </tr>
+                                                            <% } %>
+
+                                                                <% if (historial.ah.nefropatiasAbuelos ||
+                                                                    historial.ah.nefropatiasPadre ||
+                                                                    historial.ah.nefropatiasMadre ||
+                                                                    historial.ah.nefropatiasHermanos) { %>
+                                                                    <tr>
+                                                                        <td>Nefropatías</td>
+                                                                        <td><input name="nefropatiasAbuelos" type="text"
+                                                                                class="input"
+                                                                                value="<%= historial.ah.nefropatiasAbuelos %>"
+                                                                                disabled></td>
+                                                                        <td><input name="nefropatiasPadre" type="text"
+                                                                                class="input"
+                                                                                value="<%= historial.ah.nefropatiasPadre %>"
+                                                                                disabled></td>
+                                                                        <td><input name="nefropatiasMadre" type="text"
+                                                                                class="input"
+                                                                                value="<%= historial.ah.nefropatiasMadre %>"
+                                                                                disabled></td>
+                                                                        <td><input name="nefropatiasHermanos"
+                                                                                type="text" class="input"
+                                                                                value="<%= historial.ah.nefropatiasHermanos %>"
+                                                                                disabled></td>
+                                                                    </tr>
+                                                                    <% } %>
+
+                                                                        <% if (historial.ah.mentalesAbuelos ||
+                                                                            historial.ah.mentalesPadre ||
+                                                                            historial.ah.mentalesMadre ||
+                                                                            historial.ah.mentalesHermanos) { %>
+                                                                            <tr>
+                                                                                <td>Enfermedades Mentales</td>
+                                                                                <td><input name="mentalesAbuelos"
+                                                                                        type="text" class="input"
+                                                                                        value="<%= historial.ah.mentalesAbuelos %>"
+                                                                                        disabled></td>
+                                                                                <td><input name="mentalesPadre"
+                                                                                        type="text" class="input"
+                                                                                        value="<%= historial.ah.mentalesPadre %>"
+                                                                                        disabled></td>
+                                                                                <td><input name="mentalesMadre"
+                                                                                        type="text" class="input"
+                                                                                        value="<%= historial.ah.mentalesMadre %>"
+                                                                                        disabled></td>
+                                                                                <td><input name="mentalesHermanos"
+                                                                                        type="text" class="input"
+                                                                                        value="<%= historial.ah.mentalesHermanos %>"
+                                                                                        disabled></td>
+                                                                            </tr>
+                                                                            <% } %>
+
+                                                                                <% if (historial.ah.hipertensionAbuelos
+                                                                                    || historial.ah.hipertensionPadre ||
+                                                                                    historial.ah.hipertensionMadre ||
+                                                                                    historial.ah.hipertensionHermanos) {
+                                                                                    %>
+                                                                                    <tr>
+                                                                                        <td>Hipertensión Arterial</td>
+                                                                                        <td><input
+                                                                                                name="hipertensionAbuelos"
+                                                                                                type="text"
+                                                                                                class="input"
+                                                                                                value="<%= historial.ah.hipertensionAbuelos %>"
+                                                                                                disabled></td>
+                                                                                        <td><input
+                                                                                                name="hipertensionPadre"
+                                                                                                type="text"
+                                                                                                class="input"
+                                                                                                value="<%= historial.ah.hipertensionPadre %>"
+                                                                                                disabled></td>
+                                                                                        <td><input
+                                                                                                name="hipertensionMadre"
+                                                                                                type="text"
+                                                                                                class="input"
+                                                                                                value="<%= historial.ah.hipertensionMadre %>"
+                                                                                                disabled></td>
+                                                                                        <td><input
+                                                                                                name="hipertensionHermanos"
+                                                                                                type="text"
+                                                                                                class="input"
+                                                                                                value="<%= historial.ah.hipertensionHermanos %>"
+                                                                                                disabled></td>
+                                                                                    </tr>
+                                                                                    <% } %>
+
+                                                                                        <% if
+                                                                                            (historial.ah.oncologicosAbuelos
+                                                                                            ||
+                                                                                            historial.ah.oncologicosPadre
+                                                                                            ||
+                                                                                            historial.ah.oncologicosMadre
+                                                                                            ||
+                                                                                            historial.ah.oncologicosHermanos)
+                                                                                            { %>
+                                                                                            <tr>
+                                                                                                <td>Oncológicos</td>
+                                                                                                <td><input
+                                                                                                        name="oncologicosAbuelos"
+                                                                                                        type="text"
+                                                                                                        class="input"
+                                                                                                        value="<%= historial.ah.oncologicosAbuelos %>"
+                                                                                                        disabled></td>
+                                                                                                <td><input
+                                                                                                        name="oncologicosPadre"
+                                                                                                        type="text"
+                                                                                                        class="input"
+                                                                                                        value="<%= historial.ah.oncologicosPadre %>"
+                                                                                                        disabled></td>
+                                                                                                <td><input
+                                                                                                        name="oncologicosMadre"
+                                                                                                        type="text"
+                                                                                                        class="input"
+                                                                                                        value="<%= historial.ah.oncologicosMadre %>"
+                                                                                                        disabled></td>
+                                                                                                <td><input
+                                                                                                        name="oncologicosHermanos"
+                                                                                                        type="text"
+                                                                                                        class="input"
+                                                                                                        value="<%= historial.ah.oncologicosHermanos %>"
+                                                                                                        disabled></td>
+                                                                                            </tr>
+                                                                                            <% } %>
+
+                                                                                                <% if
+                                                                                                    (historial.ah.hepatopatiasAbuelos
+                                                                                                    ||
+                                                                                                    historial.ah.hepatopatiasPadre
+                                                                                                    ||
+                                                                                                    historial.ah.hepatopatiasMadre
+                                                                                                    ||
+                                                                                                    historial.ah.hepatopatiasHermanos)
+                                                                                                    { %>
+                                                                                                    <tr>
+                                                                                                        <td>Hepatopatías
+                                                                                                        </td>
+                                                                                                        <td><input
+                                                                                                                name="hepatopatiasAbuelos"
+                                                                                                                type="text"
+                                                                                                                class="input"
+                                                                                                                value="<%= historial.ah.hepatopatiasAbuelos %>"
+                                                                                                                disabled>
+                                                                                                        </td>
+                                                                                                        <td><input
+                                                                                                                name="hepatopatiasPadre"
+                                                                                                                type="text"
+                                                                                                                class="input"
+                                                                                                                value="<%= historial.ah.hepatopatiasPadre %>"
+                                                                                                                disabled>
+                                                                                                        </td>
+                                                                                                        <td><input
+                                                                                                                name="hepatopatiasMadre"
+                                                                                                                type="text"
+                                                                                                                class="input"
+                                                                                                                value="<%= historial.ah.hepatopatiasMadre %>"
+                                                                                                                disabled>
+                                                                                                        </td>
+                                                                                                        <td><input
+                                                                                                                name="hepatopatiasHermanos"
+                                                                                                                type="text"
+                                                                                                                class="input"
+                                                                                                                value="<%= historial.ah.hepatopatiasHermanos %>"
+                                                                                                                disabled>
+                                                                                                        </td>
+                                                                                                    </tr>
+                                                                                                    <% } %>
+
+                                                                                                        <% if
+                                                                                                            (historial.ah.heredoOtrosAbuelos
+                                                                                                            ||
+                                                                                                            historial.ah.heredoOtrosPadre
+                                                                                                            ||
+                                                                                                            historial.ah.heredoOtrosMadre
+                                                                                                            ||
+                                                                                                            historial.ah.heredoOtrosHermanos)
+                                                                                                            { %>
+                                                                                                            <tr>
+                                                                                                                <td>Otros
+                                                                                                                </td>
+                                                                                                                <td><input
+                                                                                                                        name="heredoOtrosAbuelos"
+                                                                                                                        type="text"
+                                                                                                                        class="input"
+                                                                                                                        value="<%= historial.ah.heredoOtrosAbuelos %>"
+                                                                                                                        disabled>
+                                                                                                                </td>
+                                                                                                                <td><input
+                                                                                                                        name="heredoOtrosPadre"
+                                                                                                                        type="text"
+                                                                                                                        class="input"
+                                                                                                                        value="<%= historial.ah.heredoOtrosPadre %>"
+                                                                                                                        disabled>
+                                                                                                                </td>
+                                                                                                                <td><input
+                                                                                                                        name="heredoOtrosMadre"
+                                                                                                                        type="text"
+                                                                                                                        class="input"
+                                                                                                                        value="<%= historial.ah.heredoOtrosMadre %>"
+                                                                                                                        disabled>
+                                                                                                                </td>
+                                                                                                                <td><input
+                                                                                                                        name="heredoOtrosHermanos"
+                                                                                                                        type="text"
+                                                                                                                        class="input"
+                                                                                                                        value="<%= historial.ah.heredoOtrosHermanos %>"
+                                                                                                                        disabled>
+                                                                                                                </td>
+                                                                                                            </tr>
+                                                                                                            <% } %>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <% } %>
+                                                <span>Última modificación: <%= historial.ultimaModificacion %> <br>
+                                                        por el médico <%= historial.doctor.nombre %> <br>
+                                                            de cédula <%= historial.doctor.cedula %></span>
+
+                </div>
+                <% } else { %>
+                    <p>No hay datos en el historial.</p>
+                    <% } %>
+            </div>
+
+            <div id="vacunas" class="seccion">
+                <div class="seccion__titulo">
+                    <h1 class="seccion__titulo--titulo">
+                        <i class="fa-solid fa-syringe"></i> Vacunas
+                    </h1>
+                </div>
+                <div class="seccion__vacunas">
+                    <div class="seccion__contenido seccion__vacunas--contenedor">
+                        <div class="buscador">
+                            <input class="input" type="text" id="buscar__vacuna" placeholder="Buscar vacuna...">
+
+                            <select id="ordenarPorVacunas">
+                                <option value="" selected disabled>Ordenar</option>
+                                <option value="nombre">Nombre</option>
+                                <option value="fecha">Fecha</option>
+                                <option value="profesional">Profesional</option>
+                            </select>
+
+                            <select id="mostrarVacunas">
+                                <option value="" selected disabled>Mostrar</option>
+                                <option value="cualquiera">Cualquier fecha</option>
+                                <option value="unDia">Últimas 24 horas</option>
+                                <option value="unaSemana">Última semana</option>
+                                <option value="unMes">Último mes</option>
+                                <option value="unAño">Último año</option>
+                            </select>
+
+                        </div>
+
+                        <div class="seccion__contenido--vacunas vacunas">
+                            <% vacunas.forEach(vacunas=> { %>
+                                <div class="vacuna">
+                                    <div class="vacuna--informacion">
+                                        <p class="vacuna__nombre">
+                                            <%= vacunas.vacuna_aplicada %>
+                                        </p>
+                                        <p>Fabricante: <%= vacunas.fabricante %>
+                                        </p>
+                                        <p>Aplicación: <%= vacunas.fechaAplicacion %>
+                                        </p>
+                                        <p>Dosis: <%= vacunas.dosisAdministrada %>
+                                        </p>
+                                        <p>No. Lote: <%= vacunas.numeroLote %>
+                                        </p>
+                                        <p>No. Serie: <%= vacunas.numeroSerie %>
+                                        </p>
+                                        <p>Lugar de administración: <%= vacunas.lugarAdministracion %>
+                                        </p>
+                                        <p>Profesional: <%= vacunas.nombre %>
+                                        </p>
+                                        <p>Cédula del profesional: <%= vacunas.cedula %>
+                                        </p>
+                                        <% if (vacunas.siguienteDosis && vacunas.siguienteDosis !=='0000-00-00 00:00:00'
+                                            && vacunas.siguienteDosis !=='NaN-NaN-NaN' ) { %>
+                                            <p class="siguiente-dosis">Siguiente dosis: <%= vacunas.siguienteDosis %>
+                                            </p>
+                                            <% } %>
+                                    </div>
+                                </div>
                                 <%})%>
-                            </div>
                         </div>
                     </div>
                 </div>
-                <div id="consultas" class="seccion">
-                    <div class="seccion__titulo">
-                        <h1 class="seccion__titulo--titulo">
-                            <i class="fa-solid fa-notes-medical"></i> Consultas
-                        </h1>
-                    </div>
-                    <div class="seccion__consultas">
-                        <div class="seccion__contenido seccion__consultas--contenedor">
-                            <div class="modal__subtitulo">
-                                <h2>Consultas</h2>
-                            </div>
-                            <div class="buscador" id="buscador--consultas">
-                                <input class="input" type="text" id="buscar__consulta" placeholder="Buscar consulta...">
-    
-                                <select id="ordenarPorConsultas">
-                                    <option value="" selected disabled>Ordenar</option>
-                                    <option value="nombre">Nombre</option>
-                                    <option value="fecha">Fecha</option>
-                                    <option value="profesional">Profesional</option>
-                                </select>
-                                
-                                <select id="mostrarConsultas">
-                                    <option value="" selected disabled>Mostrar</option>
-                                    <option value="cualquiera">Cualquier fecha</option>
-                                    <option value="unDia">Últimas 24 horas</option>
-                                    <option value="unaSemana">Última semana</option>
-                                    <option value="unMes">Último mes</option>
-                                    <option value="unAño">Último año</option>
-                                </select>
-                            </div>
-                            <div class="seccion__contenido--consultas">
-                                <% consultas.forEach(consultas=> { %>
-                                    <div class="consulta">
-                                        <div class="consulta--informacion">
-                                            <p class="observaciones">
-                                                <%= consultas.observaciones %>
-                                            </p>
-                                            <p>Profesional: <%= consultas.nombre %>
-                                            </p>
-                                            <p>Cédula del profesional: <%= consultas.cedula %>
-                                            </p>
-                                            <p>Fecha: <%= consultas.fechaConsulta %>
-                                            </p>
-                                        </div>
-                                        <div class="consulta__boton">
-                                            <button class="boton-datos abrir__consulta"
-                                                data-consulta-id="<%= consultas.consulta_id %>">
-                                                Ver Consulta
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <% }) %>
-                            </div>
+            </div>
+            <div id="consultas" class="seccion">
+                <div class="seccion__titulo">
+                    <h1 class="seccion__titulo--titulo">
+                        <i class="fa-solid fa-notes-medical"></i> Consultas
+                    </h1>
+                </div>
+                <div class="seccion__consultas">
+                    <div class="seccion__contenido seccion__consultas--contenedor">
+                        <div class="modal__subtitulo">
+                            <h2>Consultas</h2>
                         </div>
-                        <div class="seccion__contenido seccion__consultas--contenedor">
-                            <div class="modal__subtitulo">
-                                <h2>Estudios</h2>
-                            </div>
-                            <div class="buscador" id="buscador--estudios">
-                                <input class="input" type="text" id="buscar__estudio" placeholder="Buscar estudio...">
-    
-                                <select id="ordenarPorEstudios">
-                                    <option value="" selected disabled>Ordenar</option>
-                                    <option value="nombre">Nombre</option>
-                                    <option value="fecha">Fecha</option>
-                                    <option value="profesional">Profesional</option>
-                                </select>
-                                
-                                <select id="mostrarEstudios">
-                                    <option value="" selected disabled>Mostrar</option>
-                                    <option value="cualquiera">Cualquier fecha</option>
-                                    <option value="unDia">Últimas 24 horas</option>
-                                    <option value="unaSemana">Última semana</option>
-                                    <option value="unMes">Último mes</option>
-                                    <option value="unAño">Último año</option>
-                                </select>
-                            </div>
-                            <div class="seccion__contenido--estudios">
-                                <% estudios.forEach(estudios=> { %>
-                                    <div class="estudio">
-                                        <div class="estudio--informacion">
-                                            <p class="estudio__nombre">
-                                                <%= estudios.tipoEstudio %>
-                                            </p>
-                                            <p>Motivo: <%= estudios.motivoEstudio %>
-                                            </p>
-                                            <p>Profesional: <%= estudios.nombre %>
-                                            </p>
-                                            <p>Cédula del profesional: <%= estudios.cedula %>
-                                            </p>
-                                            <p>Fecha: <%= estudios.fechaEstudio %>
-                                            </p>
-                                        </div>
-                                        <div class="estudio__boton">
-                                            <button class="boton-datos abrir__estudio"
-                                                data-estudio-id="<%= estudios.estudio_id %>">
-                                                Ver Estudio
-                                            </button>
-                                        </div>
+                        <div class="buscador" id="buscador--consultas">
+                            <input class="input" type="text" id="buscar__consulta" placeholder="Buscar consulta...">
+
+                            <select id="ordenarPorConsultas">
+                                <option value="" selected disabled>Ordenar</option>
+                                <option value="nombre">Nombre</option>
+                                <option value="fecha">Fecha</option>
+                                <option value="profesional">Profesional</option>
+                            </select>
+
+                            <select id="mostrarConsultas">
+                                <option value="" selected disabled>Mostrar</option>
+                                <option value="cualquiera">Cualquier fecha</option>
+                                <option value="unDia">Últimas 24 horas</option>
+                                <option value="unaSemana">Última semana</option>
+                                <option value="unMes">Último mes</option>
+                                <option value="unAño">Último año</option>
+                            </select>
+                        </div>
+                        <div class="seccion__contenido--consultas">
+                            <% consultas.forEach(consultas=> { %>
+                                <div class="consulta">
+                                    <div class="consulta--informacion">
+                                        <p class="observaciones">
+                                            <%= consultas.observaciones %>
+                                        </p>
+                                        <p>Profesional: <%= consultas.nombre %>
+                                        </p>
+                                        <p>Cédula del profesional: <%= consultas.cedula %>
+                                        </p>
+                                        <p>Fecha: <%= consultas.fechaConsulta %>
+                                        </p>
                                     </div>
-                                    <% }) %>
-                            </div>
+                                    <div class="consulta__boton">
+                                        <button class="boton-datos abrir__consulta"
+                                            data-consulta-id="<%= consultas.consulta_id %>">
+                                            Ver Consulta
+                                        </button>
+                                    </div>
+                                </div>
+                                <% }) %>
+                        </div>
+                    </div>
+                    <div class="seccion__contenido seccion__consultas--contenedor">
+                        <div class="modal__subtitulo">
+                            <h2>Estudios</h2>
+                        </div>
+                        <div class="buscador" id="buscador--estudios">
+                            <input class="input" type="text" id="buscar__estudio" placeholder="Buscar estudio...">
+
+                            <select id="ordenarPorEstudios">
+                                <option value="" selected disabled>Ordenar</option>
+                                <option value="nombre">Nombre</option>
+                                <option value="fecha">Fecha</option>
+                                <option value="profesional">Profesional</option>
+                            </select>
+
+                            <select id="mostrarEstudios">
+                                <option value="" selected disabled>Mostrar</option>
+                                <option value="cualquiera">Cualquier fecha</option>
+                                <option value="unDia">Últimas 24 horas</option>
+                                <option value="unaSemana">Última semana</option>
+                                <option value="unMes">Último mes</option>
+                                <option value="unAño">Último año</option>
+                            </select>
+                        </div>
+                        <div class="seccion__contenido--estudios">
+                            <% estudios.forEach(estudios=> { %>
+                                <div class="estudio">
+                                    <div class="estudio--informacion">
+                                        <p class="estudio__nombre">
+                                            <%= estudios.tipoEstudio %>
+                                        </p>
+                                        <p>Motivo: <%= estudios.motivoEstudio %>
+                                        </p>
+                                        <p>Profesional: <%= estudios.nombre %>
+                                        </p>
+                                        <p>Cédula del profesional: <%= estudios.cedula %>
+                                        </p>
+                                        <p>Fecha: <%= estudios.fechaEstudio %>
+                                        </p>
+                                    </div>
+                                    <div class="estudio__boton">
+                                        <button class="boton-datos abrir__estudio"
+                                            data-estudio-id="<%= estudios.estudio_id %>">
+                                            Ver Estudio
+                                        </button>
+                                    </div>
+                                </div>
+                                <% }) %>
                         </div>
                     </div>
                 </div>
+            </div>
             <div id="registros" class="seccion">
                 <div class="seccion__titulo">
-                    <h1><i class="fa-solid fa-user-group"></i>Registros Familiares</h1>
+                    <h1 class="seccion__titulo--titulo"><i class="fa-solid fa-user-group"></i>Registros Familiares</h1>
                 </div>
                 <div class="seccion__contenido seccion__registros">
-                    <% registros.forEach(registro => { %>
+                    <% registros.forEach(registro=> { %>
                         <div class="registro">
-                            <button class="borrar__registroCompartido" data-borrarRegistro-id="<%= registro.usuario_id %>">
+                            <button class="borrar__registroCompartido"
+                                data-borrarRegistro-id="<%= registro.usuario_id %>">
                                 <i class="fa-regular fa-trash-can"></i>
                             </button>
                             <button class="botonRegistro" data-registro-id="<%= registro.usuario_id %>">
-                                <img src="https://res.cloudinary.com/dcmaesavo/image/upload/f_auto,q_auto/c_auto,g_auto,h_500,w_500/<%= registro.imagen %>?_a=BAMAGSTE0" alt="">
+                                <img src="https://res.cloudinary.com/dcmaesavo/image/upload/f_auto,q_auto/c_auto,g_auto,h_500,w_500/<%= registro.imagen %>?_a=BAMAGSTE0"
+                                    alt="">
                                 <div class="registro__nombre">
                                     <%= registro.nombre %>
                                 </div>
                             </button>
                         </div>
-                    <% }) %>
+                        <% }) %>
                             <button class="boton-datos nuevo__registro" id="abrir__registro">
                                 <i class="fa-solid fa-plus"></i>
                                 <span>Agregar Registro</span>
@@ -602,8 +872,8 @@
         </main>
     </div>
 
-    <div class="fondo__modal" id="fondo__informacion">
-        <div class="modal" id="modal__informacion">
+    <div id="fondo__informacion" class="fondo__modal">
+        <div id="modal__informacion" class="modal">
             <h1 class="modal__titulo">
                 <i class="fa-solid fa-user"></i> Información General
             </h1>
@@ -653,7 +923,7 @@
                         </li>
                     </ul>
                 </div>
-                <ul class="informacion__general--informacion informacion__lateral">
+                <ul class="informacion__general--informacion informacion__lateral--editar_perfil">
                     <li>
                         <div class="input-group">
                             <label class="label">Peso (Kg)</label>
@@ -688,8 +958,6 @@
                                     <% } %>
                         </div>
                     </li>
-                </ul>
-                <ul class="informacion__general--informacion informacion__lateral">
                     <li>
                         <div class="input-group">
                             <label class="label">Estatura (cm)</label>
@@ -750,10 +1018,12 @@
             <h1 class="modal__titulo">
                 <i class="fa-solid fa-circle-check"></i> Verificación de paciente
             </h1>
-            <span class="modal__span">Ingrese el código SMS recibido del paciente para otorgar acceso a sus datos.</span>
+            <span class="modal__span">Ingrese el código SMS recibido del paciente para otorgar acceso a sus
+                datos.</span>
             <div class="modal__contenido">
                 <form class="formularioSMS" id="formularioSMS">
-                    <input name="codigoSMS" type="text" id="codigoSMSPaciente" class="input" placeholder="- - - - - -" maxlength="6" oninput="formatoNumerico(this)" name="codigoRegistro">
+                    <input name="codigoSMS" type="text" id="codigoSMSPaciente" class="input" placeholder="- - - - - -"
+                        maxlength="6" oninput="formatoNumerico(this)" name="codigoRegistro">
                 </form>
             </div>
             <div class="modal__botones">
@@ -786,7 +1056,7 @@
             <h1 class="modal__titulo">
                 <i class="fa-solid fa-user-group"></i> Registros familiares
             </h1>
-            <div class="modal__contenido">
+            <div class="modal__contenido modal__contenido--registro">
                 <div class="modal__codigos">
                     <div class="modal__codigo">
                         <p id="texto__codigo">Ingresa el código en otro registro</p>
@@ -807,11 +1077,11 @@
                         </p>
                         <p id="regenerarCodigo">El código ha expirado, <a href="#">regeneralo aquí</a></p>
                     </div>
-                    <p>o</p>
                     <div class="modal__codigo">
-                        Ingresa el código del familiar a registrar
+                        Ingresa el código a registrar
                         <div class="input-group">
-                            <input class="input" type="text" maxlength="6" placeholder="⎯ ⎯ ⎯ ⎯ ⎯ ⎯" oninput="formatoNumerico(this)" name="codigoRegistro">
+                            <input class="input" type="text" maxlength="6" placeholder="⎯ ⎯ ⎯ ⎯ ⎯ ⎯"
+                                oninput="formatoNumerico(this)" name="codigoRegistro">
                         </div>
                         <div class="g-recaptcha" data-sitekey="<%= captcha_web %>"></div>
                     </div>
@@ -828,7 +1098,7 @@
         </form>
     </div>
 
-    
+
 
     <div id="fondo__consulta" class="fondo__modal">
         <div id="ventana__consulta" class="modal">
@@ -881,11 +1151,12 @@
                 </h2>
                 Si has perdido tu tarjeta, puedes generar una nueva. <br>
                 Al hacerlo, tu tarjeta anterior quedará inactiva y se cerrará tu sesión. ¿Deseas continuar?
-                
+
             </div>
             <div class="modal__botones">
                 <button id="cerrar__tarjetaPerdida" class="boton-datos"><i class="fa-solid fa-x"></i> Cancelar</button>
-                <button id="generar__tarjetaPerdida" class="boton-datos boton-cancelar"><i class="fa-solid fa-address-card"></i> Generar nueva tarjeta</button>
+                <button id="generar__tarjetaPerdida" class="boton-datos boton-cancelar"><i
+                        class="fa-solid fa-address-card"></i> Generar nueva tarjeta</button>
             </div>
         </div>
     </div>
@@ -898,8 +1169,9 @@
                 <i class="fa-solid fa-check"></i> Verificar número
             </button>
         </div>
-    <%}%>
-    
-    <%- include('../includes/loader') %>
+        <%}%>
+
+            <%- include('../includes/loader') %>
 </body>
+
 </html>
