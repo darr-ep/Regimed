@@ -10,7 +10,7 @@ async function registrarUsuario(
   correo,
   contrasenia
 ) {
-  const query = `INSERT INTO datos_usuario (usuario_id, nombre_comp, nombre, apellido_paterno, apellido_materno, curp, estatura, peso, sexo, sangre, telefono, nacionalidad, imagen, correo, contrasenia) VALUES (?, ?, ?, ?, ?, '', '0', '0', '', '', '', '', 'usuario.png', ?, ?)`;
+  const query = `INSERT INTO datos_usuario (usuario_id, nombre_comp, nombre, apellido_paterno, apellido_materno, curp, estatura, peso, sexo, sangre, telefono, nacionalidad, imagen, correo, contrasenia) VALUES (?, ?, ?, ?, ?, '', '0', '0', '', '', '', '', 'usuario', ?, ?)`;
   await ejecutarConsulta(query, [
     idUsuario,
     nombre_comp,
