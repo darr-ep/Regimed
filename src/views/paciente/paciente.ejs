@@ -790,75 +790,55 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <% if (historial.ah.diabetesAbuelos || historial.ah.diabetesPadre || historial.ah.diabetesMadre || historial.ah.diabetesHermanos) { %>
                             <tr>
                                 <td>Diabetes</td>
-                                <td><input name="diabetesAbuelos" type="text" class="input input__diabetes--abuelos" value="<%= historial.ah.diabetesAbuelos %>" disabled></td>
-                                <td><input name="diabetesPadre" type="text" class="input input__diabetes--padre" value="<%= historial.ah.diabetesPadre %>" disabled></td>
-                                <td><input name="diabetesMadre" type="text" class="input input__diabetes--madre" value="<%= historial.ah.diabetesMadre %>" disabled></td>
-                                <td><input name="diabetesHermanos" type="text" class="input input__diabetes--hermanos" value="<%= historial.ah.diabetesHermanos %>" disabled></td>
+                                <td><input name="diabetesAbuelos" type="text" class="input input__diabetes--abuelos" value="<%= historial && historial.ah ? historial.ah.diabetesAbuelos : '' %>" disabled></td>
+                                <td><input name="diabetesPadre" type="text" class="input input__diabetes--padre" value="<%= historial && historial.ah ? historial.ah.diabetesPadre : '' %>" disabled></td>
+                                <td><input name="diabetesMadre" type="text" class="input input__diabetes--madre" value="<%= historial && historial.ah ? historial.ah.diabetesMadre : '' %>" disabled></td>
+                                <td><input name="diabetesHermanos" type="text" class="input input__diabetes--hermanos" value="<%= historial && historial.ah ? historial.ah.diabetesHermanos : '' %>" disabled></td>
                             </tr>
-                            <% } %>
-
-                            <% if (historial.ah.nefropatiasAbuelos || historial.ah.nefropatiasPadre || historial.ah.nefropatiasMadre || historial.ah.nefropatiasHermanos) { %>
                             <tr>
                                 <td>Nefropatías</td>
-                                <td><input name="nefropatiasAbuelos" type="text" class="input" value="<%= historial.ah.nefropatiasAbuelos %>" disabled></td>
-                                <td><input name="nefropatiasPadre" type="text" class="input" value="<%= historial.ah.nefropatiasPadre %>" disabled></td>
-                                <td><input name="nefropatiasMadre" type="text" class="input" value="<%= historial.ah.nefropatiasMadre %>" disabled></td>
-                                <td><input name="nefropatiasHermanos" type="text" class="input" value="<%= historial.ah.nefropatiasHermanos %>" disabled></td>
+                                <td><input name="nefropatiasAbuelos" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.nefropatiasAbuelos : '' %>" disabled></td>
+                                <td><input name="nefropatiasPadre" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.nefropatiasPadre : '' %>" disabled></td>
+                                <td><input name="nefropatiasMadre" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.nefropatiasMadre : '' %>" disabled></td>
+                                <td><input name="nefropatiasHermanos" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.nefropatiasHermanos : '' %>" disabled></td>
                             </tr>
-                            <% } %>
-
-                            <% if (historial.ah.mentalesAbuelos || historial.ah.mentalesPadre || historial.ah.mentalesMadre || historial.ah.mentalesHermanos) { %>
                             <tr>
                                 <td>Enfermedades Mentales</td>
-                                <td><input name="mentalesAbuelos" type="text" class="input" value="<%= historial.ah.mentalesAbuelos %>" disabled></td>
-                                <td><input name="mentalesPadre" type="text" class="input" value="<%= historial.ah.mentalesPadre %>" disabled></td>
-                                <td><input name="mentalesMadre" type="text" class="input" value="<%= historial.ah.mentalesMadre %>" disabled></td>
-                                <td><input name="mentalesHermanos" type="text" class="input" value="<%= historial.ah.mentalesHermanos %>" disabled></td>
+                                <td><input name="mentalesAbuelos" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.mentalesAbuelos : '' %>" disabled></td>
+                                <td><input name="mentalesPadre" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.mentalesPadre : '' %>" disabled></td>
+                                <td><input name="mentalesMadre" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.mentalesMadre : '' %>" disabled></td>
+                                <td><input name="mentalesHermanos" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.mentalesHermanos : '' %>" disabled></td>
                             </tr>
-                            <% } %>
-
-                            <% if (historial.ah.hipertensionAbuelos || historial.ah.hipertensionPadre || historial.ah.hipertensionMadre || historial.ah.hipertensionHermanos) { %>
                             <tr>
                                 <td>Hipertensión Arterial</td>
-                                <td><input name="hipertensionAbuelos" type="text" class="input" value="<%= historial.ah.hipertensionAbuelos %>" disabled></td>
-                                <td><input name="hipertensionPadre" type="text" class="input" value="<%= historial.ah.hipertensionPadre %>" disabled></td>
-                                <td><input name="hipertensionMadre" type="text" class="input" value="<%= historial.ah.hipertensionMadre %>" disabled></td>
-                                <td><input name="hipertensionHermanos" type="text" class="input" value="<%= historial.ah.hipertensionHermanos %>" disabled></td>
+                                <td><input name="hipertensionAbuelos" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.hipertensionAbuelos : '' %>" disabled></td>
+                                <td><input name="hipertensionPadre" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.hipertensionPadre : '' %>" disabled></td>
+                                <td><input name="hipertensionMadre" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.hipertensionMadre : '' %>" disabled></td>
+                                <td><input name="hipertensionHermanos" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.hipertensionHermanos : '' %>" disabled></td>
                             </tr>
-                            <% } %>
-
-                            <% if (historial.ah.oncologicosAbuelos || historial.ah.oncologicosPadre || historial.ah.oncologicosMadre || historial.ah.oncologicosHermanos) { %>
                             <tr>
                                 <td>Oncológicos</td>
-                                <td><input name="oncologicosAbuelos" type="text" class="input" value="<%= historial.ah.oncologicosAbuelos %>" disabled></td>
-                                <td><input name="oncologicosPadre" type="text" class="input" value="<%= historial.ah.oncologicosPadre %>" disabled></td>
-                                <td><input name="oncologicosMadre" type="text" class="input" value="<%= historial.ah.oncologicosMadre %>" disabled></td>
-                                <td><input name="oncologicosHermanos" type="text" class="input" value="<%= historial.ah.oncologicosHermanos %>" disabled></td>
+                                <td><input name="oncologicosAbuelos" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.oncologicosAbuelos : '' %>" disabled></td>
+                                <td><input name="oncologicosPadre" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.oncologicosPadre : '' %>" disabled></td>
+                                <td><input name="oncologicosMadre" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.oncologicosMadre : '' %>" disabled></td>
+                                <td><input name="oncologicosHermanos" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.oncologicosHermanos : '' %>" disabled></td>
                             </tr>
-                            <% } %>
-
-                            <% if (historial.ah.hepatopatiasAbuelos || historial.ah.hepatopatiasPadre || historial.ah.hepatopatiasMadre || historial.ah.hepatopatiasHermanos) { %>
                             <tr>
                                 <td>Hepatopatías</td>
-                                <td><input name="hepatopatiasAbuelos" type="text" class="input" value="<%= historial.ah.hepatopatiasAbuelos %>" disabled></td>
-                                <td><input name="hepatopatiasPadre" type="text" class="input" value="<%= historial.ah.hepatopatiasPadre %>" disabled></td>
-                                <td><input name="hepatopatiasMadre" type="text" class="input" value="<%= historial.ah.hepatopatiasMadre %>" disabled></td>
-                                <td><input name="hepatopatiasHermanos" type="text" class="input" value="<%= historial.ah.hepatopatiasHermanos %>" disabled></td>
+                                <td><input name="hepatopatiasAbuelos" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.hepatopatiasAbuelos : '' %>" disabled></td>
+                                <td><input name="hepatopatiasPadre" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.hepatopatiasPadre : '' %>" disabled></td>
+                                <td><input name="hepatopatiasMadre" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.hepatopatiasMadre : '' %>" disabled></td>
+                                <td><input name="hepatopatiasHermanos" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.hepatopatiasHermanos : '' %>" disabled></td>
                             </tr>
-                            <% } %>
-
-                            <% if (historial.ah.heredoOtrosAbuelos || historial.ah.heredoOtrosPadre || historial.ah.heredoOtrosMadre || historial.ah.heredoOtrosHermanos) { %>
                             <tr>
                                 <td>Otros</td>
-                                <td><input name="heredoOtrosAbuelos" type="text" class="input" value="<%= historial.ah.heredoOtrosAbuelos %>" disabled></td>
-                                <td><input name="heredoOtrosPadre" type="text" class="input" value="<%= historial.ah.heredoOtrosPadre %>" disabled></td>
-                                <td><input name="heredoOtrosMadre" type="text" class="input" value="<%= historial.ah.heredoOtrosMadre %>" disabled></td>
-                                <td><input name="heredoOtrosHermanos" type="text" class="input" value="<%= historial.ah.heredoOtrosHermanos %>" disabled></td>
+                                <td><input name="heredoOtrosAbuelos" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.heredoOtrosAbuelos : '' %>" disabled></td>
+                                <td><input name="heredoOtrosPadre" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.heredoOtrosPadre : '' %>" disabled></td>
+                                <td><input name="heredoOtrosMadre" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.heredoOtrosMadre : '' %>" disabled></td>
+                                <td><input name="heredoOtrosHermanos" type="text" class="input" value="<%= historial && historial.ah ? historial.ah.heredoOtrosHermanos : '' %>" disabled></td>
                             </tr>
-                            <% } %>
                         </tbody>
                     </table>
                 </div>
